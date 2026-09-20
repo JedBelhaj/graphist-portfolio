@@ -1,0 +1,60 @@
+
+@font-face {
+font-display: swap;
+font-family: 'Vastagogrotesk';
+font-style: normal;
+font-weight: 600;
+font-stretch: normal;
+unicode-range: U+0-10FFFF;
+src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2F51e3b5ed15b719beb31f99c0159670ac756da150.otf?generation=1789909498427235&alt=media') format('woff2');
+}
+
+@font-face {
+font-display: swap;
+font-family: 'Supfonts Desmontilles';
+font-style: normal;
+font-weight: 400;
+font-stretch: normal;
+unicode-range: U+0-10FFFF;
+src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2F66ca74e835a7b2ec8fc697343b4bb258cbe72144.otf?generation=1789909498420695&alt=media') format('woff2');
+}
+
+@font-face {
+font-display: swap;
+font-family: 'Vastagogrotesk';
+font-style: normal;
+font-weight: 700;
+font-stretch: normal;
+unicode-range: U+0-10FFFF;
+src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2F955cff64d3e0fb24535f9e7de80dd3e98c99194f.otf?generation=1789909498419675&alt=media') format('woff2');
+}
+
+@font-face {
+font-display: swap;
+font-family: 'Vastagogrotesk';
+font-style: normal;
+font-weight: 900;
+font-stretch: normal;
+unicode-range: U+0-10FFFF;
+src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2Ff4e8bd9890373441a00ff01ece289010876b3739.otf?generation=1789909498422164&alt=media') format('woff2');
+}
+
+@font-face {
+font-display: swap;
+font-family: 'Acumin Variable Concept';
+font-style: normal;
+font-weight: 100 900;
+font-stretch: normal;
+unicode-range: U+0-10FFFF;
+src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2Fe0dc2603ed7d079646c0e629d32058d5aa9fbd4c.ttf?generation=1789909498408441&alt=media') format('woff2');
+}
+
+@font-face {
+font-display: auto;
+font-family: 'Arial';
+font-style: normal;
+font-weight: normal;
+font-stretch: normal;
+unicode-range: U+0-10FFFF;
+src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2Fed3e64b6fbd7c83489b4a2e1b3d653968359a497.ttf?generation=1784802587042036&alt=media') format('woff2');
+}

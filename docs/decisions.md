@@ -1,0 +1,7 @@
+Revised decisions
+Usage rights: Upwork (cleared-only, per contract), 500px (all, he owns it), direct clients (per-piece sign-off from Soltani, ongoing)
+Scope: full working backend, minimal front
+Platform & budget (revised): Wix front end. No external Postgres, no VPS-hosted database, write straight to Wix Data collections. n8n self-hosted on a cheap VPS (~$5-6/mo) for automation. Bunny Stream for video hosting (~$2-10/mo depending on volume). Total: ~$5-15/month, lower than the original plan since one whole infra piece (external DB) is gone.
+Ongoing intake (revised): Wix Forms handles photos + metadata natively, no custom form to build, submits straight into Wix Data. Videos over 150MB (Wix Forms' cap) route separately: Soltani drops them into a Drive/WeTransfer folder he already uses, n8n watches it, or a small direct-upload page pushes straight to Bunny Stream. n8n stitches both paths together, writes the final result back to Wix Data. Confirmation shown to Soltani on success, failure alerts go to you.
+Media standards: no quality/format enforcement, transcode as-is. Hard rejections only (wrong file type, oversized) get a visible error explaining why. One pipeline, forks by file type internally.
+Backlog & metadata (revised): no import tool built at all. Soltani manually pulls his existing work out of Upwork/500px (his own content, no barrier) and bulk-uploads directly into Wix's native media manager. Missing metadata gets filled in by him as he goes.
