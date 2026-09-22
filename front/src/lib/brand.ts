@@ -18,11 +18,19 @@ export const FONT_SCRIPT = '"Supfonts Desmontilles", Arial, sans-serif';
 export const FONT_BODY = '"Acumin Variable Concept", Arial, sans-serif';
 
 export const INK = "rgb(10,11,16)";
-export const PINK = "rgb(255,95,130)";
 export const LAVENDER = "rgb(217,173,255)";
 export const PURPLE = "rgb(167,68,255)";
 export const TEAL = "rgb(0,192,179)";
-export const PINK_LIGHT = "rgb(255,194,207)";
+
+/* ---------- Accent ----------
+   Replaces the original hot pink, which fought the purple for attention and
+   read candy rather than studio. Three weights, and only one of them is for
+   type: ACCENT clears 4.4:1 on white, so it is safe for the large accent lines
+   it is used on. TINT and WASH are surface colours — putting body copy on them
+   at these luminances would fail contrast, so don't. */
+export const ACCENT = "rgb(124,92,252)";
+export const ACCENT_TINT = "rgb(214,205,255)";
+export const ACCENT_WASH = "rgb(238,234,255)";
 
 /* ---------- Assets ---------- */
 export const A = (id: string, gen: string, ext = "png") =>

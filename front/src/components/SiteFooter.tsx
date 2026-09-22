@@ -48,7 +48,10 @@ export default function SiteFooter() {
             title="Navigation"
             links={[
               ["Services", "#services"],
+              ["Videography", "#videography"],
+              ["Photography", "#photography"],
               ["Work", "#work"],
+              ["Team", "#team"],
               ["Testimonial", "#testimonial"],
               ["About us", "#about"],
             ]}
