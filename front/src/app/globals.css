@@ -41,7 +41,7 @@ body {
   }
 }
 
-@keyframes hero-pop {
+@keyframes pop-in {
   from {
     opacity: 0;
     transform: scale(0);
@@ -60,15 +60,45 @@ body {
   animation: hero-in-right 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* overshoots slightly at the top of the curve so the logos pop */
-.hero-pop {
-  animation: hero-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+/* Testimonial wall: drifts on its own, holds still while hovered. */
+.testimonial-track {
+  animation: marquee var(--loop, 45s) linear infinite;
+}
+
+.testimonial-track:hover {
+  animation-play-state: paused;
+}
+
+/* Continuous rotation for the circular badge. */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-slow {
+  animation: spin-slow 18s linear infinite;
+}
+
+/* overshoots slightly at the top of the curve so elements pop */
+.pop-in {
+  animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-rise,
   .hero-in-right,
-  .hero-pop {
+  .pop-in,
+  .spin-slow,
+  .testimonial-track {
     animation: none;
+  }
+
+  /* Nothing drifts into view on its own now, so let the rail be scrolled. */
+  .testimonial-viewport {
+    overflow-x: auto;
   }
 }

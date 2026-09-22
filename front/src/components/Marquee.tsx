@@ -1,4 +1,4 @@
-import { STAR } from "@/lib/content";
+import { LOGO_MARK } from "@/lib/content";
 
 export default function Marquee({
   items,
@@ -15,7 +15,7 @@ export default function Marquee({
     <div className="flex shrink-0 items-center">
       {items.map((t, i) => (
         <div key={i} className="flex items-center">
-          <img src={STAR} alt="" className="mx-3 h-6 w-6 sm:mx-4 sm:h-8 sm:w-8" />
+          <img src={LOGO_MARK} alt="" className="mx-3 h-6 w-6 sm:mx-4 sm:h-8 sm:w-8" />
           <span
             className="whitespace-nowrap text-lg font-bold uppercase sm:text-xl lg:text-2xl"
             style={{ color: textColor }}

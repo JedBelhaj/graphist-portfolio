@@ -1,5 +1,5 @@
 import { FONT_DISPLAY, FONT_SCRIPT, PINK } from "@/lib/brand";
-import { LUNA, STAR } from "@/lib/content";
+import { LOGO_MARK, STUDIO_PHOTO } from "@/lib/content";
 import AboutBlock from "./AboutBlock";
 
 export default function About() {
@@ -11,45 +11,46 @@ export default function About() {
             className="text-5xl font-semibold leading-none tracking-tight text-[rgb(254,254,254)] sm:text-7xl lg:col-span-2 lg:text-[84px]"
             style={{ fontFamily: FONT_DISPLAY }}
           >
-            About me
+            About us
           </h2>
 
-          <AboutBlock num="01" title="WHO AM I?">
-            I&apos;m Marissa, Founder of Eclectic Creative &amp; Co., a one-woman{" "}
-            <span className="font-bold" style={{ color: PINK }}>marketing powerhouse</span> with a
-            not-so-linear resume and a big heart for small business. After a decade of shaping
-            brands across beauty, tech, CPG, real estate, financial services, and healthcare, I&apos;ve
-            learned that no two businesses or marketing strategies should ever look the same.
+          <AboutBlock num="01" title="WHO ARE WE?">
+            Soltani Media &amp; Marketing is a small production studio built around one stubborn
+            idea: the people who shoot your content should also know{" "}
+            <span className="font-bold" style={{ color: PINK }}>what it&apos;s for</span>. We started
+            behind a camera, spent years watching great footage die in the wrong hands, and built
+            the marketing side so that stopped happening.
           </AboutBlock>
 
-          <AboutBlock num="02" title="WHAT I DO?">
-            At Eclectic Creative, I blend big-picture thinking with hands-on execution. Whether
-            it&apos;s social content that converts, community events that build loyal advocates, or
-            Shopify setups that simply work. My secret weapon? A{" "}
-            <span className="font-bold" style={{ color: PINK }}>wildly diverse background</span>{" "}
-            that brings fresh ideas to every client, every time.
+          <AboutBlock num="02" title="WHAT DO WE DO?">
+            We shoot it, cut it, and put it to work. Brand photography, video, short-form social,
+            paid creative, and the campaigns that carry them. One team from the brief to the
+            reporting, which means{" "}
+            <span className="font-bold" style={{ color: PINK }}>nothing gets lost in the handoff</span>{" "}
+            between the studio, the editor, and the media buyer.
           </AboutBlock>
 
-          {/* Luna image */}
+          {/* On-set image */}
           <div className="relative overflow-hidden rounded-2xl lg:col-start-2 lg:row-start-2 lg:row-span-2">
-            <img src={LUNA} alt="Luna" className="w-full" />
+            <img src={STUDIO_PHOTO} alt="On set with the Soltani Media crew" className="w-full" />
             <div
               className="absolute bottom-6 left-4 text-2xl font-bold text-black"
               style={{ fontFamily: FONT_SCRIPT }}
             >
-              Co-founder, Luna
+              Always rolling.
             </div>
           </div>
 
           <div className="lg:col-start-1 lg:row-start-3 lg:self-end">
-            <AboutBlock num="03" title="WHY ME?">
-              This isn&apos;t one-size-fits-all marketing. It&apos;s curated, human, and{" "}
-              <span className="font-bold" style={{ color: PINK }}>built to grow with you.</span>
+            <AboutBlock num="03" title="WHY US?">
+              No template packages, no three-vendor telephone game. Just a crew that shows up with
+              a plan and content{" "}
+              <span className="font-bold" style={{ color: PINK }}>built to earn its keep.</span>
             </AboutBlock>
           </div>
 
           <div className="hidden items-end justify-center lg:col-start-3 lg:row-start-3 lg:flex">
-            <img src={STAR} alt="" className="w-40 rotate-[160deg] invert" />
+            <img src={LOGO_MARK} alt="" className="spin-slow w-40 invert" />
           </div>
         </div>
       </div>

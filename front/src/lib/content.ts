@@ -1,33 +1,77 @@
-import { A, INK, LAVENDER, PINK, PINK_LIGHT, PURPLE, TEAL } from "./brand";
+import {
+  A,
+  INK,
+  LAVENDER,
+  MOCK_AVATAR,
+  MOCK_PHOTO,
+  PINK,
+  PINK_LIGHT,
+  PURPLE,
+  TEAL,
+} from "./brand";
 
-export const LOGO = A("2815ef3cbf90965172950237f415dfead2462fc8", "1789909498660890");
-export const STAR = A("e76ac0c742a7bfaab06dd8d473b5b4e64fb4fb1f", "1789909498665119");
-export const HERO_PERSON = A("c4aed01edd5049241df70a2b63c9bbde56a47896", "1789909498714486");
-export const HERO_ARROW = A("ae47034d3c2b6f9b629d235e7ce626d32a566e5d", "1789909498683619", "svg");
-export const LUNA = A("f7c0f5a5568a54f1dde2898fec651522b68b0ef8", "1789909498678054", "jpg");
-export const SERVICE_PERSON = A("6fc76eeec1fc0475b0b2c4fed172a2dd89f6bcfc", "1789909498879537");
-export const FOOTER_PORTRAIT = A("454e9980d55ff19e9f1d4e3029514e9a332fb7ec", "1789909499114993", "jpg");
+/* Decorative mark kept from the original design system. */
+export const HERO_ARROW = A(
+  "ae47034d3c2b6f9b629d235e7ce626d32a566e5d",
+  "1789909498683619",
+  "svg",
+);
 
+/* ---------- Real assets (front/public) ---------- */
+/* Circular SM badge: big in About, and the marquee separator. */
+export const LOGO_MARK = "/logo.png";
+
+/* Transparent cut-out, 1152x2048. The subject sits in the bottom ~80% of the
+   frame; the top 19.7% is empty, which the layouts below account for. */
+export const HERO_PHOTO = "/hero.png";
+export const SERVICES_PHOTO = "/hero.png";
+
+export const PHOTOSHOP = "/adobe-photoshop-icon.png";
+export const PREMIERE = "/adobe-premiere-pro-icon.png";
+export const AFTER_EFFECTS = "/adobe-after-effects-icon.png";
+
+/* ---------- Photography (MOCK) ---------- */
+export const STUDIO_PHOTO = MOCK_PHOTO("soltani-onset", 900, 1050);
+export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
+
+/* Positions are tuned to the cut-out's silhouette: the head occupies x 45-75%
+   from y 20-35%, the body x 10-85% below that. Anything that clips the subject
+   tucks behind it, since the photo carries a higher z-index. */
 export const HERO_STICKERS = [
-  { id: A("055a210c1948ebebdad7846fd82dc326825e1e55", "1789909498657425", "svg"), cls: "w-16 sm:w-20 lg:w-28 top-0 right-[-11%]" },
-  { id: A("cb65ff875937f4a3479b723f692b9c19065caf28", "1789909498680732", "svg"), cls: "w-14 lg:w-[110px] left-[21%] top-[31%]" },
-  { id: A("feb195c82de9f8e8a5a03ccf6feefe3f9f33277c", "1789909498674904", "svg"), cls: "w-6 lg:w-[35px] left-[5%] top-[30%]" },
-  { id: A("28ce6c9361ccc969b265f695605d0ea762e2c763", "1789909498659327", "svg"), cls: "w-10 lg:w-[70px] left-[-6%] top-[42%]" },
-  { id: A("ea634b69b3625a481cb1f1be1a927b5f5e3b8be7", "1789909498666254", "svg"), cls: "w-14 lg:w-[110px] left-[5%] top-[53%]" },
+  {
+    id: A(
+      "055a210c1948ebebdad7846fd82dc326825e1e55",
+      "1789909498657425",
+      "svg",
+    ),
+    cls: "w-16 sm:w-20 lg:w-28 top-[10%] right-[0%]",
+  },
+  { id: PHOTOSHOP, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
+  {
+    id: A(
+      "feb195c82de9f8e8a5a03ccf6feefe3f9f33277c",
+      "1789909498674904",
+      "svg",
+    ),
+    cls: "w-12 lg:w-[80px] left-[-5%] top-[55%]",
+  },
+  { id: AFTER_EFFECTS, cls: "w-14 lg:w-[96px] left-[6%] top-[15%]" },
+  { id: PREMIERE, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
 ];
 
+/* Colour order is deliberate — it sets the rhythm of the bubble cluster. */
 export const SERVICES = [
-  { label: "Klaviyo Email Automation & Flow", bg: PINK, fg: "rgb(254,254,254)" },
-  { label: "Email Design", bg: LAVENDER, fg: INK },
-  { label: "Event Production", bg: PURPLE, fg: "rgb(254,254,254)" },
-  { label: "Reputation Strategy & Management", bg: TEAL, fg: "#fff" },
-  { label: "Paid Ads", bg: PURPLE, fg: "rgb(254,254,254)" },
+  { label: "Brand Photography", bg: PINK, fg: "rgb(254,254,254)" },
+  { label: "Video Production", bg: LAVENDER, fg: INK },
+  { label: "Reels & Short-Form Editing", bg: PURPLE, fg: "rgb(254,254,254)" },
+  { label: "Social Media Strategy", bg: TEAL, fg: "#fff" },
+  { label: "Paid Ads & Creative Testing", bg: PURPLE, fg: "rgb(254,254,254)" },
   { label: "Brand Storytelling", bg: TEAL, fg: "rgb(254,254,254)" },
-  { label: "Swag Design", bg: PINK_LIGHT, fg: INK },
-  { label: "Social Media Strategy", bg: LAVENDER, fg: INK },
-  { label: "Social Media Content", bg: PINK, fg: "rgb(254,254,254)" },
-  { label: "Shopify Subscription Setup & Management", bg: PURPLE, fg: "rgb(254,254,254)" },
-  { label: "Reporting & Data", bg: PINK_LIGHT, fg: INK },
+  { label: "Product & Menu Photography", bg: PINK_LIGHT, fg: INK },
+  { label: "Social Media Content", bg: LAVENDER, fg: INK },
+  { label: "Event & Venue Coverage", bg: PINK, fg: "rgb(254,254,254)" },
+  { label: "Email Marketing & Automation", bg: PURPLE, fg: "rgb(254,254,254)" },
+  { label: "Reporting & Analytics", bg: PINK_LIGHT, fg: INK },
 ];
 
 export const TOOLBOX = [
@@ -40,20 +84,21 @@ export const TOOLBOX = [
   A("d3e00aca30ddff4029550347b4446aa0a44d7870", "1789909498828438", "svg"),
 ];
 
+/* MOCK gallery — seven slots matching the grid spans in Work.tsx. */
 export const WORK_IMAGES = [
-  A("9ccc3bed529cc1ebae7c9b1ae56c142b1000ac43", "1789909498991296"),
-  A("f32270ebd675c1dab5ad1776178bd29401768181", "1789909499041478"),
-  A("4f1292da5cb2f89c34c1e95577ac203823a04b7e", "1789909499062305"),
-  A("09611869a89472ddd6188e03a43dfc694e2e426b", "1789909499162440"),
-  A("e15d034842c78a4851996359ce4fb5e2d4cf1b3d", "1789909499064548"),
-  A("57342a9edcfdd27a7b9983bb926f3afc595a543a", "1789909499094756"),
-  A("35b31cc6a708d7388481396702cc43f31dd1ef8b", "1789909499011578"),
+  MOCK_PHOTO("soltani-work-1", 900, 600),
+  MOCK_PHOTO("soltani-work-2", 900, 600),
+  MOCK_PHOTO("soltani-work-3", 700, 700),
+  MOCK_PHOTO("soltani-work-4", 700, 700),
+  MOCK_PHOTO("soltani-work-5", 700, 700),
+  MOCK_PHOTO("soltani-work-6", 900, 600),
+  MOCK_PHOTO("soltani-work-7", 900, 600),
 ];
 
 export const WORK_TABS = [
-  "Social Strategy, Content, and Design",
-  "Content Creation",
-  "Email Design & Automations",
+  "Photography",
+  "Video & Motion",
+  "Social Content & Campaigns",
 ];
 
 export type Testimonial = {
@@ -64,10 +109,11 @@ export type Testimonial = {
   tag: string | null;
 };
 
+/* MOCK testimonials — replace once consent is collected (see docs/problems.md). */
 export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      "Eclectic Creative studio has this unique ability to combine technical expertise with creative insight, explaining not just what to do but why each email strategy decision matters for getting real responses. Despite being a boutique studio, Marissa delivers the output and results you'd expect from a full marketing department — she completely overhauled our nurturing campaigns into something that actually connects.",
+      "Soltani Media is the rare shop that can shoot the thing and then tell you what to do with it. We came in expecting a photographer and left with a quarter's worth of content, a posting calendar, and an ad set that finally beat our old control. Two people delivered what our last agency needed six to half-do.",
     name: null,
     handle: null,
     avatar: null,
@@ -75,19 +121,19 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     quote:
-      "We're so glad we answered Marissa's DM at Jalapa Jar — a chance customer service encounter led to a great working relationship! She jumped in and leveled up our Salsa Club membership game, enhancing the offering and marketing efforts on social. Everything from posting cadence to hiring & liaising with freelancers to create great, impactful new content. Our regular working sessions were full of good, creative ideas that were on brand but also scrappy, actionable and practical. She's detail oriented, organized, resourceful — seriously made our team stronger and helped us grow. Highly recommend her for anyone needing a marketing boost!",
-    name: "Tommy",
-    handle: "@tommy",
-    avatar: A("30f223f51bcaaba347d6b08c3bf18c77cad6b273", "1789909499058007"),
-    tag: "Founder | Jalapa Jar",
+      "We booked one menu shoot and ended up handing over the whole content side. The photos were the easy part — what actually moved the needle was Soltani rebuilding how we post and turning the shoot into eight weeks of reels. Delivery day for delivery day, our online orders are up and I stopped dreading the content calendar. He's organised, fast, and he shows up with a plan instead of a mood board.",
+    name: "Yasmine",
+    handle: "@cafenomad",
+    avatar: MOCK_AVATAR("yasmine"),
+    tag: "Owner | Café Nomad",
   },
   {
     quote:
-      "I worked with Marissa for a couple years for my Salon, PRISM Hair in Richmond, VA! And even across the country she slayed our content and was super helpful. She had wonderful ideas, was super organized, and even helped our email campaigns. Because of her the beginning days and years of owning my salon were made easier having her help with our social media and marketing. Can't recommend her for her expertise and experience enough!",
-    name: "Brittany",
-    handle: "@brittany",
-    avatar: A("3adc334b56c8e1ec935c65d20557227973918477", "1789909499082655"),
-    tag: "Owner | Prism Hair Salon",
+      "We've worked with Soltani across two product launches now. He handles the shoot, the edit, and the paid creative, which means nothing gets lost in translation between three different vendors. He'll also tell you straight when an idea won't perform — that honesty saved us a whole campaign budget last spring. Can't recommend the studio enough.",
+    name: "Karim",
+    handle: "@atlasoutfitters",
+    avatar: MOCK_AVATAR("karim"),
+    tag: "Founder | Atlas Outfitters",
   },
 ];
 

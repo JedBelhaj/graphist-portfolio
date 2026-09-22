@@ -9,7 +9,7 @@ export default function Toolbox() {
           className="text-xl font-bold tracking-tight text-[rgb(47,38,29)] lg:text-2xl"
           style={{ fontFamily: FONT_DISPLAY }}
         >
-          What&apos;s in my toolbox
+          What&apos;s in our kit
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
           {TOOLBOX.map((src, i) => (

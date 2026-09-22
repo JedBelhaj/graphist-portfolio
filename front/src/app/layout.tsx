@@ -1,10 +1,31 @@
 import type { Metadata } from "next";
+import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
+const TITLE = `${BRAND.name} — Photo, Video & Marketing Studio`;
+const DESCRIPTION =
+  "Soltani Media & Marketing is a production and marketing studio. Brand photography, video, short-form social and the campaigns that put them to work — one team, brief to reporting.";
+
 export const metadata: Metadata = {
-  title: "www.geteclectic.co",
-  description:
-    "Create responsive websites from design mockups, enabling designers and businesses to easily launch visually appealing and functional online presences.",
+  metadataBase: new URL(`https://${BRAND.domain}`),
+  title: {
+    default: TITLE,
+    template: `%s | ${BRAND.short}`,
+  },
+  description: DESCRIPTION,
+  applicationName: BRAND.name,
+  openGraph: {
+    type: "website",
+    siteName: BRAND.name,
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
   robots: { index: false, follow: false },
 };
 

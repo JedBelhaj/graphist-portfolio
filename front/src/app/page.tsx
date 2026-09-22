@@ -18,7 +18,7 @@ export default function Page() {
         <Hero />
 
         <Marquee
-          items={Array(4).fill("Built for brands that give a damn")}
+          items={Array(4).fill("Content that looks good and does the work")}
           bg={LAVENDER}
           textColor={INK}
         />
@@ -27,7 +27,7 @@ export default function Page() {
 
         <Marquee
           items={Array(2).fill(
-            "Eclectic [Adjective]: Deriving ideas, style, or taste from a broad and diverse range of sources.",
+            "Media & Marketing [noun]: Making something worth watching — then making sure it gets seen.",
           )}
           bg={PINK_LIGHT}
           textColor={INK}
