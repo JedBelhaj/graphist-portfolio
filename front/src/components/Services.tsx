@@ -21,12 +21,16 @@ const BUBBLE_POSITIONS = [
 /* Gap between each bubble popping in, in ms. */
 const POP_STEP = 70;
 
+/* Lead-in before the first bubble, so the group reads as a reaction to the
+   scroll instead of something already in flight when it comes into view. */
+const POP_DELAY = 180;
+
 export default function Services() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const revealRef = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
-    const el = sectionRef.current;
+    const el = revealRef.current;
     if (!el) return;
 
     const io = new IntersectionObserver(
@@ -35,26 +39,31 @@ export default function Services() {
         setShown(true);
         io.disconnect(); // one-shot: it pops on the way in, not on every pass
       },
-      { threshold: 0.15 },
+      /* Watches the bubbles rather than the section: the heading above them is
+         tall enough that a section-level trigger fired while they were still
+         below the fold. The negative bottom margin holds off until they are
+         properly on screen; the threshold stays low because a block taller
+         than the viewport can never reach a high ratio. */
+      { threshold: 0.1, rootMargin: "0px 0px -15% 0px" },
     );
 
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
-  /* Held at opacity 0 until the section is in view, then the keyframe takes
+  /* Held at opacity 0 until the bubbles are in view, then the keyframe takes
      over. Under prefers-reduced-motion the animation is a no-op, so clearing
      the inline opacity is what reveals them. */
   const pop = (i: number) => ({
     className: shown ? "pop-in" : "",
     style: {
       opacity: shown ? undefined : 0,
-      animationDelay: `${i * POP_STEP}ms`,
+      animationDelay: `${POP_DELAY + i * POP_STEP}ms`,
     },
   });
 
   return (
-    <section ref={sectionRef} id="services" className="px-5 pt-20 sm:px-8 lg:pt-24">
+    <section id="services" className="px-5 pt-20 sm:px-8 lg:pt-24">
       <div className="mx-auto max-w-[940px]">
         <h2
           className="mb-12 text-center text-2xl font-semibold leading-tight tracking-tight text-[rgb(10,11,16)] sm:text-6xl lg:mb-16 lg:text-[80px]"
@@ -66,43 +75,45 @@ export default function Services() {
           </span>
         </h2>
 
-        {/* Mobile / tablet: wrapped pills */}
-        <div className="flex flex-wrap justify-center gap-3 lg:hidden">
-          {SERVICES.map((s, i) => {
-            const { className, style } = pop(i);
-            return (
-              <span
-                key={s.label}
-                className={`rounded-full px-5 py-3 text-center text-sm font-bold ${className}`}
-                style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...style }}
-              >
-                {s.label}
-              </span>
-            );
-          })}
-        </div>
+        <div ref={revealRef}>
+          {/* Mobile / tablet: wrapped pills */}
+          <div className="flex flex-wrap justify-center gap-3 lg:hidden">
+            {SERVICES.map((s, i) => {
+              const { className, style } = pop(i);
+              return (
+                <span
+                  key={s.label}
+                  className={`rounded-full px-5 py-3 text-center text-sm font-bold ${className}`}
+                  style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...style }}
+                >
+                  {s.label}
+                </span>
+              );
+            })}
+          </div>
 
-        {/* Desktop: photo with floating bubbles */}
-        <div className="relative mx-auto hidden justify-center lg:flex">
-          {/* Fixed 460px box keeps the bubble ring's tuned positions intact, while
-              object-bottom crops the cut-out's empty top so the subject fills it. */}
-          <img
-            src={SERVICES_PHOTO}
-            alt=""
-            className="h-[460px] w-[320px] object-cover object-bottom"
-          />
-          {SERVICES.map((s, i) => {
-            const { className, style } = pop(i);
-            return (
-              <div
-                key={s.label}
-                className={`absolute flex items-center justify-center rounded-full px-2 py-6 text-center text-base font-bold ${BUBBLE_POSITIONS[i]} ${className}`}
-                style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...style }}
-              >
-                {s.label}
-              </div>
-            );
-          })}
+          {/* Desktop: photo with floating bubbles */}
+          <div className="relative mx-auto hidden justify-center lg:flex">
+            {/* Fixed 460px box keeps the bubble ring's tuned positions intact, while
+                object-bottom crops the cut-out's empty top so the subject fills it. */}
+            <img
+              src={SERVICES_PHOTO}
+              alt=""
+              className="h-[460px] w-[320px] object-cover object-bottom"
+            />
+            {SERVICES.map((s, i) => {
+              const { className, style } = pop(i);
+              return (
+                <div
+                  key={s.label}
+                  className={`absolute flex items-center justify-center rounded-full px-2 py-6 text-center text-base font-bold ${BUBBLE_POSITIONS[i]} ${className}`}
+                  style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...style }}
+                >
+                  {s.label}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
