@@ -1,5 +1,6 @@
-import { FONT_DISPLAY, FONT_SCRIPT, PINK } from "@/lib/brand";
-import { HERO_ARROW, HERO_PHOTO, HERO_STICKERS } from "@/lib/content";
+import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
+import { HERO_ARROW, HERO_BURST_CLS, HERO_PHOTO, HERO_STICKERS } from "@/lib/content";
+import HeroBurst from "./HeroBurst";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
    in from the right, then the burst behind it, then the logos pop one by one. */
@@ -39,7 +40,7 @@ export default function Hero() {
 
           <p
             className="hero-rise mb-3 text-xl font-semibold leading-snug tracking-tight sm:text-2xl"
-            style={{ color: PINK, animationDelay: "120ms" }}
+            style={{ color: ACCENT, animationDelay: "120ms" }}
           >
             Shot It, Cut It, Marketed It &nbsp;&mdash;&nbsp; Across 120+ Projects and Counting
           </p>
@@ -63,7 +64,7 @@ export default function Hero() {
 
         {/* Hero image panel */}
         <div className="order-1 lg:order-2 lg:hidden">
-          <div className="relative mx-auto flex max-w-md items-end justify-center overflow-hidden rounded-3xl bg-[rgb(255,218,223)] pt-8">
+          <div className="relative mx-auto flex max-w-md items-end justify-center overflow-hidden rounded-3xl bg-[rgb(238,234,255)] pt-8">
             <img
               src={HERO_PHOTO}
               alt="Soltani on set with a clapperboard"
@@ -74,7 +75,7 @@ export default function Hero() {
       </div>
 
       {/* Desktop full-height photo panel */}
-      <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-[rgb(255,218,223)] lg:flex">
+      <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-[rgb(238,234,255)] lg:flex">
         <div className="relative left-[-8%] flex items-end justify-center xl:left-[-18%]">
           <img
             src={HERO_PHOTO}
@@ -82,23 +83,23 @@ export default function Hero() {
             className="hero-in-right relative z-[5] max-h-[640px] xl:max-h-[760px]"
             style={{ animationDelay: `${T_PHOTO}ms` }}
           />
-          {HERO_STICKERS.map((s, i) => {
-            // index 0 is the burst behind the subject; the rest are the tool logos
-            const isBurst = i === 0;
-            return (
-              <div
-                key={i}
-                className={`absolute ${s.cls} ${isBurst ? "hero-in-right" : "pop-in"}`}
-                style={{
-                  animationDelay: isBurst
-                    ? `${T_BURST}ms`
-                    : `${T_LOGOS + (i - 1) * T_LOGO_STEP}ms`,
-                }}
-              >
-                <img src={s.id} alt="" className="w-full" />
-              </div>
-            );
-          })}
+          {/* Burst behind the subject, then the tool logos pop in over it. */}
+          <div
+            className={`absolute ${HERO_BURST_CLS} hero-in-right`}
+            style={{ animationDelay: `${T_BURST}ms` }}
+          >
+            <HeroBurst className="w-full" />
+          </div>
+
+          {HERO_STICKERS.map((s, i) => (
+            <div
+              key={i}
+              className={`absolute ${s.cls} pop-in`}
+              style={{ animationDelay: `${T_LOGOS + i * T_LOGO_STEP}ms` }}
+            >
+              <img src={s.id} alt="" className="w-full" />
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -8,6 +8,20 @@ body {
   height: 100%;
 }
 
+/* Nav anchors glide instead of jumping. Handled in CSS rather than JS so it
+   also covers the footer links, the logo's #top and a pasted deep link. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* The header is fixed, so an anchor target has to clear it — without this the
+   section heading lands underneath the bar every time. */
+main[id],
+section[id],
+footer[id] {
+  scroll-margin-top: 96px;
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -52,6 +66,25 @@ body {
   }
 }
 
+/* ---------- Scroll reveal ----------
+   Shared by every section below the fold, driven by Reveal.tsx. Softer and
+   slower than the hero entrance: this one fires while someone is already
+   reading, so it should settle rather than announce itself. */
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-in {
+  animation: reveal-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .hero-rise {
   animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -89,9 +122,14 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .hero-rise,
   .hero-in-right,
   .pop-in,
+  .reveal-in,
   .spin-slow,
   .testimonial-track {
     animation: none;

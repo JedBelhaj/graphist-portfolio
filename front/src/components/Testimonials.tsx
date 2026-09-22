@@ -1,5 +1,6 @@
 import { FONT_DISPLAY } from "@/lib/brand";
 import { TESTIMONIALS } from "@/lib/content";
+import Reveal from "./Reveal";
 
 /* Seconds for one full pass of the card set. Higher = slower. */
 const LOOP_SECONDS = 45;
@@ -45,22 +46,26 @@ export default function Testimonials() {
   return (
     <section id="testimonial" className="bg-[rgb(10,11,16)] px-5 py-20 sm:px-8 lg:py-24">
       <div className="mx-auto max-w-[1180px]">
-        <h2
-          className="mb-12 text-center text-4xl font-bold tracking-tight text-[rgb(254,254,254)] sm:text-5xl lg:mb-16 lg:text-[56px]"
-          style={{ fontFamily: FONT_DISPLAY }}
-        >
-          Wall Of Love
-        </h2>
-
-        <div className="testimonial-viewport overflow-hidden">
-          <div
-            className="testimonial-track flex w-max"
-            style={{ ["--loop" as string]: `${LOOP_SECONDS}s` }}
+        <Reveal>
+          <h2
+            className="mb-12 text-center text-4xl font-bold tracking-tight text-[rgb(254,254,254)] sm:text-5xl lg:mb-16 lg:text-[56px]"
+            style={{ fontFamily: FONT_DISPLAY }}
           >
-            <Row />
-            <Row duplicate />
+            Wall Of Love
+          </h2>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="testimonial-viewport overflow-hidden">
+            <div
+              className="testimonial-track flex w-max"
+              style={{ ["--loop" as string]: `${LOOP_SECONDS}s` }}
+            >
+              <Row />
+              <Row duplicate />
+            </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

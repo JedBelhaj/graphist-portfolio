@@ -1,11 +1,11 @@
 import {
   A,
+  ACCENT,
+  ACCENT_TINT,
   INK,
   LAVENDER,
   MOCK_AVATAR,
   MOCK_PHOTO,
-  PINK,
-  PINK_LIGHT,
   PURPLE,
   TEAL,
 } from "./brand";
@@ -37,16 +37,18 @@ export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
 /* Positions are tuned to the cut-out's silhouette: the head occupies x 45-75%
    from y 20-35%, the body x 10-85% below that. Anything that clips the subject
    tucks behind it, since the photo carries a higher z-index. */
+/* The burst is drawn by HeroBurst.tsx rather than loaded, so only its placement
+   lives here — same tuned position the remote asset used to sit at. */
+export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[0%]";
+
+/* Array order is the pop-in order — Hero.tsx staggers off the index, so moving
+   an entry retimes it without touching its position, which rides on `cls`.
+   Google AdSense sits last on purpose: it lands the sequence on the marketing
+   side of the kit rather than another Adobe app. */
 export const HERO_STICKERS = [
-  {
-    id: A(
-      "055a210c1948ebebdad7846fd82dc326825e1e55",
-      "1789909498657425",
-      "svg",
-    ),
-    cls: "w-16 sm:w-20 lg:w-28 top-[10%] right-[0%]",
-  },
   { id: PHOTOSHOP, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
+  { id: AFTER_EFFECTS, cls: "w-14 lg:w-[96px] left-[6%] top-[15%]" },
+  { id: PREMIERE, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
   {
     id: A(
       "feb195c82de9f8e8a5a03ccf6feefe3f9f33277c",
@@ -55,23 +57,21 @@ export const HERO_STICKERS = [
     ),
     cls: "w-12 lg:w-[80px] left-[-5%] top-[55%]",
   },
-  { id: AFTER_EFFECTS, cls: "w-14 lg:w-[96px] left-[6%] top-[15%]" },
-  { id: PREMIERE, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
 ];
 
 /* Colour order is deliberate — it sets the rhythm of the bubble cluster. */
 export const SERVICES = [
-  { label: "Brand Photography", bg: PINK, fg: "rgb(254,254,254)" },
+  { label: "Brand Photography", bg: ACCENT, fg: "rgb(254,254,254)" },
   { label: "Video Production", bg: LAVENDER, fg: INK },
   { label: "Reels & Short-Form Editing", bg: PURPLE, fg: "rgb(254,254,254)" },
   { label: "Social Media Strategy", bg: TEAL, fg: "#fff" },
   { label: "Paid Ads & Creative Testing", bg: PURPLE, fg: "rgb(254,254,254)" },
   { label: "Brand Storytelling", bg: TEAL, fg: "rgb(254,254,254)" },
-  { label: "Product & Menu Photography", bg: PINK_LIGHT, fg: INK },
+  { label: "Product & Menu Photography", bg: ACCENT_TINT, fg: INK },
   { label: "Social Media Content", bg: LAVENDER, fg: INK },
-  { label: "Event & Venue Coverage", bg: PINK, fg: "rgb(254,254,254)" },
+  { label: "Event & Venue Coverage", bg: ACCENT, fg: "rgb(254,254,254)" },
   { label: "Email Marketing & Automation", bg: PURPLE, fg: "rgb(254,254,254)" },
-  { label: "Reporting & Analytics", bg: PINK_LIGHT, fg: INK },
+  { label: "Reporting & Analytics", bg: ACCENT_TINT, fg: INK },
 ];
 
 export const TOOLBOX = [
@@ -101,6 +101,128 @@ export const WORK_TABS = [
   "Social Content & Campaigns",
 ];
 
+/* ---------- Client logos ----------
+   Real marks from public/logos. The source files are wildly inconsistent:
+   four formats, aspect ratios from 0.6:1 to 3.6:1, and artwork that runs from
+   near-black (Eclectic, Leadfox) to pure white (FCBB, Tyler's). TrustedBy
+   flattens all of it to one ink silhouette with a brightness(0) filter, so the
+   original colour is irrelevant — what makes that safe is that every one of
+   these files has a transparent background. A logo with a baked-in background
+   would come through as a solid black slab, so check before adding one.
+
+   `cap` is a per-logo height ceiling. A single shared height would leave the
+   near-square and portrait marks towering over the wide wordmarks, so each is
+   tuned for equal optical mass rather than equal measured height.
+
+   The leadfox filename contains a space, hence the %20 — the file is left
+   named as delivered rather than renamed. */
+export const CLIENT_LOGOS: { name: string; src: string; cap: string }[] = [
+  {
+    name: "Eclectic Creative & Co",
+    src: "/logos/6893857a2382a9206011c316_3f4523b58e85c71272303ee2baceb340e9ce79ac.png",
+    cap: "max-h-9",
+  },
+  { name: "Tyler's", src: "/logos/tylers-logo.png", cap: "max-h-14" },
+  { name: "Leadfox", src: "/logos/leadfox%20logo.svg", cap: "max-h-9" },
+  { name: "P4M", src: "/logos/logo-p4m.webp", cap: "max-h-16" },
+  { name: "F45", src: "/logos/F45-logo-desktop.svg", cap: "max-h-11" },
+  {
+    name: "FCBB",
+    src: "/logos/FCBB+Logo+(White)-399w.webp",
+    cap: "max-h-8",
+  },
+  {
+    name: "Lumeniri",
+    src: "/logos/Lumeniri_Header_Soft_Chambray.webp",
+    cap: "max-h-12",
+  },
+  /* TODO: name unknown — the filename is a UUID and the artwork could not be
+     read here. Fill in before launch; it currently ships with generic alt. */
+  {
+    name: "Client",
+    src: "/logos/All_White_BG_1cc381bb-e8c1-474a-8d75-793d0e889f86.avif",
+    cap: "max-h-9",
+  },
+];
+
+/* ---------- Videography (MOCK) ---------- */
+export const VIDEO_FEATURE = MOCK_PHOTO("soltani-video-feature", 1280, 820);
+export const VIDEO_STILL_TALL = MOCK_PHOTO("soltani-video-tall", 640, 880);
+
+export const VIDEO_CAPABILITIES = [
+  {
+    title: "Brand films",
+    body: "The three-minute piece that explains who you are, cut so people actually finish it.",
+  },
+  {
+    title: "Short-form verticals",
+    body: "One shoot day, forty verticals. Hooked in the first second, captioned, sized per platform.",
+  },
+  {
+    title: "Event & venue coverage",
+    body: "Run-of-show capture that leaves you with a recap film and a month of clips, not a hard drive.",
+  },
+];
+
+export const VIDEO_STATS = [
+  { figure: "120+", label: "Projects delivered" },
+  { figure: "6K", label: "Capture standard" },
+  { figure: "72h", label: "Typical first cut" },
+];
+
+/* ---------- Photography grid (MOCK) ----------
+   Three columns of two. Heights are deliberately uneven so the parallax
+   offsets in Photography.tsx read as drift rather than as a broken grid. */
+export const PHOTO_COLUMNS = [
+  [
+    MOCK_PHOTO("soltani-photo-1", 700, 900),
+    MOCK_PHOTO("soltani-photo-2", 700, 560),
+  ],
+  [
+    MOCK_PHOTO("soltani-photo-3", 700, 620),
+    MOCK_PHOTO("soltani-photo-4", 700, 880),
+  ],
+  [
+    MOCK_PHOTO("soltani-photo-5", 700, 840),
+    MOCK_PHOTO("soltani-photo-6", 700, 600),
+  ],
+];
+
+export const PHOTO_DISCIPLINES = [
+  "Brand & campaign",
+  "Product & menu",
+  "Portrait & team",
+  "Event & venue",
+];
+
+/* ---------- Team (MOCK) ---------- */
+export const TEAM = [
+  {
+    name: "Soltani",
+    role: "Founder & Director of Photography",
+    focus: "Stills, lighting, and the final say on the grade.",
+    photo: MOCK_PHOTO("soltani-team-lead", 640, 800),
+  },
+  {
+    name: "Nadia",
+    role: "Head of Strategy",
+    focus: "Turns one shoot day into a quarter of posts that perform.",
+    photo: MOCK_PHOTO("soltani-team-strategy", 640, 800),
+  },
+  {
+    name: "Omar",
+    role: "Editor & Motion",
+    focus: "Cuts the long form, then the forty verticals hiding inside it.",
+    photo: MOCK_PHOTO("soltani-team-editor", 640, 800),
+  },
+  {
+    name: "Lina",
+    role: "Producer",
+    focus: "Locations, permits, call sheets — the reason days run on time.",
+    photo: MOCK_PHOTO("soltani-team-producer", 640, 800),
+  },
+];
+
 export type Testimonial = {
   quote: string;
   name: string | null;
@@ -125,7 +247,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: "Yasmine",
     handle: "@cafenomad",
     avatar: MOCK_AVATAR("yasmine"),
-    tag: "Owner | Café Nomad",
+    tag: "Owner | Cafe Nomad",
   },
   {
     quote:
@@ -140,5 +262,8 @@ export const TESTIMONIALS: Testimonial[] = [
 export const NAV = [
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
+  { label: "Video", href: "#videography" },
+  { label: "Photo", href: "#photography" },
   { label: "Work", href: "#work" },
+  { label: "Team", href: "#team" },
 ];
