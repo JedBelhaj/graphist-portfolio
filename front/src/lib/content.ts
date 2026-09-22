@@ -145,9 +145,21 @@ export const CLIENT_LOGOS: { name: string; src: string; cap: string }[] = [
   },
 ];
 
-/* ---------- Videography (MOCK) ---------- */
-export const VIDEO_FEATURE = MOCK_PHOTO("soltani-video-feature", 1280, 820);
-export const VIDEO_STILL_TALL = MOCK_PHOTO("soltani-video-tall", 640, 880);
+/* ---------- Videography (MOCK) ----------
+   Nine stills, which is one full repeat of the span pattern in Videography.tsx.
+   Add or remove in nines or the mosaic's bottom row stops sitting flush.
+   Source dimensions barely matter — every tile is object-cover cropped. */
+export const VIDEO_TILES = [
+  MOCK_PHOTO("soltani-video-1", 1200, 900),
+  MOCK_PHOTO("soltani-video-2", 1200, 900),
+  MOCK_PHOTO("soltani-video-3", 1200, 900),
+  MOCK_PHOTO("soltani-video-4", 1200, 900),
+  MOCK_PHOTO("soltani-video-5", 1200, 900),
+  MOCK_PHOTO("soltani-video-6", 1200, 900),
+  MOCK_PHOTO("soltani-video-7", 1200, 900),
+  MOCK_PHOTO("soltani-video-8", 1200, 900),
+  MOCK_PHOTO("soltani-video-9", 1200, 900),
+];
 
 export const VIDEO_CAPABILITIES = [
   {
@@ -171,21 +183,18 @@ export const VIDEO_STATS = [
 ];
 
 /* ---------- Photography grid (MOCK) ----------
-   Three columns of two. Heights are deliberately uneven so the parallax
-   offsets in Photography.tsx read as drift rather than as a broken grid. */
-export const PHOTO_COLUMNS = [
-  [
-    MOCK_PHOTO("soltani-photo-1", 700, 900),
-    MOCK_PHOTO("soltani-photo-2", 700, 560),
-  ],
-  [
-    MOCK_PHOTO("soltani-photo-3", 700, 620),
-    MOCK_PHOTO("soltani-photo-4", 700, 880),
-  ],
-  [
-    MOCK_PHOTO("soltani-photo-5", 700, 840),
-    MOCK_PHOTO("soltani-photo-6", 700, 600),
-  ],
+   Nine frames, one full repeat of the span pattern in Photography.tsx. Same
+   rule as the video mosaic: add in nines to keep the bottom row flush. */
+export const PHOTO_TILES = [
+  MOCK_PHOTO("soltani-photo-1", 1200, 900),
+  MOCK_PHOTO("soltani-photo-2", 1200, 900),
+  MOCK_PHOTO("soltani-photo-3", 1200, 900),
+  MOCK_PHOTO("soltani-photo-4", 1200, 900),
+  MOCK_PHOTO("soltani-photo-5", 1200, 900),
+  MOCK_PHOTO("soltani-photo-6", 1200, 900),
+  MOCK_PHOTO("soltani-photo-7", 1200, 900),
+  MOCK_PHOTO("soltani-photo-8", 1200, 900),
+  MOCK_PHOTO("soltani-photo-9", 1200, 900),
 ];
 
 export const PHOTO_DISCIPLINES = [

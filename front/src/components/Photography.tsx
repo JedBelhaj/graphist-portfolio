@@ -1,22 +1,32 @@
 import { ACCENT, ACCENT_WASH, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
-import { PHOTO_COLUMNS, PHOTO_DISCIPLINES } from "@/lib/content";
-import Parallax from "./Parallax";
+import { PHOTO_DISCIPLINES, PHOTO_TILES } from "@/lib/content";
+import MediaMosaic from "./MediaMosaic";
 import Reveal from "./Reveal";
 
-/* Per-column drift. The middle column runs against the outer two — counter
-   motion is what sells the depth; three columns drifting together would just
-   look like the whole grid is loose. */
-const COLUMN_DRIFT = [34, -20, 48];
+/* A different arrangement from the video mosaic on purpose — the anchor tile
+   lands third here instead of first, so the two sections don't read as the
+   same block twice.
+
+   Same tiling rule: the areas must divide by the column count. At 2 columns
+   this is 1+1+4+2+2+2+2+1+1 = 16 (8 rows); at 4 columns the spans are
+   unchanged, so it is 16 again (4 rows). */
+const PHOTO_SPANS = [
+  "",
+  "",
+  "col-span-2 row-span-2",
+  "col-span-2",
+  "col-span-2",
+  "row-span-2",
+  "row-span-2",
+  "",
+  "",
+];
 
 export default function Photography() {
   return (
-    <section
-      id="photography"
-      className="overflow-hidden px-5 py-20 sm:px-8 lg:py-28"
-      style={{ backgroundColor: ACCENT_WASH }}
-    >
-      <div className="mx-auto max-w-[1180px]">
-        <div className="mb-14 flex flex-col gap-6 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
+    <section id="photography" style={{ backgroundColor: ACCENT_WASH }}>
+      <div className="mx-auto max-w-[1180px] px-5 pb-14 pt-20 sm:px-8 lg:pb-20 lg:pt-28">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <Reveal>
               <p
@@ -48,28 +58,12 @@ export default function Photography() {
             </p>
           </Reveal>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-          {PHOTO_COLUMNS.map((column, ci) => (
-            <Parallax key={ci} amount={COLUMN_DRIFT[ci]}>
-              <div className="flex flex-col gap-4 lg:gap-6">
-                {column.map((src, i) => (
-                  <Reveal key={src} delay={ci * 90 + i * 60}>
-                    <div className="group overflow-hidden rounded-2xl bg-black/5">
-                      <img
-                        src={src}
-                        alt=""
-                        className="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                      />
-                    </div>
-                  </Reveal>
-                ))}
-              </div>
-            </Parallax>
-          ))}
-        </div>
+      <MediaMosaic items={PHOTO_TILES} spans={PHOTO_SPANS} />
 
-        <div className="mt-16 flex flex-wrap justify-center gap-3">
+      <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8 lg:py-20">
+        <div className="flex flex-wrap justify-center gap-3">
           {PHOTO_DISCIPLINES.map((d, i) => (
             <Reveal key={d} delay={i * 70}>
               <span
