@@ -1,6 +1,22 @@
 import type { Metadata } from "next";
+import { preload } from "react-dom";
 import { BRAND } from "@/lib/brand";
 import "./globals.css";
+
+/* Every face, not just the above-fold ones. fonts.css uses font-display:
+   optional, so a face that misses its window falls back for the entire page
+   view — preloading some but not others would mean headings in two fonts.
+   All five together are 152KB and same-origin.
+
+   crossOrigin is required even same-origin: fonts are fetched in CORS mode,
+   and without it the browser downloads the file twice. */
+const FONT_PRELOADS = [
+  "/fonts/acumin-variable.woff2",
+  "/fonts/vastago-600.woff2",
+  "/fonts/vastago-700.woff2",
+  "/fonts/vastago-900.woff2",
+  "/fonts/supfonts-desmontilles-400.woff2",
+];
 
 const TITLE = `${BRAND.name} — Photo, Video & Marketing Studio`;
 const DESCRIPTION =
@@ -34,6 +50,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  /* react-dom's preload rather than a hand-written <link>: it emits the tag
+     into <head> without fighting Next's own head management. */
+  FONT_PRELOADS.forEach((href) =>
+    preload(href, { as: "font", type: "font/woff2", crossOrigin: "anonymous" }),
+  );
+
   return (
     <html lang="en">
       <body>{children}</body>
