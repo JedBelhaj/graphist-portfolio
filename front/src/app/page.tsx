@@ -1,64 +1,50 @@
-import { ACCENT_TINT, FONT_BODY, INK, LAVENDER } from "@/lib/brand";
-import Header from "@/components/Header";
+import { ACCENT_TINT, ACCENT_WASH, INK } from "@/lib/brand";
 import Hero from "@/components/Hero";
-import TrustedBy from "@/components/TrustedBy";
 import Marquee from "@/components/Marquee";
-import About from "@/components/About";
 import Services from "@/components/Services";
-import Videography from "@/components/Videography";
-import Photography from "@/components/Photography";
-import Toolbox from "@/components/Toolbox";
-import Work from "@/components/Work";
-import Team from "@/components/Team";
-import Testimonials from "@/components/Testimonials";
-import SiteFooter from "@/components/SiteFooter";
+import WorkTeaser from "@/components/WorkTeaser";
+import Packages from "@/components/Packages";
+import WallOfLove from "@/components/WallOfLove";
+import AboutIntro from "@/components/AboutIntro";
+import Countries from "@/components/Countries";
+import TrustedBy from "@/components/TrustedBy";
 
+/* Home is the short version of everything: each section is a teaser that
+   hands off to its own page. Header and footer come from the layout. */
 export default function Page() {
   return (
-    <div className="min-h-full bg-white font-light text-[rgb(51,51,51)]" style={{ fontFamily: FONT_BODY }}>
-      <Header />
+    <>
+      <Hero />
 
-      <main id="top">
-        <Hero />
+      <Marquee
+        items={Array(4).fill("Content that looks good and does the work")}
+        bg={ACCENT_TINT}
+        textColor={INK}
+      />
 
-        {/* Social proof sits directly under the hero, before any pitch. */}
-        <TrustedBy />
+      {/* The work and the proof lead; what we offer and what it costs follow. */}
+      <WorkTeaser />
 
-        <Marquee
-          items={Array(4).fill("Content that looks good and does the work")}
-          bg={LAVENDER}
-          textColor={INK}
-        />
+      <WallOfLove />
 
-        <About />
+      <Services />
 
-        <Marquee
-          items={Array(2).fill(
-            "Media & Marketing [noun]: Making something worth watching — then making sure it gets seen.",
-          )}
-          bg={ACCENT_TINT}
-          textColor={INK}
-          duration={40}
-        />
+      <Packages />
 
-        <Services />
+      <Marquee
+        items={Array(2).fill(
+          "Media & Marketing [noun]: Making something worth watching — then making sure it gets seen.",
+        )}
+        bg={ACCENT_WASH}
+        textColor={INK}
+        duration={40}
+      />
 
-        {/* The two craft sections run dark then light, so the parallax in each
-            reads against a different ground. */}
-        <Videography />
+      <AboutIntro />
 
-        <Photography />
+      <Countries />
 
-        <Toolbox />
-
-        <Work />
-
-        <Team />
-
-        <Testimonials />
-
-        <SiteFooter />
-      </main>
-    </div>
+      <TrustedBy />
+    </>
   );
 }

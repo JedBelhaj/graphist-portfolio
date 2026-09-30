@@ -9,7 +9,7 @@ export default function SiteFooter() {
     <footer id="contact" className="bg-[rgb(10,11,16)] px-5 pb-12 sm:px-8 lg:px-[72px]">
       <div className="mx-auto max-w-[1180px]">
         {/* CTA card */}
-        <div className="mb-12 flex flex-col items-center gap-6 rounded-2xl bg-[rgb(167,68,255)] p-8 text-center lg:flex-row lg:justify-between lg:gap-16 lg:text-left">
+        <div className="mb-12 flex flex-col items-center gap-6 rounded-2xl bg-[rgb(124,92,252)] p-8 text-center lg:flex-row lg:justify-between lg:gap-16 lg:text-left">
           <Logo className="shrink-0" color="rgb(254,254,254)" />
           <h3
             className="text-3xl font-normal leading-tight tracking-tight text-[rgb(254,254,254)]"
@@ -19,7 +19,7 @@ export default function SiteFooter() {
           </h3>
           <a
             href={`mailto:${BRAND.email}`}
-            className="rounded-full bg-[rgb(254,254,254)] px-6 py-2.5 text-base font-medium text-[rgb(167,68,255)] transition-transform hover:scale-[1.03]"
+            className="rounded-full bg-[rgb(254,254,254)] px-6 py-2.5 text-base font-medium text-[rgb(124,92,252)] transition-transform hover:scale-[1.03]"
           >
             Let&apos;s Chat
           </a>
@@ -38,7 +38,7 @@ export default function SiteFooter() {
                 <span className="text-base font-semibold text-[rgb(254,254,254)]">
                   {BRAND.founder}
                 </span>
-                <Check size={14} className="text-[rgb(167,68,255)]" />
+                <Check size={14} className="text-[rgb(124,92,252)]" />
               </div>
               <div className="text-sm text-[rgb(254,254,254)]">Behind the lens &amp; the plan</div>
             </div>
@@ -47,19 +47,19 @@ export default function SiteFooter() {
           <FooterCol
             title="Navigation"
             links={[
-              ["Services", "#services"],
-              ["Videography", "#videography"],
-              ["Photography", "#photography"],
-              ["Work", "#work"],
-              ["Team", "#team"],
-              ["Testimonial", "#testimonial"],
-              ["About us", "#about"],
+              ["Home", "/"],
+              ["Services", "/services"],
+              ["Photography", "/work/photography"],
+              ["Videography", "/work/videography"],
+              ["About us", "/about"],
+              ["FAQ", "/faq"],
             ]}
           />
           <FooterCol
             title="Connect"
             links={[
               ["Instagram", BRAND.instagram],
+              ["Facebook", BRAND.facebook],
               ["LinkedIn", BRAND.linkedin],
               [BRAND.email, `mailto:${BRAND.email}`],
             ]}

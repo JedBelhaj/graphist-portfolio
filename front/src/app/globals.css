@@ -139,4 +139,11 @@ footer[id] {
   .testimonial-viewport {
     overflow-x: auto;
   }
+
+  /* The header's shrink is a transition, not a keyframe, so it needs its own
+     opt-out — it still changes shape, just without the glide. */
+  header,
+  header * {
+    transition-duration: 0s !important;
+  }
 }

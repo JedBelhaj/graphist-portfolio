@@ -3,10 +3,8 @@ import {
   ACCENT,
   ACCENT_TINT,
   INK,
-  LAVENDER,
   MOCK_AVATAR,
   MOCK_PHOTO,
-  PURPLE,
   TEAL,
 } from "./brand";
 
@@ -62,15 +60,15 @@ export const HERO_STICKERS = [
 /* Colour order is deliberate — it sets the rhythm of the bubble cluster. */
 export const SERVICES = [
   { label: "Brand Photography", bg: ACCENT, fg: "rgb(254,254,254)" },
-  { label: "Video Production", bg: LAVENDER, fg: INK },
-  { label: "Reels & Short-Form Editing", bg: PURPLE, fg: "rgb(254,254,254)" },
+  { label: "Video Production", bg: ACCENT_TINT, fg: INK },
+  { label: "Reels & Short-Form Editing", bg: INK, fg: "rgb(254,254,254)" },
   { label: "Social Media Strategy", bg: TEAL, fg: "#fff" },
-  { label: "Paid Ads & Creative Testing", bg: PURPLE, fg: "rgb(254,254,254)" },
+  { label: "Paid Ads & Creative Testing", bg: INK, fg: "rgb(254,254,254)" },
   { label: "Brand Storytelling", bg: TEAL, fg: "rgb(254,254,254)" },
   { label: "Product & Menu Photography", bg: ACCENT_TINT, fg: INK },
-  { label: "Social Media Content", bg: LAVENDER, fg: INK },
+  { label: "Social Media Content", bg: ACCENT_TINT, fg: INK },
   { label: "Event & Venue Coverage", bg: ACCENT, fg: "rgb(254,254,254)" },
-  { label: "Email Marketing & Automation", bg: PURPLE, fg: "rgb(254,254,254)" },
+  { label: "Email Marketing & Automation", bg: INK, fg: "rgb(254,254,254)" },
   { label: "Reporting & Analytics", bg: ACCENT_TINT, fg: INK },
 ];
 
@@ -102,46 +100,190 @@ export const WORK_TABS = [
 ];
 
 /* ---------- Client logos ----------
-   Real marks from public/logos. The source files are wildly inconsistent:
-   four formats, aspect ratios from 0.6:1 to 3.6:1, and artwork that runs from
+   Real marks from public/logos/real. The source files are wildly inconsistent:
+   five formats, aspect ratios from 0.6:1 to 5.8:1, and artwork that runs from
    near-black (Eclectic, Leadfox) to pure white (FCBB, Tyler's). TrustedBy
-   flattens all of it to one ink silhouette with a brightness(0) filter, so the
+   flattens most of it to one ink silhouette with a brightness(0) filter, so the
    original colour is irrelevant — what makes that safe is that every one of
    these files has a transparent background. A logo with a baked-in background
    would come through as a solid black slab, so check before adding one.
+
+   Canimoov and FitLife were delivered as JPGs on a solid background, so they
+   point at transparent PNGs cut from those originals (the JPGs are kept).
+
+   `tone: "grayscale"` is for marks whose detail is a light shape on a dark one
+   (BSense's white B, Lipfi's illustrated badge) — a silhouette would fill them
+   in to a plain blob, so those are desaturated instead.
 
    `cap` is a per-logo height ceiling. A single shared height would leave the
    near-square and portrait marks towering over the wide wordmarks, so each is
    tuned for equal optical mass rather than equal measured height.
 
-   The leadfox filename contains a space, hence the %20 — the file is left
-   named as delivered rather than renamed. */
-export const CLIENT_LOGOS: { name: string; src: string; cap: string }[] = [
+   Filenames with spaces are left as delivered, hence the %20. */
+export type ClientLogo = {
+  name: string;
+  src: string;
+  cap: string;
+  tone?: "silhouette" | "grayscale";
+};
+
+export const CLIENT_LOGOS: ClientLogo[] = [
   {
     name: "Eclectic Creative & Co",
-    src: "/logos/6893857a2382a9206011c316_3f4523b58e85c71272303ee2baceb340e9ce79ac.png",
+    src: "/logos/real/6893857a2382a9206011c316_3f4523b58e85c71272303ee2baceb340e9ce79ac.png",
     cap: "max-h-9",
   },
-  { name: "Tyler's", src: "/logos/tylers-logo.png", cap: "max-h-14" },
-  { name: "Leadfox", src: "/logos/leadfox%20logo.svg", cap: "max-h-9" },
-  { name: "P4M", src: "/logos/logo-p4m.webp", cap: "max-h-16" },
-  { name: "F45", src: "/logos/F45-logo-desktop.svg", cap: "max-h-11" },
+  { name: "Bailey Anne Studios", src: "/logos/real/BaileyAnneStudios-Whitecrop.webp", cap: "max-h-10" },
+  { name: "Tyler's", src: "/logos/real/tylers-logo.png", cap: "max-h-14" },
+  { name: "Easy Dental Marketing", src: "/logos/real/edm-logo.webp", cap: "max-h-12" },
+  { name: "Leadfox", src: "/logos/real/leadfox%20logo.svg", cap: "max-h-9" },
+  { name: "BSense", src: "/logos/real/bsense-logo.webp", cap: "max-h-14", tone: "grayscale" },
+  { name: "P4M", src: "/logos/real/logo-p4m.webp", cap: "max-h-16" },
+  { name: "Son & Bear", src: "/logos/real/Asset-4_375x.webp", cap: "max-h-6" },
+  { name: "F45", src: "/logos/real/F45-logo-desktop.svg", cap: "max-h-11" },
+  { name: "Canimoov", src: "/logos/real/canimoov.png", cap: "max-h-14" },
+  { name: "FCBB", src: "/logos/real/FCBB+Logo+(White)-399w.webp", cap: "max-h-8" },
+  { name: "Reedz", src: "/logos/real/logo-reedz1.png", cap: "max-h-12" },
+  { name: "Lumeniri", src: "/logos/real/Lumeniri_Header_Soft_Chambray.webp", cap: "max-h-12" },
+  { name: "FitLife", src: "/logos/real/fitlife.png", cap: "max-h-14" },
   {
-    name: "FCBB",
-    src: "/logos/FCBB+Logo+(White)-399w.webp",
-    cap: "max-h-8",
+    name: "Lipfi's Barbershop",
+    src: "/logos/real/All_White_BG_1cc381bb-e8c1-474a-8d75-793d0e889f86.avif",
+    cap: "max-h-10",
+    tone: "grayscale",
+  },
+];
+
+/* ---------- Countries ----------
+   California is folded into the US entry rather than listed as its own
+   country — it rides along as the note. */
+export const COUNTRIES = [
+  { code: "US", name: "United States", note: "incl. California" },
+  { code: "CA", name: "Canada", note: null },
+  { code: "FR", name: "France", note: null },
+  { code: "DE", name: "Germany", note: null },
+  { code: "LB", name: "Lebanon", note: null },
+];
+
+/* ---------- Results (Wall of Love) ----------
+   Real client messages from public/results. Filenames are as delivered, so
+   encodeURI handles the spaces and the accented é.
+   TODO before launch: confirm consent, or crop/blur names and avatars. */
+export const RESULTS = [
+  {
+    src: encodeURI("/results/WhatsApp Image 2026-06-21 at 4.53.50 PM.jpeg"),
+    alt: "Client message thanking Lauren and the team for a surprise birthday video that made her cry",
+    label: "Surprise birthday film",
   },
   {
-    name: "Lumeniri",
-    src: "/logos/Lumeniri_Header_Soft_Chambray.webp",
-    cap: "max-h-12",
+    src: encodeURI("/results/Capture d_écran 2026-09-29 200451.png"),
+    alt: "Message shouting out Oussama Soltani Photography: Dr. Sydney loved the reel",
+    label: "Clinic reel",
   },
-  /* TODO: name unknown — the filename is a UUID and the artwork could not be
-     read here. Fill in before launch; it currently ships with generic alt. */
   {
-    name: "Client",
-    src: "/logos/All_White_BG_1cc381bb-e8c1-474a-8d75-793d0e889f86.avif",
-    cap: "max-h-9",
+    src: encodeURI("/results/WhatsApp Image 2026-09-29 at 12.33.24 AM.jpeg"),
+    alt: "Dr. Alex Martin saying the editing on the reel from today is fabulous",
+    label: "Same-day reel edit",
+  },
+];
+
+/* ---------- Packages (MOCK) ----------
+   Placeholder tiers and prices — swap in the real offer before launch.
+   `featured` gets the highlighted card; keep it to one. */
+export const PACKAGES = [
+  {
+    name: "Starter",
+    price: "$750",
+    cadence: "/ month",
+    pitch: "A steady, good-looking feed without thinking about it.",
+    features: [
+      "Half-day shoot every month",
+      "20 edited photos",
+      "4 short-form reels",
+      "Monthly content calendar",
+    ],
+    featured: false,
+  },
+  {
+    name: "Growth",
+    price: "$1,800",
+    cadence: "/ month",
+    pitch: "Content plus the strategy that makes it perform.",
+    features: [
+      "Full-day shoot every month",
+      "40 edited photos",
+      "10 short-form reels",
+      "Social management on 2 platforms",
+      "Paid ad creative & testing",
+      "Monthly results report",
+    ],
+    featured: true,
+  },
+  {
+    name: "Signature",
+    price: "Custom",
+    cadence: "",
+    pitch: "A full production and marketing team, without the hiring.",
+    features: [
+      "Multi-day productions",
+      "Brand film + campaign assets",
+      "Every platform, fully managed",
+      "Dedicated producer",
+      "Quarterly strategy workshop",
+    ],
+    featured: false,
+  },
+];
+
+/* ---------- Services page ---------- */
+export const SERVICE_GROUPS = [
+  {
+    title: "Photography",
+    body: "Stills lit for where they are going — the grid, the menu, the website, the ad set.",
+    items: ["Brand & campaign", "Product & menu", "Portrait & team", "Event & venue"],
+  },
+  {
+    title: "Video",
+    body: "Shot, directed and cut in-house, so the person framing the shot knows where it lands.",
+    items: ["Brand films", "Reels & short-form", "Event recaps", "Testimonial videos"],
+  },
+  {
+    title: "Social",
+    body: "A plan for what goes out, when, and why — then the posting, so you don't have to.",
+    items: ["Strategy & calendar", "Content creation", "Community management", "Reporting"],
+  },
+  {
+    title: "Growth",
+    body: "Paid creative built from the same shoot, tested until something beats the control.",
+    items: ["Paid ads", "Creative testing", "Email & automation", "Analytics"],
+  },
+];
+
+/* ---------- FAQ (placeholder) ---------- */
+export const FAQS = [
+  {
+    q: "What kind of businesses do you work with?",
+    a: "Placeholder — mostly local businesses, clinics, gyms and restaurants, plus brands that need content every month rather than once.",
+  },
+  {
+    q: "Do you travel for shoots?",
+    a: "Placeholder — yes. We've shot across the US, Canada, France, Germany and Lebanon. Travel is quoted separately.",
+  },
+  {
+    q: "How fast do we get the content?",
+    a: "Placeholder — first edits usually land within 72 hours of the shoot, with reels on a rolling schedule after that.",
+  },
+  {
+    q: "Can we book a one-off shoot instead of a package?",
+    a: "Placeholder — absolutely. Packages are for ongoing work; one-off shoots are quoted per project.",
+  },
+  {
+    q: "Who owns the photos and videos?",
+    a: "Placeholder — you do, for your own marketing. The details are in the agreement we send before any shoot.",
+  },
+  {
+    q: "How do we get started?",
+    a: "Placeholder — hit “Work with us”, tell us what you need, and we'll set up a short discovery call.",
   },
 ];
 
@@ -268,11 +410,23 @@ export const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-export const NAV = [
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Video", href: "#videography" },
-  { label: "Photo", href: "#photography" },
-  { label: "Work", href: "#work" },
-  { label: "Team", href: "#team" },
+export type NavItem = {
+  label: string;
+  href: string;
+  children?: { label: string; href: string }[];
+};
+
+export const NAV: NavItem[] = [
+  { label: "Home", href: "/" },
+  { label: "Services", href: "/services" },
+  {
+    label: "Work",
+    href: "/work",
+    children: [
+      { label: "Photography", href: "/work/photography" },
+      { label: "Videography", href: "/work/videography" },
+    ],
+  },
+  { label: "About Us", href: "/about" },
+  { label: "FAQ", href: "/faq" },
 ];

@@ -26,13 +26,13 @@ export default function Work() {
             className="text-4xl font-bold tracking-tight text-[rgb(47,38,29)] sm:text-5xl lg:text-[56px]"
             style={{ fontFamily: FONT_DISPLAY }}
           >
-            Our work
+            Recent projects
           </h2>
         </Reveal>
 
         {/* Tabs */}
         <Reveal delay={90}>
-          <div role="tablist" className="flex flex-wrap justify-center gap-1 border-b border-[rgb(167,68,255)]/30">
+          <div role="tablist" className="flex flex-wrap justify-center gap-1 border-b border-[rgb(124,92,252)]/30">
             {WORK_TABS.map((t, i) => (
               <button
                 key={t}
@@ -41,8 +41,8 @@ export default function Work() {
                 onClick={() => setActiveTab(i)}
                 className={`px-4 py-3 text-center text-sm transition-colors ${
                   activeTab === i
-                    ? "rounded-t-lg border border-b-0 border-[rgb(167,68,255)] font-semibold text-[rgb(167,68,255)]"
-                    : "font-normal text-[rgb(34,34,34)] hover:text-[rgb(167,68,255)]"
+                    ? "rounded-t-lg border border-b-0 border-[rgb(124,92,252)] font-semibold text-[rgb(124,92,252)]"
+                    : "font-normal text-[rgb(34,34,34)] hover:text-[rgb(124,92,252)]"
                 }`}
               >
                 {t}

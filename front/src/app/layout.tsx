@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { preload } from "react-dom";
-import { BRAND } from "@/lib/brand";
+import { BRAND, FONT_BODY } from "@/lib/brand";
+import Header from "@/components/Header";
+import SiteFooter from "@/components/SiteFooter";
 import "./globals.css";
 
 /* Every face, not just the above-fold ones. fonts.css uses font-display:
@@ -56,9 +58,18 @@ export default function RootLayout({
     preload(href, { as: "font", type: "font/woff2", crossOrigin: "anonymous" }),
   );
 
+  /* data-scroll-behavior lets Next switch off the CSS smooth scroll while it
+     jumps to the top of a new page, so route changes don't glide up from the
+     footer. In-page anchors still glide. */
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" data-scroll-behavior="smooth">
+      <body>
+        <div className="min-h-full bg-white font-light text-[rgb(51,51,51)]" style={{ fontFamily: FONT_BODY }}>
+          <Header />
+          <main id="top">{children}</main>
+          <SiteFooter />
+        </div>
+      </body>
     </html>
   );
 }
