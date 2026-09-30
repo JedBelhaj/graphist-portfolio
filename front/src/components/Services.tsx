@@ -71,7 +71,9 @@ export default function Services() {
           style={{ fontFamily: FONT_DISPLAY }}
         >
           THE SH** WE GET DONE
-          <span className="block mb-30 text-2xl sm:text-4xl lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
+          {/* The large bottom margin is only for desktop, where the bubble ring
+              floats up into this space; the mobile pills don't. */}
+          <span className="block text-2xl sm:text-4xl lg:mb-30 lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
             [aka what we do]
           </span>
         </h2>

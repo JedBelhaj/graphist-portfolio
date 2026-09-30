@@ -93,6 +93,14 @@ footer[id] {
   animation: hero-in-right 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Entrances inside an InViewGate wait, invisible, until it is on screen.
+   Swapping `animation: none` for the real keyframe starts it fresh, so each
+   element's animation-delay counts from the moment the gate opens. */
+.in-view-gate:not(.is-shown) :is(.hero-rise, .hero-in-right, .pop-in) {
+  animation: none;
+  opacity: 0;
+}
+
 /* Testimonial wall: drifts on its own, holds still while hovered. */
 .testimonial-track {
   animation: marquee var(--loop, 45s) linear infinite;
