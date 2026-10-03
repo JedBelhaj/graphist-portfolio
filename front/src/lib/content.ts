@@ -19,6 +19,10 @@ export const HERO_ARROW = A(
 /* Circular SM badge: big in About, and the marquee separator. */
 export const LOGO_MARK = "/logo.png";
 
+/* Wordmark lockups, cut from public/soltani_logo.png (see Logo.tsx). */
+export const LOGO_FULL = "/soltani-logo.png";
+export const LOGO_WORDMARK = "/soltani-wordmark.png";
+
 /* Transparent cut-out, 1152x2048. The subject sits in the bottom ~80% of the
    frame; the top 19.7% is empty, which the layouts below account for. */
 export const HERO_PHOTO = "/hero.png";
@@ -346,6 +350,43 @@ export const PHOTO_DISCIPLINES = [
   "Event & venue",
 ];
 
+/* ---------- Web design ----------
+   What the studio builds. No live client sites are cleared to show yet, so
+   the page leads with capabilities and process rather than a case-study grid.
+   WEB_SHOTS are MOCK stills for the browser frames — swap for real
+   screenshots once a build can be shown. */
+export const WEB_SHOTS = [
+  MOCK_PHOTO("soltani-web-1", 1400, 900),
+  MOCK_PHOTO("soltani-web-2", 1400, 900),
+  MOCK_PHOTO("soltani-web-3", 1400, 900),
+];
+
+export const WEB_CAPABILITIES = [
+  {
+    title: "Brand sites",
+    body: "A home on the web that looks like the rest of your brand, built around the photos and video we shoot for it.",
+  },
+  {
+    title: "Landing pages",
+    body: "One page, one offer, one action. Built to catch the traffic your ads and reels send over.",
+  },
+  {
+    title: "Online stores",
+    body: "Product pages shot and written to sell, with checkout set up so you can run it day to day.",
+  },
+  {
+    title: "Care & SEO",
+    body: "Speed, search basics and updates after launch, so the site keeps working once it's live.",
+  },
+];
+
+export const WEB_PROCESS = [
+  { step: "Plan", body: "What the site has to do, who it's for, and the pages it needs to get there." },
+  { step: "Design", body: "Layouts in your brand, with real content from the shoot, not stock filler." },
+  { step: "Build", body: "Fast, responsive and editable, tested on every screen size before it ships." },
+  { step: "Launch", body: "Domain, analytics and handover, then we stay on for fixes and growth." },
+];
+
 /* ---------- Team (MOCK) ---------- */
 export const TEAM = [
   {
@@ -425,6 +466,7 @@ export const NAV: NavItem[] = [
     children: [
       { label: "Photography", href: "/work/photography" },
       { label: "Videography", href: "/work/videography" },
+      { label: "Web Design", href: "/work/web-design" },
     ],
   },
   { label: "About Us", href: "/about" },

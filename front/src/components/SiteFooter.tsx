@@ -10,7 +10,7 @@ export default function SiteFooter() {
       <div className="mx-auto max-w-[1180px]">
         {/* CTA card */}
         <div className="mb-12 flex flex-col items-center gap-6 rounded-2xl bg-[rgb(124,92,252)] p-8 text-center lg:flex-row lg:justify-between lg:gap-16 lg:text-left">
-          <Logo className="shrink-0" color="rgb(254,254,254)" />
+          <Logo variant="full" tone="light" className="h-10 shrink-0 lg:h-11" />
           <h3
             className="text-3xl font-normal leading-tight tracking-tight text-[rgb(254,254,254)]"
             style={{ fontFamily: FONT_SCRIPT }}
@@ -51,6 +51,7 @@ export default function SiteFooter() {
               ["Services", "/services"],
               ["Photography", "/work/photography"],
               ["Videography", "/work/videography"],
+              ["Web Design", "/work/web-design"],
               ["About us", "/about"],
               ["FAQ", "/faq"],
             ]}

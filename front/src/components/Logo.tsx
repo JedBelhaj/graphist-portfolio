@@ -1,28 +1,31 @@
-import { FONT_DISPLAY } from "@/lib/brand";
+import { BRAND } from "@/lib/brand";
+import { LOGO_FULL, LOGO_WORDMARK } from "@/lib/content";
 
-/* Typographic wordmark. Rendered inline rather than as an <img> so it picks up
-   the display face and can be recoloured per surface. */
+/* The Soltani Media mark, from public/soltani_logo.png.
+
+   The delivered file is black on a solid white canvas, so it can't sit on any
+   other surface. The two files used here are cut from it with the white keyed
+   out to transparency and the margins trimmed: `full` keeps the "Only the best
+   results" tagline, `wordmark` drops it for small sizes where the tagline
+   would blur into a grey line.
+
+   The artwork is ink-coloured; `tone="light"` flips it to white with a filter
+   rather than shipping a second file. Size it with a height class. */
 export default function Logo({
+  variant = "wordmark",
+  tone = "ink",
   className = "",
-  color = "rgb(10,11,16)",
 }: {
+  variant?: "full" | "wordmark";
+  tone?: "ink" | "light";
   className?: string;
-  color?: string;
 }) {
   return (
-    <span className={`block leading-none ${className}`} style={{ color }}>
-      <span
-        className="block text-[26px] font-black tracking-[-0.03em] lg:text-[30px]"
-        style={{ fontFamily: FONT_DISPLAY }}
-      >
-        SOLTANI
-      </span>
-      <span
-        className="mt-1 block text-[8px] font-semibold uppercase tracking-[0.2em] lg:text-[9px]"
-        style={{ fontFamily: FONT_DISPLAY }}
-      >
-        Media &amp; Marketing
-      </span>
-    </span>
+    <img
+      src={variant === "full" ? LOGO_FULL : LOGO_WORDMARK}
+      alt={BRAND.short}
+      className={`block w-auto select-none ${tone === "light" ? "brightness-0 invert" : ""} ${className}`}
+      draggable={false}
+    />
   );
 }

@@ -1,10 +1,9 @@
-import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
+import { ACCENT, ACCENT_TINT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { CLIENT_LOGOS, COUNTRIES, RESULTS } from "@/lib/content";
-import CommentCarousel from "./CommentCarousel";
 import Reveal from "./Reveal";
 
 /* Figures lead the section, then the receipts. Two of the three are counted
-   from the data so they can't drift out of step with the logo wall and the
+   from the data so they can't drift out of step with the logo band and the
    countries list. */
 const STATS = [
   { figure: "120+", label: "Projects delivered" },
@@ -16,32 +15,42 @@ const STATS = [
    rather than a tidy gallery. They straighten on hover. */
 const TILTS = ["-rotate-2", "rotate-1", "-rotate-1", "rotate-2"];
 
-export default function WallOfLove() {
+/* The proof, right after the logos: numbers first, then the messages clients
+   actually sent. Written testimonials follow in their own section. */
+export default function Results() {
   return (
     <section id="results" className="bg-[rgb(10,11,16)] px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-[1180px]">
-        <div className="mb-14 text-center lg:mb-16">
-          <Reveal>
-            <p
-              className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
-              style={{ color: ACCENT }}
-            >
-              Results
-            </p>
-          </Reveal>
-          <Reveal delay={80}>
-            <h2
-              className="text-4xl font-bold tracking-tight text-[rgb(254,254,254)] sm:text-5xl lg:text-[64px]"
-              style={{ fontFamily: FONT_DISPLAY }}
-            >
-              Wall of Love
-              <span
-                className="block text-3xl font-normal text-[rgb(214,205,255)] sm:text-4xl lg:text-5xl"
-                style={{ fontFamily: FONT_SCRIPT }}
+        <div className="mb-14 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <Reveal>
+              <p
+                className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
+                style={{ color: ACCENT }}
               >
-                [straight from the group chat]
-              </span>
-            </h2>
+                Results
+              </p>
+            </Reveal>
+            <Reveal delay={80}>
+              <h2
+                className="text-4xl font-bold leading-[1.05] tracking-tight text-[rgb(254,254,254)] sm:text-5xl lg:text-[64px]"
+                style={{ fontFamily: FONT_DISPLAY }}
+              >
+                Proof, not promises
+                <span
+                  className="block text-3xl font-normal sm:text-4xl lg:text-5xl"
+                  style={{ fontFamily: FONT_SCRIPT, color: ACCENT_TINT }}
+                >
+                  [straight from the group chat]
+                </span>
+              </h2>
+            </Reveal>
+          </div>
+          <Reveal delay={160}>
+            <p className="max-w-sm text-base leading-relaxed text-[rgb(160,160,172)]">
+              Real messages from real clients, sent the day the work landed. No staging, no
+              rewrites.
+            </p>
           </Reveal>
         </div>
 
@@ -84,10 +93,6 @@ export default function WallOfLove() {
             </Reveal>
           ))}
         </div>
-
-        <Reveal delay={120} className="mt-8 lg:mt-12">
-          <CommentCarousel />
-        </Reveal>
       </div>
     </section>
   );

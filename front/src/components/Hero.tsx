@@ -83,7 +83,7 @@ export default function Hero() {
             className="hero-rise mb-8 max-w-xl text-lg leading-relaxed tracking-tight text-[rgb(10,11,16)] sm:text-xl"
             style={{ animationDelay: "200ms" }}
           >
-            Photo, video, and the campaigns that actually put them to work. One studio, one brief,
+            Photo, video, websites, and the campaigns that actually put them to work. One studio, one brief,
             no handoffs. What you see below is just a taste &mdash; there&apos;s a lot more where
             that came from.
           </p>

@@ -5,7 +5,7 @@ import Work from "@/components/Work";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "Photography and videography from Soltani Media — brand, product, event and short-form work.",
+  description: "Photography, videography and web design from Soltani Media — brand, product, event, short-form and web work.",
 };
 
 export default function WorkPage() {

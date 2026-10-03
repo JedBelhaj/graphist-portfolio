@@ -22,7 +22,7 @@ const FONT_PRELOADS = [
 
 const TITLE = `${BRAND.name} — Photo, Video & Marketing Studio`;
 const DESCRIPTION =
-  "Soltani Media & Marketing is a production and marketing studio. Brand photography, video, short-form social and the campaigns that put them to work — one team, brief to reporting.";
+  "Soltani Media & Marketing is a production and marketing studio. Brand photography, video, web design, short-form social and the campaigns that put them to work — one team, brief to reporting.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${BRAND.domain}`),

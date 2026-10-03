@@ -110,6 +110,20 @@ footer[id] {
   animation-play-state: paused;
 }
 
+/* Client logo band: same drift, but the ends fade into the page so marks
+   don't get sliced off at a hard edge. */
+.logo-track {
+  animation: marquee var(--loop, 50s) linear infinite;
+}
+
+.logo-viewport:hover .logo-track {
+  animation-play-state: paused;
+}
+
+.logo-viewport {
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
 /* Continuous rotation for the circular badge. */
 @keyframes spin-slow {
   from {
@@ -139,12 +153,14 @@ footer[id] {
   .pop-in,
   .reveal-in,
   .spin-slow,
-  .testimonial-track {
+  .testimonial-track,
+  .logo-track {
     animation: none;
   }
 
   /* Nothing drifts into view on its own now, so let the rail be scrolled. */
-  .testimonial-viewport {
+  .testimonial-viewport,
+  .logo-viewport {
     overflow-x: auto;
   }
 
