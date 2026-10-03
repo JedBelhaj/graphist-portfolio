@@ -1,24 +1,6 @@
-import {
-  A,
-  ACCENT,
-  ACCENT_TINT,
-  INK,
-  MOCK_AVATAR,
-  MOCK_PHOTO,
-  TEAL,
-} from "./brand";
-
-/* Decorative mark kept from the original design system. */
-export const HERO_ARROW = A(
-  "ae47034d3c2b6f9b629d235e7ce626d32a566e5d",
-  "1789909498683619",
-  "svg",
-);
+import { MOCK_AVATAR, MOCK_PHOTO } from "./brand";
 
 /* ---------- Real assets (front/public) ---------- */
-/* Circular SM badge: big in About, and the marquee separator. */
-export const LOGO_MARK = "/logo.png";
-
 /* Wordmark lockups, cut from public/soltani_logo.png (see Logo.tsx). */
 export const LOGO_FULL = "/soltani-logo.png";
 export const LOGO_WORDMARK = "/soltani-wordmark.png";
@@ -26,64 +8,55 @@ export const LOGO_WORDMARK = "/soltani-wordmark.png";
 /* Transparent cut-out, 1152x2048. The subject sits in the bottom ~80% of the
    frame; the top 19.7% is empty, which the layouts below account for. */
 export const HERO_PHOTO = "/hero.png";
-export const SERVICES_PHOTO = "/hero.png";
 
-export const PHOTOSHOP = "/adobe-photoshop-icon.png";
-export const PREMIERE = "/adobe-premiere-pro-icon.png";
-export const AFTER_EFFECTS = "/adobe-after-effects-icon.png";
+/* ---------- Hero tool stickers ----------
+   They pop in one by one around the viewfinder (Hero.tsx). Array order is
+   the pop-in order — the stagger runs off the index, so reordering retimes
+   them without touching their position, which rides on `cls`. Google Ads
+   goes last on purpose: it lands the sequence on the marketing side of the
+   kit rather than another Adobe app.
+
+   Positions are percentages of the viewfinder's box, so they hold at any
+   size. Negative values hang the sticker over the frame's edge. */
+export const HERO_STICKERS = [
+  { src: "/adobe-photoshop-icon.png", cls: "w-14 lg:w-[88px] left-[-9%] top-[8%]" },
+  { src: "/adobe-after-effects-icon.png", cls: "w-14 lg:w-[84px] left-[-13%] top-[30%]" },
+  { src: "/adobe-premiere-pro-icon.png", cls: "w-12 lg:w-[76px] left-[-8%] top-[52%]" },
+  { src: "/google-ads-icon.svg", cls: "w-12 lg:w-[72px] left-[-11%] top-[72%]" },
+];
+
+/* The purple burst (HeroBurst.tsx), over the viewfinder's top-right corner. */
+export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-24 right-[-8%] top-[-7%]";
 
 /* ---------- Photography (MOCK) ---------- */
 export const STUDIO_PHOTO = MOCK_PHOTO("soltani-onset", 900, 1050);
-export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
 
-/* Positions are tuned to the cut-out's silhouette: the head occupies x 45-75%
-   from y 20-35%, the body x 10-85% below that. Anything that clips the subject
-   tucks behind it, since the photo carries a higher z-index. */
-/* The burst is drawn by HeroBurst.tsx rather than loaded, so only its placement
-   lives here — same tuned position the remote asset used to sit at. */
-export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[0%]";
-
-/* Array order is the pop-in order — Hero.tsx staggers off the index, so moving
-   an entry retimes it without touching its position, which rides on `cls`.
-   Google AdSense sits last on purpose: it lands the sequence on the marketing
-   side of the kit rather than another Adobe app. */
-export const HERO_STICKERS = [
-  { id: PHOTOSHOP, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
-  { id: AFTER_EFFECTS, cls: "w-14 lg:w-[96px] left-[6%] top-[15%]" },
-  { id: PREMIERE, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
-  {
-    id: A(
-      "feb195c82de9f8e8a5a03ccf6feefe3f9f33277c",
-      "1789909498674904",
-      "svg",
-    ),
-    cls: "w-12 lg:w-[80px] left-[-5%] top-[55%]",
-  },
-];
-
-/* Colour order is deliberate — it sets the rhythm of the bubble cluster. */
+/* Index order on the home Services list. */
 export const SERVICES = [
-  { label: "Brand Photography", bg: ACCENT, fg: "rgb(254,254,254)" },
-  { label: "Video Production", bg: ACCENT_TINT, fg: INK },
-  { label: "Reels & Short-Form Editing", bg: INK, fg: "rgb(254,254,254)" },
-  { label: "Social Media Strategy", bg: TEAL, fg: "#fff" },
-  { label: "Paid Ads & Creative Testing", bg: INK, fg: "rgb(254,254,254)" },
-  { label: "Brand Storytelling", bg: TEAL, fg: "rgb(254,254,254)" },
-  { label: "Product & Menu Photography", bg: ACCENT_TINT, fg: INK },
-  { label: "Social Media Content", bg: ACCENT_TINT, fg: INK },
-  { label: "Event & Venue Coverage", bg: ACCENT, fg: "rgb(254,254,254)" },
-  { label: "Email Marketing & Automation", bg: INK, fg: "rgb(254,254,254)" },
-  { label: "Reporting & Analytics", bg: ACCENT_TINT, fg: INK },
+  "Brand Photography",
+  "Video Production",
+  "Reels & Short-Form Editing",
+  "Web Design & Development",
+  "Social Media Strategy",
+  "Social Media Content",
+  "Paid Ads & Creative Testing",
+  "Brand Storytelling",
+  "Product & Menu Photography",
+  "Event & Venue Coverage",
+  "Email Marketing & Automation",
+  "Reporting & Analytics",
 ];
 
+/* The kit, as words rather than borrowed logo art. */
 export const TOOLBOX = [
-  A("6dda1d55e1edd24f8e8b7263a69d2a7d2df3ac43", "1789909498771927", "svg"),
-  A("d38c31018c606d20f2dcfc13f9aa6fd0f5d9a30a", "1789909498817571", "svg"),
-  A("ccddafeee887321cad7ca56d5f194d62ab2db49d", "1789909498815883", "svg"),
-  A("34e1708d8ca04800513036b8863dd4b78de2ba9d", "1789909498820724", "svg"),
-  A("85768e3a65404cb9c5abde92cd5d02c9a13e574d", "1789909498819935", "svg"),
-  A("8af38476fe7dec33409f061d249565f929de1896", "1789909498819401", "svg"),
-  A("d3e00aca30ddff4029550347b4446aa0a44d7870", "1789909498828438", "svg"),
+  "Premiere Pro",
+  "After Effects",
+  "Photoshop",
+  "Lightroom",
+  "DaVinci Resolve",
+  "Figma",
+  "Meta Ads",
+  "Google Ads",
 ];
 
 /* MOCK gallery — seven slots matching the grid spans in Work.tsx. */
@@ -95,12 +68,6 @@ export const WORK_IMAGES = [
   MOCK_PHOTO("soltani-work-5", 700, 700),
   MOCK_PHOTO("soltani-work-6", 900, 600),
   MOCK_PHOTO("soltani-work-7", 900, 600),
-];
-
-export const WORK_TABS = [
-  "Photography",
-  "Video & Motion",
-  "Social Content & Campaigns",
 ];
 
 /* ---------- Client logos ----------
@@ -250,6 +217,11 @@ export const SERVICE_GROUPS = [
     title: "Video",
     body: "Shot, directed and cut in-house, so the person framing the shot knows where it lands.",
     items: ["Brand films", "Reels & short-form", "Event recaps", "Testimonial videos"],
+  },
+  {
+    title: "Web",
+    body: "Sites designed around the content we shoot, built fast and handed over ready to run.",
+    items: ["Brand sites", "Landing pages", "Online stores", "Care & SEO"],
   },
   {
     title: "Social",

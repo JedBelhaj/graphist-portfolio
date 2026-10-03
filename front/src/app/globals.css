@@ -1,7 +1,79 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./theme.css";
-@import "./fonts.css";
+
+/* ---------- Soltani tokens ----------
+   Mirrors INK / ACCENT / ACCENT_TINT / ACCENT_WASH in lib/brand.ts. Named
+   brand / tint / wash so they don't collide with the shadcn tokens in
+   theme.css (which already owns "accent"). */
+@theme {
+  --color-ink: rgb(10, 11, 16);
+  --color-ink-2: rgb(22, 22, 30);
+  --color-brand: rgb(124, 92, 252);
+  --color-tint: rgb(214, 205, 255);
+  --color-wash: rgb(238, 234, 255);
+  --color-muted: rgb(84, 84, 98);
+
+  /* next/font sets the --nf-* variables on <html> (see layout.tsx). */
+  --font-display: var(--nf-display), "Arial Black", sans-serif;
+  --font-body: var(--nf-body), Arial, sans-serif;
+  --font-mono: var(--nf-mono), ui-monospace, monospace;
+
+  /* Square-cornered by default — hard edges keep the layout from reading as
+     the soft-card reference it started from. rounded-full is left alone for
+     dots and avatars. */
+  --radius-xs: 1px;
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 3px;
+  --radius-2xl: 3px;
+  --radius-3xl: 4px;
+  --radius-4xl: 4px;
+}
+
+/* Headline voice: Archivo pushed wide and heavy, in caps, set tight. Pairs
+   with the logo's lettering without copying it. */
+.display {
+  font-family: var(--nf-display), "Arial Black", sans-serif;
+  font-weight: 800;
+  font-variation-settings: "wdth" 112;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  line-height: 0.92;
+}
+
+/* Camera-readout labels: section numbers, timecodes, captions. */
+.readout {
+  font-family: var(--nf-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* The handwritten script, self-hosted (public/fonts). Used for the second
+   line of a headline, the accent words, and nothing else. font-display:
+   optional so a slow load keeps the fallback rather than repainting under
+   the reader. */
+@font-face {
+  font-family: "Supfonts Desmontilles";
+  src: url("/fonts/supfonts-desmontilles-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: optional;
+}
+
+/* Undoes everything .display sets, since script lines usually sit inside a
+   .display heading. */
+.script {
+  font-family: "Supfonts Desmontilles", cursive;
+  font-weight: 400;
+  font-variation-settings: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
 
 html,
 body {
@@ -124,6 +196,22 @@ footer[id] {
   mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
 
+/* The REC light. Steps rather than fades, like the real thing. */
+@keyframes rec-blink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0.15;
+  }
+}
+
+.rec-blink {
+  animation: rec-blink 1.4s steps(1, end) infinite;
+}
+
 /* Continuous rotation for the circular badge. */
 @keyframes spin-slow {
   from {
@@ -154,7 +242,9 @@ footer[id] {
   .reveal-in,
   .spin-slow,
   .testimonial-track,
-  .logo-track {
+  .logo-track,
+  .marquee-track,
+  .rec-blink {
     animation: none;
   }
 

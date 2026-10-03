@@ -10,7 +10,7 @@ Plan and context: [Plan_and_notes.md](Plan_and_notes.md)
 - [ ] Real Instagram / Facebook / email links (`BRAND` in `brand.ts`)
 - [ ] Replace mock photos (picsum) with real shoots: work cards, galleries, team, about
 - [ ] Web design: real site screenshots for `WEB_SHOTS`, then pass `wireframe={false}` to `BrowserFrame`
-- [ ] Add web design to the Services page groups and the Services bubble cluster
+- [x] Add web design to the Services page groups and the home services index
 - [ ] Write original copy for each page (nothing taken from Marissa's site)
 - [ ] Before launch: confirm consent for the Wall of Love screenshots, or crop/blur names and avatars
 - [ ] Decide whether to delete the old `public/logos/*` copies (the site now uses `logos/real/`)
@@ -41,8 +41,17 @@ Plan and context: [Plan_and_notes.md](Plan_and_notes.md)
 - [x] `/photography`, `/videography`, `/about` (Bailey-style intro + team), `/faq`, `/services`, `/work`
 - [ ] Refine each page section by section
 
+## G. Redesign (branch `redesign`) â€” move away from the Eclectic reference
+- [x] Drop Vastago and Acumin for Archivo / Inter Tight / JetBrains Mono via next/font
+- [ ] Desmontilles (script) came from Eclectic's site — confirm a licence or swap for a free script before launch
+- [x] Square corners; ink + purple palette (purple / tint / wash) kept from v1, script face kept for second lines and accents
+- [x] Viewfinder hero, numbered section heads, services index, ruled package/country grids, new footer
+- [x] Remove Eclectic-hosted assets (hero stickers, arrow, toolbox SVGs) and the bubble cluster / definition marquee
+- [ ] Decide on the unused `public/logo.png` badge (no longer referenced)
+
 ## F. Polish and QA
 - [ ] Responsive check on mobile, tablet and desktop for every page
 - [ ] Image and video optimisation (next/image, lazy loading)
 - [ ] Confirm no copied text or images from Marissa's site
 - [x] Lint and build pass
+

@@ -1,4 +1,3 @@
-import { ACCENT_TINT, ACCENT_WASH, INK } from "@/lib/brand";
 import Hero from "@/components/Hero";
 import TrustedBy from "@/components/TrustedBy";
 import Results from "@/components/Results";
@@ -11,7 +10,11 @@ import AboutIntro from "@/components/AboutIntro";
 import Countries from "@/components/Countries";
 
 /* Home is the short version of everything: each section is a teaser that
-   hands off to its own page. Header and footer come from the layout. */
+   hands off to its own page. Header and footer come from the layout.
+
+   Sections are numbered like scenes (01 Results … 07 Locations). The
+   home-only sections carry their number themselves; the ones that also
+   appear on other pages take it as a prop here, and go unnumbered there. */
 export default function Page() {
   return (
     <>
@@ -28,28 +31,15 @@ export default function Page() {
 
       <WorkTeaser />
 
-      <Marquee
-        items={Array(4).fill("Content that looks good and does the work")}
-        bg={ACCENT_TINT}
-        textColor={INK}
-      />
+      <Marquee items={["Photography", "Videography", "Web Design", "Social", "Paid Ads", "Strategy"]} />
 
       <Services />
 
-      <Packages />
+      <Packages index="05" />
 
-      <Marquee
-        items={Array(2).fill(
-          "Media & Marketing [noun]: Making something worth watching — then making sure it gets seen.",
-        )}
-        bg={ACCENT_WASH}
-        textColor={INK}
-        duration={40}
-      />
+      <AboutIntro index="06" />
 
-      <AboutIntro />
-
-      <Countries />
+      <Countries index="07" />
     </>
   );
 }

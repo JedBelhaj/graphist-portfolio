@@ -1,103 +1,73 @@
-import { Check } from "lucide-react";
-import { ACCENT, FONT_DISPLAY, FONT_SCRIPT, INK } from "@/lib/brand";
 import { PACKAGES } from "@/lib/content";
+import Button from "./Button";
+import PlayMark from "./PlayMark";
 import Reveal from "./Reveal";
+import SectionHead from "./SectionHead";
 
-export default function Packages() {
+/* Three tiers as ruled columns. `index` is the section number on home; on
+   /services the page has its own hero, so it is left off. */
+export default function Packages({ index }: { index?: string }) {
   return (
-    <section id="packages" className="bg-white px-5 py-20 sm:px-8 lg:py-28">
-      <div className="mx-auto max-w-[1180px]">
-        <div className="mb-14 text-center lg:mb-16">
-          <Reveal>
-            <p
-              className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
-              style={{ color: ACCENT }}
-            >
-              Packages
-            </p>
-          </Reveal>
-          <Reveal delay={80}>
-            <h2
-              className="text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[64px]"
-              style={{ fontFamily: FONT_DISPLAY }}
-            >
-              Pick your pace
-              <span className="block text-3xl sm:text-4xl lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
-                [or we&apos;ll build one]
-              </span>
-            </h2>
-          </Reveal>
-        </div>
+    <section id="packages" className="bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+      <div className="mx-auto max-w-[1220px]">
+        <SectionHead
+          index={index}
+          label="Packages"
+          title="Pick your pace,"
+          script="or build one."
+          aside="Monthly plans for brands that need content every month, not once. One-off shoots are quoted on their own."
+        />
 
-        {/* items-stretch + h-full so the three cards share a height and their
+        {/* items-stretch + h-full so the cards share a height and their
             buttons line up along the bottom regardless of feature count. */}
-        <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-3 lg:gap-8">
+        <div className="grid grid-cols-1 items-stretch border border-ink/15 md:grid-cols-3">
           {PACKAGES.map((p, i) => {
             const dark = p.featured;
             return (
-              <Reveal key={p.name} delay={i * 110}>
+              <Reveal
+                key={p.name}
+                delay={i * 110}
+                className={i > 0 ? "border-t border-ink/15 md:border-l md:border-t-0" : ""}
+              >
                 <div
-                  className={`relative flex h-full flex-col rounded-3xl p-8 lg:p-10 ${
-                    dark
-                      ? "bg-[rgb(10,11,16)] text-white md:-my-4 md:py-12 lg:py-14"
-                      : "border border-black/10 bg-white text-[rgb(10,11,16)]"
-                  }`}
+                  className={`relative flex h-full flex-col p-8 lg:p-10 ${dark ? "bg-ink text-white" : "text-ink"}`}
                 >
-                  {dark && (
-                    <span
-                      className="absolute right-6 top-6 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white"
-                      style={{ backgroundColor: ACCENT }}
-                    >
-                      Most popular
+                  <div className="readout mb-10 flex h-6 items-center justify-between">
+                    <span className={dark ? "text-white/50" : "text-muted"}>
+                      Tier {String(i + 1).padStart(2, "0")}
                     </span>
-                  )}
-
-                  <div className="text-lg font-bold" style={{ fontFamily: FONT_DISPLAY }}>
-                    {p.name}
+                    {dark && <span className="bg-brand px-2.5 py-1 text-white">Most booked</span>}
                   </div>
-                  <p className={`mt-2 text-base leading-relaxed ${dark ? "text-white/70" : "text-[rgb(74,74,86)]"}`}>
+
+                  <h3 className="display text-3xl">{p.name}</h3>
+                  <p className={`mt-3 text-base leading-relaxed ${dark ? "text-white/65" : "text-muted"}`}>
                     {p.pitch}
                   </p>
 
-                  <div className="mt-8 flex items-baseline gap-2">
-                    <span
-                      className="text-5xl font-bold tracking-tight lg:text-6xl"
-                      style={{ fontFamily: FONT_DISPLAY }}
-                    >
-                      {p.price}
-                    </span>
+                  <div className={`mt-8 flex items-baseline gap-2 border-y py-6 ${dark ? "border-white/10" : "border-ink/10"}`}>
+                    <span className="display text-5xl lg:text-6xl">{p.price}</span>
                     {p.cadence && (
-                      <span className={dark ? "text-white/60" : "text-[rgb(122,122,132)]"}>{p.cadence}</span>
+                      <span className={`readout ${dark ? "text-white/50" : "text-muted"}`}>{p.cadence}</span>
                     )}
                   </div>
 
-                  <ul className="mb-10 mt-8 flex flex-col gap-3">
+                  <ul className="mb-10 mt-8 flex flex-col gap-3.5">
                     {p.features.map((f) => (
                       <li key={f} className="flex items-start gap-3 text-base">
-                        <Check size={18} className="mt-0.5 shrink-0" style={{ color: ACCENT }} />
-                        <span className={dark ? "text-white/90" : ""}>{f}</span>
+                        <PlayMark className="mt-1 text-[10px] text-brand" />
+                        <span className={dark ? "text-white/85" : ""}>{f}</span>
                       </li>
                     ))}
                   </ul>
 
-                  <a
-                    href="#contact"
-                    className="mt-auto rounded-full px-6 py-3 text-center text-base font-medium transition-transform hover:scale-[1.03]"
-                    style={dark ? { backgroundColor: ACCENT, color: "#fff" } : { backgroundColor: INK, color: "#fff" }}
-                  >
-                    {p.price === "Custom" ? "Let's talk" : "Work with us"}
-                  </a>
+                  <Button href="#contact" variant={dark ? "brand" : "outline"} className="mt-auto w-full">
+                    {p.price === "Custom" ? "Let's talk" : "Start here"}
+                  </Button>
                 </div>
               </Reveal>
             );
           })}
         </div>
-
-        <Reveal delay={200}>
-          <p className="mt-12 text-center text-sm text-[rgb(122,122,132)]">
-            Need a one-off shoot instead? Every project can be quoted on its own.
-          </p>
-        </Reveal>
       </div>
     </section>
   );

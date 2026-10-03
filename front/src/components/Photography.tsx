@@ -1,7 +1,8 @@
-import { ACCENT, ACCENT_WASH, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { PHOTO_DISCIPLINES, PHOTO_TILES } from "@/lib/content";
 import MediaMosaic from "./MediaMosaic";
+import PlayMark from "./PlayMark";
 import Reveal from "./Reveal";
+import SectionHead from "./SectionHead";
 
 /* A different arrangement from the video mosaic on purpose — the anchor tile
    lands third here instead of first, so the two sections don't read as the
@@ -24,57 +25,31 @@ const PHOTO_SPANS = [
 
 export default function Photography() {
   return (
-    <section id="photography" style={{ backgroundColor: ACCENT_WASH }}>
-      <div className="mx-auto max-w-[1180px] px-5 pb-14 pt-20 sm:px-8 lg:pb-20 lg:pt-28">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <Reveal>
-              <p
-                className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
-                style={{ color: ACCENT }}
-              >
-                Photography
-              </p>
-            </Reveal>
-
-            <Reveal delay={80}>
-              <h2
-                className="max-w-2xl text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[64px]"
-                style={{ fontFamily: FONT_DISPLAY }}
-              >
-                Stills with a
-                <span className="block" style={{ fontFamily: FONT_SCRIPT }}>
-                  job to do.
-                </span>
-              </h2>
-            </Reveal>
-          </div>
-
-          <Reveal delay={160}>
-            <p className="max-w-md text-base leading-relaxed text-[rgb(74,74,86)]">
-              Shot for where they are going — the grid, the menu, the ad set, the deck. We light for
-              the crop you actually need, then hand over a library that is already sized and named
-              for it.
-            </p>
-          </Reveal>
-        </div>
+    <section id="photography" className="bg-wash">
+      <div className="mx-auto max-w-[1300px] px-5 pt-20 sm:px-8 lg:px-10 lg:pt-28">
+        <SectionHead
+          label="Photography"
+          title="Stills with"
+          script="a job to do."
+          aside="Shot for where they are going — the grid, the menu, the ad set, the deck. We light for the crop you actually need, then hand over a library already sized and named for it."
+        />
       </div>
 
       <MediaMosaic items={PHOTO_TILES} spans={PHOTO_SPANS} />
 
-      <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8 lg:py-20">
-        <div className="flex flex-wrap justify-center gap-3">
+      <div className="mx-auto max-w-[1300px] px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
+        <ul className="grid grid-cols-2 border-l border-t border-ink/15 lg:grid-cols-4">
           {PHOTO_DISCIPLINES.map((d, i) => (
-            <Reveal key={d} delay={i * 70}>
-              <span
-                className="inline-block rounded-full border border-[rgb(10,11,16)]/12 bg-white/70 px-5 py-2.5 text-sm font-semibold text-[rgb(10,11,16)]"
-                style={{ fontFamily: FONT_DISPLAY }}
-              >
-                {d}
-              </span>
-            </Reveal>
+            <li key={d} className="border-b border-r border-ink/15">
+              <Reveal delay={i * 70}>
+                <div className="flex items-center gap-3 p-5 lg:p-6">
+                  <PlayMark className="text-[10px] text-brand" />
+                  <span className="display text-base text-ink lg:text-lg">{d}</span>
+                </div>
+              </Reveal>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

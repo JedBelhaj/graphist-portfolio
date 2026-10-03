@@ -1,42 +1,30 @@
-import { Camera, Clapperboard, Megaphone, TrendingUp } from "lucide-react";
-import { ACCENT, ACCENT_WASH, FONT_DISPLAY } from "@/lib/brand";
+import { Camera, Clapperboard, Megaphone, MonitorSmartphone, TrendingUp } from "lucide-react";
 import { SERVICE_GROUPS } from "@/lib/content";
 import Reveal from "./Reveal";
 
 /* Icons pair with SERVICE_GROUPS by index — keep the order in step. */
-const ICONS = [Camera, Clapperboard, Megaphone, TrendingUp];
+const ICONS = [Camera, Clapperboard, MonitorSmartphone, Megaphone, TrendingUp];
 
+/* The disciplines as ruled rows, read left to right like a call sheet:
+   number, name, what it is, what's in it. */
 export default function ServiceGroups() {
   return (
-    <section className="bg-white px-5 pb-20 sm:px-8 lg:pb-28">
-      <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
+    <section className="bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+      <div className="mx-auto max-w-[1220px] border-t border-ink">
         {SERVICE_GROUPS.map((g, i) => {
           const Icon = ICONS[i];
           return (
-            <Reveal key={g.title} delay={(i % 2) * 110}>
-              <div className="flex h-full flex-col rounded-3xl border border-black/10 p-8 transition-colors duration-300 hover:border-[rgb(124,92,252)] lg:p-10">
-                <div className="mb-8 flex items-center justify-between">
-                  <span
-                    className="flex h-14 w-14 items-center justify-center rounded-2xl"
-                    style={{ backgroundColor: ACCENT_WASH, color: ACCENT }}
-                  >
-                    <Icon size={26} />
-                  </span>
-                  <span className="text-sm tabular-nums text-[rgb(122,122,132)]">0{i + 1}</span>
+            <Reveal key={g.title} delay={i * 70}>
+              <div className="group grid grid-cols-1 gap-5 border-b border-ink/15 py-10 lg:grid-cols-12 lg:gap-8 lg:py-12">
+                <div className="flex items-center gap-4 lg:col-span-5">
+                  <span className="readout text-brand">0{i + 1}</span>
+                  <Icon size={22} className="text-ink/40 transition-colors group-hover:text-brand" />
+                  <h2 className="display text-3xl text-ink lg:text-4xl">{g.title}</h2>
                 </div>
-                <h2
-                  className="text-3xl font-bold tracking-tight text-[rgb(10,11,16)] lg:text-4xl"
-                  style={{ fontFamily: FONT_DISPLAY }}
-                >
-                  {g.title}
-                </h2>
-                <p className="mt-3 text-base leading-relaxed text-[rgb(74,74,86)]">{g.body}</p>
-                <ul className="mt-8 flex flex-wrap gap-2">
+                <p className="text-lg leading-relaxed text-muted lg:col-span-4">{g.body}</p>
+                <ul className="flex flex-col gap-2 lg:col-span-3">
                   {g.items.map((item) => (
-                    <li
-                      key={item}
-                      className="rounded-full border border-black/10 px-4 py-2 text-sm font-semibold text-[rgb(10,11,16)]"
-                    >
+                    <li key={item} className="readout flex items-center justify-between border-b border-ink/10 pb-2 text-ink">
                       {item}
                     </li>
                   ))}

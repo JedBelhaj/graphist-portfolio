@@ -1,5 +1,3 @@
-import { ACCENT } from "@/lib/brand";
-
 /* A browser window drawn in CSS around a screenshot, so web work reads as a
    website at a glance rather than as one more photo. Size it from outside;
    the screenshot fills whatever height the frame is given.
@@ -23,7 +21,7 @@ export default function BrowserFrame({
 }) {
   return (
     <div
-      className={`flex flex-col overflow-hidden rounded-xl bg-white shadow-[0_30px_70px_rgba(0,0,0,0.35)] ring-1 ring-black/10 ${className}`}
+      className={`flex flex-col overflow-hidden bg-white shadow-[0_30px_70px_rgba(0,0,0,0.45)] ring-1 ring-black/10 ${className}`}
     >
       <div className="flex shrink-0 items-center gap-3 border-b border-black/6 bg-[rgb(246,246,248)] px-3 py-2">
         <div className="flex gap-1.5" aria-hidden="true">
@@ -31,7 +29,7 @@ export default function BrowserFrame({
           <span className="h-2.5 w-2.5 rounded-full bg-[rgb(254,188,46)]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[rgb(40,200,64)]" />
         </div>
-        <div className="mx-auto w-full max-w-[60%] truncate rounded-md bg-white px-3 py-0.5 text-center text-[11px] text-[rgb(122,122,132)] ring-1 ring-black/5">
+        <div className="mx-auto w-full max-w-[60%] truncate bg-white px-3 py-0.5 text-center font-mono text-[10px] text-muted ring-1 ring-black/5">
           {url}
         </div>
         {/* Balances the dots so the address bar sits dead centre. */}
@@ -45,20 +43,20 @@ export default function BrowserFrame({
             aria-hidden="true"
           >
             <div className="flex items-center justify-between">
-              <span className="h-[6px] w-[14%] rounded-full bg-white" />
-              <div className="flex items-center gap-2.5 [&>span]:h-[4px] [&>span]:w-[22px] [&>span]:rounded-full [&>span]:bg-white/70">
+              <span className="h-[6px] w-[14%] bg-white" />
+              <div className="flex items-center gap-2.5 [&>span]:h-[4px] [&>span]:w-[22px] [&>span]:bg-white/70">
                 <span />
                 <span />
                 <span />
-                <div className="h-[12px] w-[38px] rounded-full" style={{ backgroundColor: ACCENT }} />
+                <div className="h-[12px] w-[38px] bg-brand" />
               </div>
             </div>
             <div className="mt-auto flex w-[62%] flex-col gap-[6px]">
-              <span className="h-[10px] w-full rounded-full bg-white" />
-              <span className="h-[10px] w-[72%] rounded-full bg-white" />
-              <span className="mt-1 h-[5px] w-[85%] rounded-full bg-white/60" />
-              <span className="h-[5px] w-[60%] rounded-full bg-white/60" />
-              <span className="mt-2 h-[16px] w-[42%] rounded-full" style={{ backgroundColor: ACCENT }} />
+              <span className="h-[10px] w-full bg-white" />
+              <span className="h-[10px] w-[72%] bg-white" />
+              <span className="mt-1 h-[5px] w-[85%] bg-white/60" />
+              <span className="h-[5px] w-[60%] bg-white/60" />
+              <span className="mt-2 h-[16px] w-[42%] bg-brand" />
             </div>
           </div>
         )}

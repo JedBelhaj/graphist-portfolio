@@ -1,133 +1,47 @@
-"use client";
+import { SERVICES } from "@/lib/content";
+import Button from "./Button";
+import PlayMark from "./PlayMark";
+import Reveal from "./Reveal";
+import SectionHead from "./SectionHead";
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
-import { SERVICES, SERVICES_PHOTO } from "@/lib/content";
-
-const BUBBLE_POSITIONS = [
-  "top-[-13%] right-[17%] w-[180px]",
-  "right-[20%] bottom-[21%] w-[120px]",
-  "right-[1%] bottom-[52%] w-[130px]",
-  "right-[-1%] bottom-[9%] w-40",
-  "right-[52%] bottom-[91%] w-[120px]",
-  "right-[78%] bottom-[83%] w-[140px]",
-  "right-[64%] bottom-[60%] w-[120px]",
-  "right-[87%] bottom-[53%] w-[200px]",
-  "right-[90%] bottom-[5%] w-[200px]",
-  "right-[67%] bottom-[9%] w-[200px]",
-  "right-[-3%] bottom-[89%] w-[120px]",
-];
-
-/* Gap between each bubble popping in, in ms. */
-const POP_STEP = 70;
-
-/* Lead-in before the first bubble, so the group reads as a reaction to the
-   scroll instead of something already in flight when it comes into view. */
-const POP_DELAY = 180;
-
+/* What we do, as a numbered index — two columns of ruled rows, like a shot
+   list. Hovering a row slides the play mark in and turns it red. The full
+   breakdown lives on /services; this is the table of contents. */
 export default function Services() {
-  const revealRef = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    const el = revealRef.current;
-    if (!el) return;
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        setShown(true);
-        io.disconnect(); // one-shot: it pops on the way in, not on every pass
-      },
-      /* Watches the bubbles rather than the section: the heading above them is
-         tall enough that a section-level trigger fired while they were still
-         below the fold. The negative bottom margin holds off until they are
-         properly on screen; the threshold stays low because a block taller
-         than the viewport can never reach a high ratio. */
-      { threshold: 0.1, rootMargin: "0px 0px -15% 0px" },
-    );
-
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  /* Held at opacity 0 until the bubbles are in view, then the keyframe takes
-     over. Under prefers-reduced-motion the animation is a no-op, so clearing
-     the inline opacity is what reveals them. */
-  const pop = (i: number) => ({
-    className: shown ? "pop-in" : "",
-    style: {
-      opacity: shown ? undefined : 0,
-      animationDelay: `${POP_DELAY + i * POP_STEP}ms`,
-    },
-  });
-
   return (
-    <section id="services" className="px-5 pt-20 sm:px-8 lg:pt-24">
-      <div className="mx-auto max-w-[940px]">
-        <h2
-          className="mb-12 text-center text-2xl font-semibold leading-tight tracking-tight text-[rgb(10,11,16)] sm:text-6xl lg:mb-16 lg:text-[80px]"
-          style={{ fontFamily: FONT_DISPLAY }}
-        >
-          THE SH** WE GET DONE
-          {/* The large bottom margin is only for desktop, where the bubble ring
-              floats up into this space; the mobile pills don't. */}
-          <span className="block text-2xl sm:text-4xl lg:mb-30 lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
-            [aka what we do]
-          </span>
-        </h2>
+    <section id="services" className="bg-wash px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+      <div className="mx-auto max-w-[1220px]">
+        <SectionHead
+          index="04"
+          label="Services"
+          title="Everything"
+          script="it takes."
+          aside="Twelve things we do, under one roof. Pick the pieces you need, or hand over the whole content side."
+        />
 
-        <div ref={revealRef}>
-          {/* Mobile / tablet: wrapped pills */}
-          <div className="flex flex-wrap justify-center gap-3 lg:hidden">
-            {SERVICES.map((s, i) => {
-              const { className, style } = pop(i);
-              return (
-                <span
-                  key={s.label}
-                  className={`rounded-full px-5 py-3 text-center text-sm font-bold ${className}`}
-                  style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...style }}
-                >
-                  {s.label}
-                </span>
-              );
-            })}
-          </div>
-
-          {/* Desktop: photo with floating bubbles */}
-          <div className="relative mx-auto hidden justify-center lg:flex">
-            {/* Fixed 460px box keeps the bubble ring's tuned positions intact, while
-                object-bottom crops the cut-out's empty top so the subject fills it. */}
-            <img
-              src={SERVICES_PHOTO}
-              alt=""
-              className="h-[460px] w-[320px] object-cover object-bottom"
-            />
-            {SERVICES.map((s, i) => {
-              const { className, style } = pop(i);
-              return (
-                <div
-                  key={s.label}
-                  className={`absolute flex items-center justify-center rounded-full px-2 py-6 text-center text-base font-bold ${BUBBLE_POSITIONS[i]} ${className}`}
-                  style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...style }}
-                >
-                  {s.label}
+        <ol className="grid grid-cols-1 border-t border-ink/15 md:grid-cols-2 md:gap-x-12">
+          {SERVICES.map((s, i) => (
+            <li key={s} className="border-b border-ink/15">
+              <Reveal delay={(i % 6) * 50}>
+                <div className="group flex items-center gap-5 py-5 lg:py-6">
+                  <span className="readout w-7 shrink-0 text-muted transition-colors group-hover:text-brand">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="display flex-1 text-xl text-ink transition-transform duration-300 group-hover:translate-x-1 lg:text-2xl">
+                    {s}
+                  </span>
+                  <PlayMark className="-translate-x-2 text-sm text-brand opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </Reveal>
+            </li>
+          ))}
+        </ol>
 
-        {/* On home this is the teaser — the full breakdown lives on /services. */}
-        <div className="mt-14 flex justify-center pb-4 lg:mt-24">
-          <Link
-            href="/services"
-            className="rounded-full bg-[rgb(10,11,16)] px-6 py-3 text-base font-medium text-white transition-transform hover:scale-[1.03]"
-          >
+        <Reveal className="mt-12 lg:mt-14">
+          <Button href="/services" variant="ink">
             See all services
-          </Link>
-        </div>
+          </Button>
+        </Reveal>
       </div>
     </section>
   );

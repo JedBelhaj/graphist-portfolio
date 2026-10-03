@@ -1,26 +1,40 @@
 import type { Metadata } from "next";
+import { Archivo, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { preload } from "react-dom";
-import { BRAND, FONT_BODY } from "@/lib/brand";
+import { BRAND } from "@/lib/brand";
 import Header from "@/components/Header";
 import SiteFooter from "@/components/SiteFooter";
 import "./globals.css";
 
-/* Every face, not just the above-fold ones. fonts.css uses font-display:
-   optional, so a face that misses its window falls back for the entire page
-   view — preloading some but not others would mean headings in two fonts.
-   All five together are 152KB and same-origin.
+/* Three Google faces, each with one job (the handwritten script is the
+   fourth, self-hosted — see globals.css):
+   - Archivo for headlines. Heavy, wide caps that sit next to the logo's
+     lettering; the width axis is loaded so .display can push it wider.
+   - Inter Tight for reading.
+   - JetBrains Mono for the small camera-readout labels (timecodes, section
+     numbers, captions).
+   next/font downloads them at build time and serves them from this domain,
+   so there is no request to Google from the visitor's browser. */
+const display = Archivo({
+  subsets: ["latin"],
+  axes: ["wdth"],
+  variable: "--nf-display",
+  display: "swap",
+});
 
-   crossOrigin is required even same-origin: fonts are fetched in CORS mode,
-   and without it the browser downloads the file twice. */
-const FONT_PRELOADS = [
-  "/fonts/acumin-variable.woff2",
-  "/fonts/vastago-600.woff2",
-  "/fonts/vastago-700.woff2",
-  "/fonts/vastago-900.woff2",
-  "/fonts/supfonts-desmontilles-400.woff2",
-];
+const body = Inter_Tight({
+  subsets: ["latin"],
+  variable: "--nf-body",
+  display: "swap",
+});
 
-const TITLE = `${BRAND.name} — Photo, Video & Marketing Studio`;
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--nf-mono",
+  display: "swap",
+});
+
+const TITLE = `${BRAND.name} — Photo, Video, Web & Marketing Studio`;
 const DESCRIPTION =
   "Soltani Media & Marketing is a production and marketing studio. Brand photography, video, web design, short-form social and the campaigns that put them to work — one team, brief to reporting.";
 
@@ -52,19 +66,27 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  /* react-dom's preload rather than a hand-written <link>: it emits the tag
-     into <head> without fighting Next's own head management. */
-  FONT_PRELOADS.forEach((href) =>
-    preload(href, { as: "font", type: "font/woff2", crossOrigin: "anonymous" }),
-  );
+  /* The script face is self-hosted (globals.css) with font-display:
+     optional, so it has to arrive early or it sits the page view out.
+     crossOrigin is required even same-origin: fonts are fetched in CORS
+     mode, and without it the browser downloads the file twice. */
+  preload("/fonts/supfonts-desmontilles-400.woff2", {
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous",
+  });
 
   /* data-scroll-behavior lets Next switch off the CSS smooth scroll while it
      jumps to the top of a new page, so route changes don't glide up from the
      footer. In-page anchors still glide. */
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${display.variable} ${body.variable} ${mono.variable}`}
+    >
       <body>
-        <div className="min-h-full bg-white font-light text-[rgb(51,51,51)]" style={{ fontFamily: FONT_BODY }}>
+        <div className="min-h-full bg-wash font-body text-ink">
           <Header />
           <main id="top">{children}</main>
           <SiteFooter />

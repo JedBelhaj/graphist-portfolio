@@ -13,29 +13,27 @@ export const BRAND = {
   year: 2026,
 } as const;
 
-/* ---------- Brand tokens ---------- */
-export const FONT_DISPLAY = "Vastagogrotesk, Arial, sans-serif";
-export const FONT_SCRIPT = '"Supfonts Desmontilles", Arial, sans-serif';
-export const FONT_BODY = '"Acumin Variable Concept", Arial, sans-serif';
+/* ---------- Brand tokens ----------
+   Same values as the Tailwind colours in globals.css (bg-ink, text-brand,
+   bg-tint, bg-wash) — keep the two in step. These constants are for the
+   places that need a colour in JS, like SVG fills. */
+export const FONT_DISPLAY = 'var(--nf-display), "Arial Black", sans-serif';
+export const FONT_SCRIPT = '"Supfonts Desmontilles", cursive';
+export const FONT_BODY = "var(--nf-body), Arial, sans-serif";
+export const FONT_MONO = "var(--nf-mono), ui-monospace, monospace";
 
 export const INK = "rgb(10,11,16)";
-export const TEAL = "rgb(0,192,179)";
 
 /* ---------- Accent ----------
-   The one purple on the site. It replaced the original hot pink, and later
-   also the old magenta-leaning PURPLE and its LAVENDER tint, which read pink
-   next to it — don't reintroduce either. Three weights, and only one of them is for
-   type: ACCENT clears 4.4:1 on white, so it is safe for the large accent lines
-   it is used on. TINT and WASH are surface colours — putting body copy on them
+   The one purple on the site. Three weights, and only one of them is for
+   type: ACCENT clears 4.4:1 on white, so it is safe for large accent lines
+   and labels. TINT and WASH are surface colours — putting body copy on them
    at these luminances would fail contrast, so don't. */
 export const ACCENT = "rgb(124,92,252)";
 export const ACCENT_TINT = "rgb(214,205,255)";
 export const ACCENT_WASH = "rgb(238,234,255)";
 
 /* ---------- Assets ---------- */
-export const A = (id: string, gen: string, ext = "png") =>
-  `https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2F${id}.${ext}?generation=${gen}&alt=media`;
-
 /* Stand-in photography. Seeded, so each slot stays on the same image between
    reloads. Replace with real shoots from the Soltani library. */
 export const MOCK_PHOTO = (seed: string, w: number, h: number) =>

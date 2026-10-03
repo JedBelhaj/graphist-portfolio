@@ -1,5 +1,3 @@
-import { Quote, User } from "lucide-react";
-import { ACCENT, ACCENT_WASH } from "@/lib/brand";
 import { TESTIMONIALS, type Testimonial } from "@/lib/content";
 
 /* Seconds for one full pass of the card set. Higher = slower. */
@@ -11,39 +9,27 @@ const LOOP_SECONDS = 60;
    Row keeps it full past 3,000px. */
 const PASSES = 2;
 
-function Card({ t, hidden }: { t: Testimonial; hidden: boolean }) {
+function Card({ t, n, hidden }: { t: Testimonial; n: number; hidden: boolean }) {
   return (
     <figure
       aria-hidden={hidden || undefined}
-      className="mr-5 flex w-[85vw] shrink-0 flex-col rounded-[24px] border border-black/6 bg-white p-7 shadow-[0_14px_40px_rgba(10,11,16,0.06)] sm:w-[420px] lg:w-[500px] lg:p-8"
+      className="mr-5 flex w-[85vw] shrink-0 flex-col border border-white/10 bg-ink-2 p-7 transition-colors duration-300 hover:border-white/30 sm:w-[420px] lg:w-[500px] lg:p-9"
     >
-      <span
-        className="mb-5 flex h-11 w-11 items-center justify-center rounded-full"
-        style={{ backgroundColor: ACCENT_WASH, color: ACCENT }}
-      >
-        <Quote size={18} fill="currentColor" strokeWidth={0} />
-      </span>
-      <blockquote className="mb-6 text-[15px] leading-relaxed text-[rgb(51,51,60)] lg:text-base">
+      <div className="readout mb-8 flex items-center justify-between text-white/40">
+        <span>Take {String(n + 1).padStart(2, "0")}</span>
+        <span className="display text-5xl leading-none text-brand">&ldquo;</span>
+      </div>
+      <blockquote className="mb-8 text-[15px] leading-relaxed text-white/80 lg:text-base">
         {t.quote}
       </blockquote>
-      <figcaption className="mt-auto flex items-center gap-3 border-t border-black/6 pt-5">
-        {t.avatar ? (
-          <img src={t.avatar} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
-        ) : (
-          <span
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-            style={{ backgroundColor: ACCENT_WASH, color: ACCENT }}
-            aria-hidden="true"
-          >
-            <User size={20} />
-          </span>
+      <figcaption className="mt-auto flex items-center gap-3 border-t border-white/10 pt-5">
+        {t.avatar && (
+          <img src={t.avatar} alt="" className="h-11 w-11 shrink-0 object-cover grayscale" />
         )}
         <div className="min-w-0">
-          <div className="text-sm font-semibold text-[rgb(10,11,16)]">
-            {t.name ?? "Client, name withheld"}
-          </div>
+          <div className="display text-base text-white">{t.name ?? "Client, name withheld"}</div>
           {(t.tag || t.handle) && (
-            <div className="truncate text-sm text-[rgb(122,122,132)]">{t.tag ?? t.handle}</div>
+            <div className="readout mt-1 truncate text-white/45">{t.tag ?? t.handle}</div>
           )}
         </div>
       </figcaption>
@@ -61,16 +47,21 @@ function Row({ duplicate = false }: { duplicate?: boolean }) {
        decoration for the loop. */
     <div className="flex shrink-0 items-stretch">
       {cards.map((t, i) => (
-        <Card key={i} t={t} hidden={duplicate || i >= TESTIMONIALS.length} />
+        <Card
+          key={i}
+          t={t}
+          n={i % TESTIMONIALS.length}
+          hidden={duplicate || i >= TESTIMONIALS.length}
+        />
       ))}
     </div>
   );
 }
 
-/* The drifting testimonial rail. Light cards, made for a pale ground. */
+/* The drifting testimonial rail. Dark cards, made for the ink ground. */
 export default function CommentCarousel() {
   return (
-    <div className="testimonial-viewport overflow-hidden py-4">
+    <div className="testimonial-viewport overflow-hidden">
       <div className="testimonial-track flex w-max" style={{ ["--loop" as string]: `${LOOP_SECONDS}s` }}>
         <Row />
         <Row duplicate />

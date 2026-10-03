@@ -14,16 +14,20 @@ function Row({ duplicate = false }: { duplicate?: boolean }) {
         /* Fixed-width slots so the band has an even beat, whatever shape the
            mark is. object-contain plus the per-logo cap keeps each one inside
            without distortion. */
-        <li key={l.src} className="flex h-16 w-[124px] shrink-0 items-center justify-center px-4 sm:w-[180px] sm:px-6 lg:h-20 lg:w-[200px]">
-          {/* brightness-0 flattens every logo — white, black or colour — to
-              the same ink silhouette; grayscale ones keep their inner detail
-              (see CLIENT_LOGOS). */}
+        <li
+          key={l.src}
+          className="flex h-16 w-[124px] shrink-0 items-center justify-center px-4 sm:w-[180px] sm:px-6 lg:h-20 lg:w-[200px]"
+        >
+          {/* On the ink band every mark is flattened to white: brightness-0
+              takes it to a black silhouette, invert flips that to white.
+              Grayscale marks keep their inner detail (see CLIENT_LOGOS) and
+              are inverted so their light shapes stay light. */}
           <img
             src={l.src}
             alt={duplicate ? "" : `${l.name} logo`}
             loading="lazy"
-            className={`${l.cap} w-auto max-w-full object-contain transition-[opacity,filter] duration-300 hover:opacity-100 ${
-              l.tone === "grayscale" ? "opacity-60 grayscale hover:grayscale-0" : "opacity-50 brightness-0"
+            className={`${l.cap} w-auto max-w-full object-contain opacity-55 transition-opacity duration-300 hover:opacity-100 ${
+              l.tone === "grayscale" ? "grayscale invert" : "brightness-0 invert"
             }`}
           />
         </li>
@@ -32,17 +36,19 @@ function Row({ duplicate = false }: { duplicate?: boolean }) {
   );
 }
 
-/* Straight under the hero: the first thing after the pitch is who has
-   already bought it. A moving band rather than the old logo lattice, so it
-   reads as a strip of proof instead of a section you have to stop and read. */
+/* Straight under the hero and on the same ink, so the opening reads as one
+   dark block: the pitch, then who has already bought it. */
 export default function TrustedBy() {
   return (
-    <section aria-label="Brands we've worked with" className="border-b border-black/5 bg-white py-12 lg:py-16">
-      <Reveal>
-        <p className="mb-8 text-balance px-5 text-center text-xs font-semibold uppercase tracking-[0.22em] text-[rgb(122,122,132)] lg:mb-10">
-          Trusted by {CLIENT_LOGOS.length} brands across {COUNTRIES.length} countries
-        </p>
-      </Reveal>
+    <section aria-label="Brands we've worked with" className="bg-ink pb-14 pt-4 lg:pb-20">
+      <div className="mx-auto mb-8 flex max-w-[1300px] items-center gap-4 px-5 sm:px-8 lg:mb-10 lg:px-10">
+        <Reveal>
+          <p className="readout whitespace-nowrap text-white/50">
+            Trusted by {CLIENT_LOGOS.length} brands · {COUNTRIES.length} countries
+          </p>
+        </Reveal>
+        <span className="h-px flex-1 bg-white/10" aria-hidden="true" />
+      </div>
 
       <Reveal delay={100}>
         <div className="logo-viewport overflow-hidden">
