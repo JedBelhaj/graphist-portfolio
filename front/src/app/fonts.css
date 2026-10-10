@@ -1,60 +1,71 @@
+/* Self-hosted, Latin-subset woff2.
+
+   These were served from a third-party Google Storage bucket as uncompressed
+   OTF/TTF — 1.4MB in total, with the Acumin variable font alone at 1004KB, and
+   declared `format('woff2')` when the bytes were nothing of the sort. They are
+   now local files at 152KB combined, so a build no longer depends on someone
+   else's bucket staying up.
+
+   Originals are kept in front/fonts-src (not served). To regenerate:
+     python -m fontTools.varLib.instancer acumin-variable.ttf wdth=100 slnt=0 \
+       wght=300:700 -o trimmed.ttf
+     python -m fontTools.subset trimmed.ttf --output-file=acumin-variable.woff2 \
+       --flavor=woff2 --unicodes="U+0000-00FF,U+2000-206F,..." --layout-features='*'
+
+   font-display: optional is the point of this file. `swap`, which the export
+   shipped, is a request to render the fallback first and then visibly repaint
+   in the real face — that repaint is the flash. `optional` gives the browser a
+   short window and, if the font misses it, keeps the fallback for that page
+   view and never swaps. Nothing changes under the reader.
+
+   That only holds if the font usually wins the race, which is why every face
+   is preloaded in layout.tsx — including the ones below the fold. A face that
+   misses its window falls back for the whole page, so preloading only the
+   above-fold faces would leave headings in two different fonts.
+
+   No unicode-range: the files are already subset, and characters they lack
+   (the footer's ©, for one — absent from Acumin in the original too) should
+   fall through to the system stack rather than render blank. */
 
 @font-face {
-font-display: swap;
-font-family: 'Vastagogrotesk';
-font-style: normal;
-font-weight: 600;
-font-stretch: normal;
-unicode-range: U+0-10FFFF;
-src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2F51e3b5ed15b719beb31f99c0159670ac756da150.otf?generation=1789909498427235&alt=media') format('woff2');
+  font-family: "Vastagogrotesk";
+  src: url("/fonts/vastago-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: optional;
 }
 
 @font-face {
-font-display: swap;
-font-family: 'Supfonts Desmontilles';
-font-style: normal;
-font-weight: 400;
-font-stretch: normal;
-unicode-range: U+0-10FFFF;
-src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2F66ca74e835a7b2ec8fc697343b4bb258cbe72144.otf?generation=1789909498420695&alt=media') format('woff2');
+  font-family: "Vastagogrotesk";
+  src: url("/fonts/vastago-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: optional;
 }
 
 @font-face {
-font-display: swap;
-font-family: 'Vastagogrotesk';
-font-style: normal;
-font-weight: 700;
-font-stretch: normal;
-unicode-range: U+0-10FFFF;
-src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2F955cff64d3e0fb24535f9e7de80dd3e98c99194f.otf?generation=1789909498419675&alt=media') format('woff2');
+  font-family: "Vastagogrotesk";
+  src: url("/fonts/vastago-900.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: optional;
 }
 
 @font-face {
-font-display: swap;
-font-family: 'Vastagogrotesk';
-font-style: normal;
-font-weight: 900;
-font-stretch: normal;
-unicode-range: U+0-10FFFF;
-src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2Ff4e8bd9890373441a00ff01ece289010876b3739.otf?generation=1789909498422164&alt=media') format('woff2');
+  font-family: "Supfonts Desmontilles";
+  src: url("/fonts/supfonts-desmontilles-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: optional;
 }
 
+/* Declared 100-900 before, but the wght axis is trimmed to 300-700 and nothing
+   in the markup asks for more — the 900s are all Vastago. Claiming a range the
+   file cannot serve makes the browser synthesise weights instead. */
 @font-face {
-font-display: swap;
-font-family: 'Acumin Variable Concept';
-font-style: normal;
-font-weight: 100 900;
-font-stretch: normal;
-unicode-range: U+0-10FFFF;
-src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2Fe0dc2603ed7d079646c0e629d32058d5aa9fbd4c.ttf?generation=1789909498408441&alt=media') format('woff2');
-}
-
-@font-face {
-font-display: auto;
-font-family: 'Arial';
-font-style: normal;
-font-weight: normal;
-font-stretch: normal;
-unicode-range: U+0-10FFFF;
-src: url('https://storage.googleapis.com/download/storage/v1/b/prd-shared-services.firebasestorage.app/o/h2m-assets%2Fed3e64b6fbd7c83489b4a2e1b3d653968359a497.ttf?generation=1784802587042036&alt=media') format('woff2');
+  font-family: "Acumin Variable Concept";
+  src: url("/fonts/acumin-variable.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: optional;
 }

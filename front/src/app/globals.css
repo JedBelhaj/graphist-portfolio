@@ -93,6 +93,14 @@ footer[id] {
   animation: hero-in-right 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Entrances inside an InViewGate wait, invisible, until it is on screen.
+   Swapping `animation: none` for the real keyframe starts it fresh, so each
+   element's animation-delay counts from the moment the gate opens. */
+.in-view-gate:not(.is-shown) :is(.hero-rise, .hero-in-right, .pop-in) {
+  animation: none;
+  opacity: 0;
+}
+
 /* Testimonial wall: drifts on its own, holds still while hovered. */
 .testimonial-track {
   animation: marquee var(--loop, 45s) linear infinite;
@@ -100,6 +108,20 @@ footer[id] {
 
 .testimonial-track:hover {
   animation-play-state: paused;
+}
+
+/* Client logo band: same drift, but the ends fade into the page so marks
+   don't get sliced off at a hard edge. */
+.logo-track {
+  animation: marquee var(--loop, 50s) linear infinite;
+}
+
+.logo-viewport:hover .logo-track {
+  animation-play-state: paused;
+}
+
+.logo-viewport {
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
 
 /* Continuous rotation for the circular badge. */
@@ -131,12 +153,21 @@ footer[id] {
   .pop-in,
   .reveal-in,
   .spin-slow,
-  .testimonial-track {
+  .testimonial-track,
+  .logo-track {
     animation: none;
   }
 
   /* Nothing drifts into view on its own now, so let the rail be scrolled. */
-  .testimonial-viewport {
+  .testimonial-viewport,
+  .logo-viewport {
     overflow-x: auto;
+  }
+
+  /* The header's shrink is a transition, not a keyframe, so it needs its own
+     opt-out — it still changes shape, just without the glide. */
+  header,
+  header * {
+    transition-duration: 0s !important;
   }
 }

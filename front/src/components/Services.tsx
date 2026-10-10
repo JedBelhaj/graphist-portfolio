@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { SERVICES, SERVICES_PHOTO } from "@/lib/content";
 
@@ -70,7 +71,9 @@ export default function Services() {
           style={{ fontFamily: FONT_DISPLAY }}
         >
           THE SH** WE GET DONE
-          <span className="block mb-30 text-2xl sm:text-4xl lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
+          {/* The large bottom margin is only for desktop, where the bubble ring
+              floats up into this space; the mobile pills don't. */}
+          <span className="block text-2xl sm:text-4xl lg:mb-30 lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
             [aka what we do]
           </span>
         </h2>
@@ -114,6 +117,16 @@ export default function Services() {
               );
             })}
           </div>
+        </div>
+
+        {/* On home this is the teaser — the full breakdown lives on /services. */}
+        <div className="mt-14 flex justify-center pb-4 lg:mt-24">
+          <Link
+            href="/services"
+            className="rounded-full bg-[rgb(10,11,16)] px-6 py-3 text-base font-medium text-white transition-transform hover:scale-[1.03]"
+          >
+            See all services
+          </Link>
         </div>
       </div>
     </section>
