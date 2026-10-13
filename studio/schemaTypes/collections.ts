@@ -1,10 +1,31 @@
 import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
 import { Camera, Film, Image as ImageIcon, MessageSquareQuote, Monitor, Sparkles, Users } from "lucide-react";
-import { defineField, defineType } from "sanity";
+import { defineField, defineType, type PreviewValue } from "sanity";
 
 /* The repeatable content: one document per photo, video, person, logo.
    Each list is drag-to-reorder in the studio (orderRank), and the site shows
-   them in that order. */
+   them in that order. Any item can be hidden: it stays in the studio but the
+   site's query skips it. */
+
+const hidden = defineField({
+  name: "hidden",
+  title: "Hide from website",
+  type: "boolean",
+  description: "Keeps this in the studio but off the site. Switch it off again to show it.",
+  initialValue: false,
+});
+
+/* List previews with "Hidden" in front of the subtitle, so hidden items stand
+   out in the studio lists. */
+type PreviewFields = { title?: string; subtitle?: string; media?: PreviewValue["media"]; hidden?: boolean };
+const preview = (select: { title: string; subtitle?: string; media?: string }, untitled?: string) => ({
+  select: { ...select, hidden: "hidden" },
+  prepare: ({ title, subtitle, media, hidden }: PreviewFields) => ({
+    title: title || untitled,
+    subtitle: hidden ? ["Hidden", subtitle].filter(Boolean).join(" · ") : subtitle,
+    media,
+  }),
+});
 
 const showInRecent = defineField({
   name: "showInRecent",
@@ -15,7 +36,7 @@ const showInRecent = defineField({
 });
 
 const MOSAIC_NOTE =
-  "The gallery is laid out in blocks of nine. Keep the total a multiple of nine (9, 18, 27…) so the bottom row sits flush — extras past the last full block are held back.";
+  "The gallery is laid out in blocks of nine. Keep the number shown (not hidden) a multiple of nine (9, 18, 27…) so the bottom row sits flush — extras past the last full block are held back.";
 
 export const photo = defineType({
   name: "photo",
@@ -26,6 +47,7 @@ export const photo = defineType({
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "photo" }),
+    hidden,
     defineField({
       name: "image",
       title: "Image",
@@ -55,10 +77,7 @@ export const photo = defineType({
     }),
     showInRecent,
   ],
-  preview: {
-    select: { title: "alt", subtitle: "category", media: "image" },
-    prepare: ({ title, subtitle, media }) => ({ title: title || "Untitled photo", subtitle, media }),
-  },
+  preview: preview({ title: "alt", subtitle: "category", media: "image" }, "Untitled photo"),
 });
 
 export const video = defineType({
@@ -70,6 +89,7 @@ export const video = defineType({
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "video" }),
+    hidden,
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
     defineField({
       name: "poster",
@@ -96,7 +116,7 @@ export const video = defineType({
     }),
     showInRecent,
   ],
-  preview: { select: { title: "title", media: "poster" } },
+  preview: preview({ title: "title", media: "poster" }),
 });
 
 export const webProject = defineType({
@@ -108,6 +128,7 @@ export const webProject = defineType({
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "webProject" }),
+    hidden,
     defineField({ name: "title", title: "Client / site name", type: "string", validation: (r) => r.required() }),
     defineField({
       name: "screenshot",
@@ -123,7 +144,7 @@ export const webProject = defineType({
       description: "What the fake address bar shows, e.g. yourbrand.com.",
     }),
   ],
-  preview: { select: { title: "title", subtitle: "address", media: "screenshot" } },
+  preview: preview({ title: "title", subtitle: "address", media: "screenshot" }),
 });
 
 export const testimonial = defineType({
@@ -134,6 +155,7 @@ export const testimonial = defineType({
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "testimonial" }),
+    hidden,
     defineField({ name: "quote", title: "Quote", type: "text", rows: 6, validation: (r) => r.required() }),
     defineField({
       name: "name",
@@ -150,10 +172,7 @@ export const testimonial = defineType({
     }),
     defineField({ name: "avatar", title: "Photo", type: "image", options: { hotspot: true } }),
   ],
-  preview: {
-    select: { title: "name", subtitle: "quote", media: "avatar" },
-    prepare: ({ title, subtitle, media }) => ({ title: title || "Name withheld", subtitle, media }),
-  },
+  preview: preview({ title: "name", subtitle: "quote", media: "avatar" }, "Name withheld"),
 });
 
 export const result = defineType({
@@ -165,6 +184,7 @@ export const result = defineType({
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "result" }),
+    hidden,
     defineField({ name: "image", title: "Screenshot", type: "image", validation: (r) => r.required() }),
     defineField({ name: "label", title: "Caption", type: "string", validation: (r) => r.required() }),
     defineField({
@@ -174,7 +194,7 @@ export const result = defineType({
       description: "What the message says, for screen readers.",
     }),
   ],
-  preview: { select: { title: "label", media: "image" } },
+  preview: preview({ title: "label", media: "image" }),
 });
 
 export const teamMember = defineType({
@@ -185,6 +205,7 @@ export const teamMember = defineType({
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "teamMember" }),
+    hidden,
     defineField({ name: "name", title: "Name", type: "string", validation: (r) => r.required() }),
     defineField({ name: "role", title: "Role", type: "string" }),
     defineField({ name: "focus", title: "One line on what they own", type: "text", rows: 2 }),
@@ -196,7 +217,7 @@ export const teamMember = defineType({
       description: "Portrait, 4:5. Shown in black and white until hovered.",
     }),
   ],
-  preview: { select: { title: "name", subtitle: "role", media: "photo" } },
+  preview: preview({ title: "name", subtitle: "role", media: "photo" }),
 });
 
 /* Size keys map to Tailwind classes in content.ts (LOGO_CAPS). The classes
@@ -210,6 +231,7 @@ export const clientLogo = defineType({
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "clientLogo" }),
+    hidden,
     defineField({ name: "name", title: "Client name", type: "string", validation: (r) => r.required() }),
     defineField({
       name: "logo",
@@ -248,7 +270,7 @@ export const clientLogo = defineType({
       initialValue: "silhouette",
     }),
   ],
-  preview: { select: { title: "name", media: "logo" } },
+  preview: preview({ title: "name", media: "logo" }),
 });
 
 export const collectionTypes = [photo, video, webProject, testimonial, result, teamMember, clientLogo];
