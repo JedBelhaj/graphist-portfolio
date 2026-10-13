@@ -1,8 +1,11 @@
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
-import { TEAM } from "@/lib/content";
+import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
 
-export default function Team() {
+export default async function Team() {
+  const { about, team } = await getContent();
+  const h = about.team;
+
   return (
     <section id="team" className="bg-white px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-[1180px]">
@@ -12,7 +15,7 @@ export default function Team() {
               className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
               style={{ color: ACCENT }}
             >
-              The crew
+              {h.eyebrow}
             </p>
           </Reveal>
 
@@ -21,22 +24,22 @@ export default function Team() {
               className="text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[64px]"
               style={{ fontFamily: FONT_DISPLAY }}
             >
-              Meet the team
+              {h.title}
               <span className="block text-3xl sm:text-4xl lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
-                [the whole roster]
+                {h.accent}
               </span>
             </h2>
           </Reveal>
 
           <Reveal delay={160}>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[rgb(74,74,86)]">
-              Four people, no account layer. You talk to whoever is doing the work.
+              {h.body}
             </p>
           </Reveal>
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          {TEAM.map((m, i) => (
+          {team.map((m, i) => (
             <Reveal key={m.name} delay={i * 110}>
               {/* h-full so the cards in a row line up even when the focus line
                   wraps to a different number of lines. */}

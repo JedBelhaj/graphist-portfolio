@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
-import { SERVICES, SERVICES_PHOTO } from "@/lib/content";
+import type { ServiceBubble } from "@/lib/cms";
 
 const BUBBLE_POSITIONS = [
   "top-[-13%] right-[17%] w-[180px]",
@@ -26,7 +26,21 @@ const POP_STEP = 70;
    scroll instead of something already in flight when it comes into view. */
 const POP_DELAY = 180;
 
-export default function Services() {
+/* Client component (it watches its own scroll position), so the content comes
+   in as props from the page rather than being fetched here. The desktop ring
+   has one tuned spot per bubble; any past the last spot are left to the
+   mobile pills, which wrap freely. */
+export default function Services({
+  bubbles,
+  title,
+  accent,
+  photo,
+}: {
+  bubbles: ServiceBubble[];
+  title: string;
+  accent: string;
+  photo: string;
+}) {
   const revealRef = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -70,18 +84,18 @@ export default function Services() {
           className="mb-12 text-center text-2xl font-semibold leading-tight tracking-tight text-[rgb(10,11,16)] sm:text-6xl lg:mb-16 lg:text-[80px]"
           style={{ fontFamily: FONT_DISPLAY }}
         >
-          THE SH** WE GET DONE
+          {title}
           {/* The large bottom margin is only for desktop, where the bubble ring
               floats up into this space; the mobile pills don't. */}
           <span className="block text-2xl sm:text-4xl lg:mb-30 lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
-            [aka what we do]
+            {accent}
           </span>
         </h2>
 
         <div ref={revealRef}>
           {/* Mobile / tablet: wrapped pills */}
           <div className="flex flex-wrap justify-center gap-3 lg:hidden">
-            {SERVICES.map((s, i) => {
+            {bubbles.map((s, i) => {
               const { className, style } = pop(i);
               return (
                 <span
@@ -100,11 +114,11 @@ export default function Services() {
             {/* Fixed 460px box keeps the bubble ring's tuned positions intact, while
                 object-bottom crops the cut-out's empty top so the subject fills it. */}
             <img
-              src={SERVICES_PHOTO}
+              src={photo}
               alt=""
               className="h-[460px] w-[320px] object-cover object-bottom"
             />
-            {SERVICES.map((s, i) => {
+            {bubbles.slice(0, BUBBLE_POSITIONS.length).map((s, i) => {
               const { className, style } = pop(i);
               return (
                 <div

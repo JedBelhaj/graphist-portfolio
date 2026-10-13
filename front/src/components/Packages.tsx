@@ -1,9 +1,12 @@
 import { Check } from "lucide-react";
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT, INK } from "@/lib/brand";
-import { PACKAGES } from "@/lib/content";
+import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
 
-export default function Packages() {
+export default async function Packages() {
+  const { services } = await getContent();
+  const h = services.packagesHeading;
+
   return (
     <section id="packages" className="bg-white px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-[1180px]">
@@ -13,7 +16,7 @@ export default function Packages() {
               className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
               style={{ color: ACCENT }}
             >
-              Packages
+              {h.eyebrow}
             </p>
           </Reveal>
           <Reveal delay={80}>
@@ -21,9 +24,9 @@ export default function Packages() {
               className="text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[64px]"
               style={{ fontFamily: FONT_DISPLAY }}
             >
-              Pick your pace
+              {h.title}
               <span className="block text-3xl sm:text-4xl lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
-                [or we&apos;ll build one]
+                {h.accent}
               </span>
             </h2>
           </Reveal>
@@ -32,7 +35,7 @@ export default function Packages() {
         {/* items-stretch + h-full so the three cards share a height and their
             buttons line up along the bottom regardless of feature count. */}
         <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-3 lg:gap-8">
-          {PACKAGES.map((p, i) => {
+          {services.packages.map((p, i) => {
             const dark = p.featured;
             return (
               <Reveal key={p.name} delay={i * 110}>
@@ -95,7 +98,7 @@ export default function Packages() {
 
         <Reveal delay={200}>
           <p className="mt-12 text-center text-sm text-[rgb(122,122,132)]">
-            Need a one-off shoot instead? Every project can be quoted on its own.
+            {services.packagesFootnote}
           </p>
         </Reveal>
       </div>

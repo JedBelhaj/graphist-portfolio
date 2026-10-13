@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getContent } from "@/lib/cms";
 import PageHero from "@/components/PageHero";
 import ServiceGroups from "@/components/ServiceGroups";
 import Packages from "@/components/Packages";
@@ -10,12 +11,13 @@ export const metadata: Metadata = {
     "Photography, video, social and paid growth — everything Soltani Media does, plus packages to get started.",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const { hero } = (await getContent()).services;
+
   return (
     <>
-      <PageHero eyebrow="Services" title="Everything it takes" accent="to get seen.">
-        Four disciplines, one team. Pick the pieces you need, or hand over the whole content side
-        and we&apos;ll run it end to end.
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} accent={hero.accent || undefined}>
+        {hero.body || undefined}
       </PageHero>
 
       <ServiceGroups />

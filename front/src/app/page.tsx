@@ -1,4 +1,5 @@
 import { ACCENT_TINT, ACCENT_WASH, INK } from "@/lib/brand";
+import { getContent } from "@/lib/cms";
 import Hero from "@/components/Hero";
 import TrustedBy from "@/components/TrustedBy";
 import Results from "@/components/Results";
@@ -12,7 +13,9 @@ import Countries from "@/components/Countries";
 
 /* Home is the short version of everything: each section is a teaser that
    hands off to its own page. Header and footer come from the layout. */
-export default function Page() {
+export default async function Page() {
+  const { home, services, images } = await getContent();
+
   return (
     <>
       <Hero />
@@ -29,19 +32,22 @@ export default function Page() {
       <WorkTeaser />
 
       <Marquee
-        items={Array(4).fill("Content that looks good and does the work")}
+        items={Array(4).fill(home.marqueeOne)}
         bg={ACCENT_TINT}
         textColor={INK}
       />
 
-      <Services />
+      <Services
+        bubbles={services.bubbles}
+        title={home.services.title}
+        accent={home.services.accent}
+        photo={images.hero}
+      />
 
       <Packages />
 
       <Marquee
-        items={Array(2).fill(
-          "Media & Marketing [noun]: Making something worth watching — then making sure it gets seen.",
-        )}
+        items={Array(2).fill(home.marqueeTwo)}
         bg={ACCENT_WASH}
         textColor={INK}
         duration={40}
