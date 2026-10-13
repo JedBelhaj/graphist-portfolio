@@ -15,25 +15,41 @@ import { useEffect, useRef } from "react";
    slack. Raise DRIFT past ~11 and an empty edge appears at the extremes. */
 const DRIFT = 11;
 
+/* `video` swaps the still for a silent loop clip, with `src` as its poster.
+   It only plays while on screen, so a page of nine clips isn't decoding
+   nine videos at once — and not at all under reduced motion, where the
+   poster stays up. */
 export default function ParallaxImage({
   src,
+  video,
   alt = "",
   className = "",
 }: {
   src: string;
+  video?: string;
   alt?: string;
   className?: string;
 }) {
   const frameRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const mediaRef = useRef<HTMLImageElement | HTMLVideoElement | null>(null);
 
   useEffect(() => {
     const frame = frameRef.current;
-    const img = imgRef.current;
+    const img = mediaRef.current;
     if (!frame || !img) return;
 
     /* No drift at all under the OS setting, and no listener either. */
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let io: IntersectionObserver | undefined;
+    if (img instanceof HTMLVideoElement) {
+      io = new IntersectionObserver(([entry]) => {
+        /* play() rejects if the browser blocks autoplay; the poster stays. */
+        if (entry.isIntersecting) img.play().catch(() => {});
+        else img.pause();
+      });
+      io.observe(frame);
+    }
 
     let raf = 0;
 
@@ -61,6 +77,7 @@ export default function ParallaxImage({
     window.addEventListener("resize", onScroll);
 
     return () => {
+      io?.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
@@ -69,14 +86,33 @@ export default function ParallaxImage({
 
   return (
     <div ref={frameRef} className={`relative h-full w-full overflow-hidden ${className}`}>
-      <img
-        ref={imgRef}
-        src={src}
-        alt={alt}
-        loading="lazy"
-        className="absolute left-0 h-[130%] w-full object-cover"
-        style={{ top: "-15%", willChange: "transform" }}
-      />
+      {video ? (
+        <video
+          ref={(el) => {
+            mediaRef.current = el;
+          }}
+          src={video}
+          poster={src}
+          aria-label={alt || undefined}
+          muted
+          loop
+          playsInline
+          preload="none"
+          className="absolute left-0 h-[130%] w-full object-cover"
+          style={{ top: "-15%", willChange: "transform" }}
+        />
+      ) : (
+        <img
+          ref={(el) => {
+            mediaRef.current = el;
+          }}
+          src={src}
+          alt={alt}
+          loading="lazy"
+          className="absolute left-0 h-[130%] w-full object-cover"
+          style={{ top: "-15%", willChange: "transform" }}
+        />
+      )}
     </div>
   );
 }

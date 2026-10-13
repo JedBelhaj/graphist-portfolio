@@ -1,15 +1,17 @@
 import { Plus } from "lucide-react";
 import { FONT_DISPLAY } from "@/lib/brand";
-import { FAQS } from "@/lib/content";
+import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
 
 /* Native <details> rather than a JS accordion: keyboard, screen reader and
    find-in-page support come free, and it works before hydration. */
-export default function Faq() {
+export default async function Faq() {
+  const { faq } = await getContent();
+
   return (
     <section className="bg-white px-5 pb-20 sm:px-8 lg:pb-28">
       <div className="mx-auto max-w-[880px] border-t border-black/10">
-        {FAQS.map((f, i) => (
+        {faq.faqs.map((f, i) => (
           <Reveal key={f.q} delay={i * 60}>
             <details className="group border-b border-black/10">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 [&::-webkit-details-marker]:hidden">
@@ -34,13 +36,13 @@ export default function Faq() {
               className="text-2xl font-semibold tracking-tight text-[rgb(10,11,16)]"
               style={{ fontFamily: FONT_DISPLAY }}
             >
-              Still have a question?
+              {faq.ctaTitle}
             </p>
             <a
               href="#contact"
               className="rounded-full bg-[rgb(10,11,16)] px-6 py-3 text-base font-medium text-white transition-transform hover:scale-[1.03]"
             >
-              Work with us
+              {faq.ctaButton}
             </a>
           </div>
         </Reveal>

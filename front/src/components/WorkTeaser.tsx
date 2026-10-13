@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Play } from "lucide-react";
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
-import { PHOTO_TILES, VIDEO_TILES, WEB_SHOTS } from "@/lib/content";
+import { getContent } from "@/lib/cms";
 import BrowserFrame from "./BrowserFrame";
 import Reveal from "./Reveal";
 
@@ -12,6 +12,9 @@ type Lane = {
   tags: string[];
   href: string;
   img: string;
+  /* Web only: false while the card still shows a mock still, which gets the
+     wireframe overlay (see BrowserFrame). */
+  real?: boolean;
   /* Overrides for the grid cell and the card's shape. Web Design takes the
      full row at md, where two columns would otherwise leave it alone next to
      an empty cell, and goes landscape to suit the wider slot. */
@@ -19,34 +22,6 @@ type Lane = {
   aspect?: string;
 };
 
-const LANES: Lane[] = [
-  {
-    kind: "photo",
-    title: "Photography",
-    blurb: "Brand, product, portrait and event stills.",
-    tags: ["Brand", "Product", "Events"],
-    href: "/work/photography",
-    img: PHOTO_TILES[0],
-  },
-  {
-    kind: "video",
-    title: "Videography",
-    blurb: "Brand films, reels and event coverage.",
-    tags: ["Films", "Reels", "Recaps"],
-    href: "/work/videography",
-    img: VIDEO_TILES[0],
-  },
-  {
-    kind: "web",
-    title: "Web Design",
-    blurb: "Sites built around the content we shoot.",
-    tags: ["Brand sites", "Stores", "SEO"],
-    href: "/work/web-design",
-    img: WEB_SHOTS[0],
-    span: "md:col-span-2 lg:col-span-1",
-    aspect: "md:aspect-[16/9] lg:aspect-[4/5]",
-  },
-];
 
 /* What sits behind each card's caption. Photo and video are a full-bleed
    still; web design is a browser window on a dark ground, so the three lanes
@@ -61,7 +36,7 @@ function Media({ lane }: { lane: Lane }) {
         }}
       >
         <div className="absolute inset-x-[10%] top-[16%] h-[38%] -rotate-3 transition-transform duration-700 ease-out group-hover:-translate-y-2 group-hover:rotate-0 md:inset-x-[24%] md:top-[12%] md:h-[46%] lg:inset-x-[10%] lg:top-[16%] lg:h-[38%]">
-          <BrowserFrame src={lane.img} className="h-full" />
+          <BrowserFrame src={lane.img} wireframe={!lane.real} className="h-full" />
         </div>
       </div>
     );
@@ -81,7 +56,24 @@ function Media({ lane }: { lane: Lane }) {
 
 /* Three doors into the portfolio. On home it carries its own heading; /work
    already has a PageHero above it, so it renders bare there. */
-export default function WorkTeaser({ heading = true }: { heading?: boolean }) {
+export default async function WorkTeaser({ heading = true }: { heading?: boolean }) {
+  const { home, work } = await getContent();
+  const h = home.work;
+  const { photo, video, web } = work.lanes;
+
+  /* Copy and pictures from the CMS; the routes and layout stay fixed here. */
+  const LANES: Lane[] = [
+    { kind: "photo", ...photo, href: "/work/photography" },
+    { kind: "video", ...video, href: "/work/videography" },
+    {
+      kind: "web",
+      ...web,
+      href: "/work/web-design",
+      span: "md:col-span-2 lg:col-span-1",
+      aspect: "md:aspect-[16/9] lg:aspect-[4/5]",
+    },
+  ];
+
   return (
     <section id="work" className={`bg-white px-5 sm:px-8 ${heading ? "py-20 lg:py-28" : "pb-20 lg:pb-28"}`}>
       <div className="mx-auto max-w-[1180px]">
@@ -93,7 +85,7 @@ export default function WorkTeaser({ heading = true }: { heading?: boolean }) {
                   className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
                   style={{ color: ACCENT }}
                 >
-                  My work
+                  {h.eyebrow}
                 </p>
               </Reveal>
               <Reveal delay={80}>
@@ -101,9 +93,9 @@ export default function WorkTeaser({ heading = true }: { heading?: boolean }) {
                   className="text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[64px]"
                   style={{ fontFamily: FONT_DISPLAY }}
                 >
-                  Three lanes,
+                  {h.title}
                   <span className="block text-3xl sm:text-4xl lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
-                    one standard.
+                    {h.accent}
                   </span>
                 </h2>
               </Reveal>

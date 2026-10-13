@@ -1,6 +1,7 @@
 import {
   A,
   ACCENT,
+  BRAND,
   ACCENT_TINT,
   INK,
   MOCK_AVATAR,
@@ -26,7 +27,6 @@ export const LOGO_WORDMARK = "/soltani-wordmark.png";
 /* Transparent cut-out, 1152x2048. The subject sits in the bottom ~80% of the
    frame; the top 19.7% is empty, which the layouts below account for. */
 export const HERO_PHOTO = "/hero.png";
-export const SERVICES_PHOTO = "/hero.png";
 
 export const PHOTOSHOP = "/adobe-photoshop-icon.png";
 export const PREMIERE = "/adobe-premiere-pro-icon.png";
@@ -61,19 +61,30 @@ export const HERO_STICKERS = [
   },
 ];
 
+/* The four bubble colourways. The CMS stores the key; components get the
+   resolved pair. */
+export const SERVICE_COLORS = {
+  accent: { bg: ACCENT, fg: "rgb(254,254,254)" },
+  tint: { bg: ACCENT_TINT, fg: INK },
+  ink: { bg: INK, fg: "rgb(254,254,254)" },
+  teal: { bg: TEAL, fg: "rgb(254,254,254)" },
+} as const;
+
+export type ServiceColor = keyof typeof SERVICE_COLORS;
+
 /* Colour order is deliberate — it sets the rhythm of the bubble cluster. */
-export const SERVICES = [
-  { label: "Brand Photography", bg: ACCENT, fg: "rgb(254,254,254)" },
-  { label: "Video Production", bg: ACCENT_TINT, fg: INK },
-  { label: "Reels & Short-Form Editing", bg: INK, fg: "rgb(254,254,254)" },
-  { label: "Social Media Strategy", bg: TEAL, fg: "#fff" },
-  { label: "Paid Ads & Creative Testing", bg: INK, fg: "rgb(254,254,254)" },
-  { label: "Brand Storytelling", bg: TEAL, fg: "rgb(254,254,254)" },
-  { label: "Product & Menu Photography", bg: ACCENT_TINT, fg: INK },
-  { label: "Social Media Content", bg: ACCENT_TINT, fg: INK },
-  { label: "Event & Venue Coverage", bg: ACCENT, fg: "rgb(254,254,254)" },
-  { label: "Email Marketing & Automation", bg: INK, fg: "rgb(254,254,254)" },
-  { label: "Reporting & Analytics", bg: ACCENT_TINT, fg: INK },
+export const SERVICES: { label: string; color: ServiceColor }[] = [
+  { label: "Brand Photography", color: "accent" },
+  { label: "Video Production", color: "tint" },
+  { label: "Reels & Short-Form Editing", color: "ink" },
+  { label: "Social Media Strategy", color: "teal" },
+  { label: "Paid Ads & Creative Testing", color: "ink" },
+  { label: "Brand Storytelling", color: "teal" },
+  { label: "Product & Menu Photography", color: "tint" },
+  { label: "Social Media Content", color: "tint" },
+  { label: "Event & Venue Coverage", color: "accent" },
+  { label: "Email Marketing & Automation", color: "ink" },
+  { label: "Reporting & Analytics", color: "tint" },
 ];
 
 export const TOOLBOX = [
@@ -129,6 +140,19 @@ export type ClientLogo = {
   src: string;
   cap: string;
   tone?: "silhouette" | "grayscale";
+};
+
+/* The studio's logo "Height" options (in px) and the class each one maps to.
+   Written out in full so Tailwind finds and generates every class. */
+export const LOGO_CAPS: Record<string, string> = {
+  "24": "max-h-6",
+  "32": "max-h-8",
+  "36": "max-h-9",
+  "40": "max-h-10",
+  "44": "max-h-11",
+  "48": "max-h-12",
+  "56": "max-h-14",
+  "64": "max-h-16",
 };
 
 export const CLIENT_LOGOS: ClientLogo[] = [
@@ -239,25 +263,30 @@ export const PACKAGES = [
   },
 ];
 
-/* ---------- Services page ---------- */
+/* ---------- Services page ----------
+   `icon` is a key into the icon map in ServiceGroups.tsx. */
 export const SERVICE_GROUPS = [
   {
     title: "Photography",
+    icon: "camera",
     body: "Stills lit for where they are going — the grid, the menu, the website, the ad set.",
     items: ["Brand & campaign", "Product & menu", "Portrait & team", "Event & venue"],
   },
   {
     title: "Video",
+    icon: "clapperboard",
     body: "Shot, directed and cut in-house, so the person framing the shot knows where it lands.",
     items: ["Brand films", "Reels & short-form", "Event recaps", "Testimonial videos"],
   },
   {
     title: "Social",
+    icon: "megaphone",
     body: "A plan for what goes out, when, and why — then the posting, so you don't have to.",
     items: ["Strategy & calendar", "Content creation", "Community management", "Reporting"],
   },
   {
     title: "Growth",
+    icon: "trending",
     body: "Paid creative built from the same shoot, tested until something beats the control.",
     items: ["Paid ads", "Creative testing", "Email & automation", "Analytics"],
   },
@@ -472,3 +501,174 @@ export const NAV: NavItem[] = [
   { label: "About Us", href: "/about" },
   { label: "FAQ", href: "/faq" },
 ];
+
+/* ---------- Page copy ----------
+   The words on every page, as they stood before the CMS. Each one is the
+   fallback for the matching Sanity field (see src/lib/cms.ts): blank in the
+   studio means this text shows. The seed script also copies these into Sanity
+   as the starting point for editing.
+
+   Headings share one shape: `eyebrow` is the small purple label, `accent`
+   the script-face second line. A part the design doesn't show is "". */
+export type Heading = { eyebrow: string; title: string; accent: string; body: string };
+export type Blurb = { title: string; body: string };
+
+const heading = (h: Partial<Heading>): Heading => ({ eyebrow: "", title: "", accent: "", body: "", ...h });
+
+export const COPY = {
+  site: {
+    seoTitle: `${BRAND.name} — Photo, Video & Marketing Studio`,
+    seoDescription:
+      "Soltani Media & Marketing is a production and marketing studio. Brand photography, video, web design, short-form social and the campaigns that put them to work — one team, brief to reporting.",
+    footerCta: "Ready to look the part?",
+    footerButton: "Let's Chat",
+    founderCaption: "Behind the lens & the plan",
+  },
+
+  home: {
+    heroLine1: "Sharp visuals.",
+    heroLine2: "Sharper strategy.",
+    heroLine3: "All under one roof.",
+    /* The non-breaking spaces keep the dash from starting a line. */
+    heroTagline: "Shot It, Cut It, Marketed It  —  Across 120+ Projects and Counting",
+    heroIntro:
+      "Photo, video, websites, and the campaigns that actually put them to work. One studio, one brief, no handoffs. What you see below is just a taste — there's a lot more where that came from.",
+    heroButton: "Book A Discovery Call",
+    results: heading({
+      eyebrow: "Results",
+      title: "Proof, not promises",
+      accent: "[straight from the group chat]",
+      body: "Real messages from real clients, sent the day the work landed. No staging, no rewrites.",
+    }),
+    projectsDelivered: "120+",
+    testimonials: heading({ eyebrow: "Testimonials", title: "Wall of Love", accent: "[in their words]" }),
+    work: heading({ eyebrow: "My work", title: "Three lanes,", accent: "one standard." }),
+    marqueeOne: "Content that looks good and does the work",
+    services: heading({ title: "THE SH** WE GET DONE", accent: "[aka what we do]" }),
+    marqueeTwo:
+      "Media & Marketing [noun]: Making something worth watching — then making sure it gets seen.",
+  },
+
+  about: {
+    intro: heading({
+      eyebrow: "About us",
+      title: "A studio built to make your brand",
+      accent: "worth watching.",
+      body: `Hi, we're ${BRAND.name}. We started behind a camera and built the marketing side so great footage stops dying in a folder. Photo, video, social and paid — one small team that shoots it, cuts it and makes sure it gets seen, for brands from clinics and gyms to cafés and barbershops.`,
+    }),
+    aboutTitle: "About us",
+    /* **…** renders bold purple (see Highlight.tsx). */
+    principles: [
+      {
+        title: "WHO ARE WE?",
+        body: "Soltani Media & Marketing is a small production studio built around one stubborn idea: the people who shoot your content should also know **what it's for**. We started behind a camera, spent years watching great footage die in the wrong hands, and built the marketing side so that stopped happening.",
+      },
+      {
+        title: "WHAT DO WE DO?",
+        body: "We shoot it, cut it, and put it to work. Brand photography, video, short-form social, paid creative, and the campaigns that carry them. One team from the brief to the reporting, which means **nothing gets lost in the handoff** between the studio, the editor, and the media buyer.",
+      },
+      {
+        title: "WHY US?",
+        body: "No template packages, no three-vendor telephone game. Just a crew that shows up with a plan and content **built to earn its keep.**",
+      },
+    ] as Blurb[],
+    photoCaption: "Always rolling.",
+    team: heading({
+      eyebrow: "The crew",
+      title: "Meet the team",
+      accent: "[the whole roster]",
+      body: "Four people, no account layer. You talk to whoever is doing the work.",
+    }),
+    countries: heading({
+      title: "Where we've worked",
+      accent: "passport ready.",
+      body: "Shoots, campaigns and clients across five countries — and we're happy to add a sixth.",
+    }),
+  },
+
+  services: {
+    hero: heading({
+      eyebrow: "Services",
+      title: "Everything it takes",
+      accent: "to get seen.",
+      body: "Four disciplines, one team. Pick the pieces you need, or hand over the whole content side and we'll run it end to end.",
+    }),
+    toolboxTitle: "What's in our kit",
+    packagesHeading: heading({ eyebrow: "Packages", title: "Pick your pace", accent: "[or we'll build one]" }),
+    packagesFootnote: "Need a one-off shoot instead? Every project can be quoted on its own.",
+  },
+
+  work: {
+    hero: heading({
+      eyebrow: "Work",
+      title: "Made to be seen,",
+      accent: "then remembered.",
+      body: "A look at what we shoot and cut. Pick a lane below, or scroll for a mix of recent projects.",
+    }),
+    photoLane: {
+      title: "Photography",
+      blurb: "Brand, product, portrait and event stills.",
+      tags: ["Brand", "Product", "Events"],
+    },
+    videoLane: {
+      title: "Videography",
+      blurb: "Brand films, reels and event coverage.",
+      tags: ["Films", "Reels", "Recaps"],
+    },
+    webLane: {
+      title: "Web Design",
+      blurb: "Sites built around the content we shoot.",
+      tags: ["Brand sites", "Stores", "SEO"],
+    },
+    recentTitle: "Recent projects",
+  },
+
+  photography: {
+    hero: heading({
+      eyebrow: "Work / Photography",
+      title: "Photography",
+      body: "Brand, product, portrait and event stills — lit for the crop you actually need.",
+    }),
+    heading: heading({
+      eyebrow: "Photography",
+      title: "Stills with a",
+      accent: "job to do.",
+      body: "Shot for where they are going — the grid, the menu, the ad set, the deck. We light for the crop you actually need, then hand over a library that is already sized and named for it.",
+    }),
+  },
+
+  videography: {
+    hero: heading({
+      eyebrow: "Work / Videography",
+      title: "Videography",
+      body: "Brand films, short-form verticals and event coverage — shot, directed and cut in-house.",
+    }),
+    heading: heading({
+      eyebrow: "Videography",
+      title: "Motion that earns",
+      accent: "the second watch.",
+      body: "We shoot, direct and cut in-house — which means the person framing the shot already knows where it lands and how long it has to hold someone. No brief survives three vendors; ours never has to.",
+    }),
+  },
+
+  webDesign: {
+    hero: heading({
+      eyebrow: "Work / Web Design",
+      title: "Web Design",
+      body: "Brand sites, landing pages and stores — designed around your content and built to load fast.",
+    }),
+    heading: heading({
+      title: "Where the content",
+      accent: "gets to live.",
+      body: "The photos and video are built to travel; the website is where they land. We design and build it around the shoot, so the site looks like the brand on day one.",
+    }),
+    capabilitiesTitle: "What we build",
+    processHeading: heading({ title: "How a build runs", accent: "four steps, no surprises." }),
+  },
+
+  faq: {
+    hero: heading({ eyebrow: "FAQ", title: "Good questions,", accent: "straight answers." }),
+    ctaTitle: "Still have a question?",
+    ctaButton: "Work with us",
+  },
+};

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { FONT_DISPLAY } from "@/lib/brand";
-import { WORK_IMAGES, WORK_TABS } from "@/lib/content";
 import Reveal from "./Reveal";
 
 const SPANS = [
@@ -15,7 +14,8 @@ const SPANS = [
   "sm:col-span-3",
 ];
 
-export default function Work() {
+/* Client component (the tabs hold state), so the page passes the content in. */
+export default function Work({ title, tabs, images }: { title: string; tabs: string[]; images: string[] }) {
   const [activeTab, setActiveTab] = useState(1);
 
   return (
@@ -26,14 +26,14 @@ export default function Work() {
             className="text-4xl font-bold tracking-tight text-[rgb(47,38,29)] sm:text-5xl lg:text-[56px]"
             style={{ fontFamily: FONT_DISPLAY }}
           >
-            Recent projects
+            {title}
           </h2>
         </Reveal>
 
         {/* Tabs */}
         <Reveal delay={90}>
           <div role="tablist" className="flex flex-wrap justify-center gap-1 border-b border-[rgb(124,92,252)]/30">
-            {WORK_TABS.map((t, i) => (
+            {tabs.map((t, i) => (
               <button
                 key={t}
                 role="tab"
@@ -54,7 +54,7 @@ export default function Work() {
         {/* Masonry-ish responsive grid. The span classes ride on the Reveal
             wrapper, since that is what the grid now lays out. */}
         <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-6">
-          {WORK_IMAGES.map((src, i) => (
+          {images.map((src, i) => (
             <Reveal key={i} delay={i * 70} className={SPANS[i]}>
               <div className="group h-full overflow-hidden rounded-lg">
                 <img

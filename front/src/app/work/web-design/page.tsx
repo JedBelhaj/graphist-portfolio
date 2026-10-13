@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getContent } from "@/lib/cms";
 import PageHero from "@/components/PageHero";
 import WebDesign from "@/components/WebDesign";
 
@@ -7,11 +8,13 @@ export const metadata: Metadata = {
   description: "Brand sites, landing pages and online stores designed and built by Soltani Media.",
 };
 
-export default function WebDesignPage() {
+export default async function WebDesignPage() {
+  const { hero } = (await getContent()).webDesign;
+
   return (
     <>
-      <PageHero eyebrow="Work / Web Design" title="Web Design">
-        Brand sites, landing pages and stores — designed around your content and built to load fast.
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} accent={hero.accent || undefined}>
+        {hero.body || undefined}
       </PageHero>
 
       <WebDesign />

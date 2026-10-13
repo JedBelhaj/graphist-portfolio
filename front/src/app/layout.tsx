@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { preload } from "react-dom";
 import { BRAND, FONT_BODY } from "@/lib/brand";
+import { getContent } from "@/lib/cms";
 import Header from "@/components/Header";
 import SiteFooter from "@/components/SiteFooter";
 import "./globals.css";
@@ -20,38 +21,39 @@ const FONT_PRELOADS = [
   "/fonts/supfonts-desmontilles-400.woff2",
 ];
 
-const TITLE = `${BRAND.name} — Photo, Video & Marketing Studio`;
-const DESCRIPTION =
-  "Soltani Media & Marketing is a production and marketing studio. Brand photography, video, web design, short-form social and the campaigns that put them to work — one team, brief to reporting.";
+export async function generateMetadata(): Promise<Metadata> {
+  const { brand, seo } = await getContent();
+  return {
+    metadataBase: new URL(`https://${BRAND.domain}`),
+    title: {
+      default: seo.title,
+      template: `%s | ${brand.short}`,
+    },
+    description: seo.description,
+    applicationName: brand.name,
+    openGraph: {
+      type: "website",
+      siteName: brand.name,
+      title: seo.title,
+      description: seo.description,
+      url: "/",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.title,
+      description: seo.description,
+    },
+    robots: { index: false, follow: false },
+  };
+}
 
-export const metadata: Metadata = {
-  metadataBase: new URL(`https://${BRAND.domain}`),
-  title: {
-    default: TITLE,
-    template: `%s | ${BRAND.short}`,
-  },
-  description: DESCRIPTION,
-  applicationName: BRAND.name,
-  openGraph: {
-    type: "website",
-    siteName: BRAND.name,
-    title: TITLE,
-    description: DESCRIPTION,
-    url: "/",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: TITLE,
-    description: DESCRIPTION,
-  },
-  robots: { index: false, follow: false },
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { brand } = await getContent();
+
   /* react-dom's preload rather than a hand-written <link>: it emits the tag
      into <head> without fighting Next's own head management. */
   FONT_PRELOADS.forEach((href) =>
@@ -65,7 +67,7 @@ export default function RootLayout({
     <html lang="en" data-scroll-behavior="smooth">
       <body>
         <div className="min-h-full bg-white font-light text-[rgb(51,51,51)]" style={{ fontFamily: FONT_BODY }}>
-          <Header />
+          <Header brandName={brand.name} instagram={brand.instagram} facebook={brand.facebook} />
           <main id="top">{children}</main>
           <SiteFooter />
         </div>
