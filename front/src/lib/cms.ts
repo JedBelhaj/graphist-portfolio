@@ -78,7 +78,8 @@ type MaybeHeading = { eyebrow?: string; title?: string; accent?: string; body?: 
 
 /* Singletons by fixed ID (the _type filter is what lets TypeGen narrow each
    one to its own document type); collections in the order set in the studio.
-   Items missing their required image are skipped rather than rendered broken. */
+   Items missing their required image are skipped rather than rendered broken,
+   and so are items the editor switched to "Hide from website". */
 const CONTENT_QUERY = defineQuery(`{
   "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],
   "home": *[_type == "homePage" && _id == "homePage"][0],
@@ -89,19 +90,19 @@ const CONTENT_QUERY = defineQuery(`{
   "videography": *[_type == "videographyPage" && _id == "videographyPage"][0],
   "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],
   "faq": *[_type == "faqPage" && _id == "faqPage"][0],
-  "photos": *[_type == "photo" && defined(image.asset)] | order(orderRank)
+  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)
     { image, alt, showInRecent, _createdAt },
-  "videos": *[_type == "video" && defined(poster.asset)] | order(orderRank)
+  "videos": *[_type == "video" && defined(poster.asset) && hidden != true] | order(orderRank)
     { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },
-  "webProjects": *[_type == "webProject" && defined(screenshot.asset)] | order(orderRank)
+  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)
     { title, screenshot, address },
-  "testimonials": *[_type == "testimonial" && defined(quote)] | order(orderRank)
+  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true] | order(orderRank)
     { quote, name, tag, handle, avatar },
-  "results": *[_type == "result" && defined(image.asset)] | order(orderRank)
+  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)
     { image, label, alt },
-  "team": *[_type == "teamMember" && defined(name)] | order(orderRank)
+  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)
     { name, role, focus, photo },
-  "logos": *[_type == "clientLogo" && defined(logo.asset)] | order(orderRank)
+  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)
     { name, logo, size, tone }
 }`);
 
