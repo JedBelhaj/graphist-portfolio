@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ACCENT, ACCENT_TINT, ACCENT_WASH, BRAND, FONT_DISPLAY, FONT_SCRIPT, INK } from "@/lib/brand";
-import { HERO_PHOTO, STUDIO_PHOTO } from "@/lib/content";
+import { ACCENT, ACCENT_TINT, ACCENT_WASH, FONT_DISPLAY, FONT_SCRIPT, INK } from "@/lib/brand";
+import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
 
 /* The calm, editorial intro: one big two-tone headline, a single warm
@@ -11,7 +11,9 @@ import Reveal from "./Reveal";
    fixed header and uses the transparent cut-out bleeding off the bottom edge.
    The home teaser uses a framed studio shot instead, since the cut-out is
    already the home hero. */
-export default function AboutIntro({ page = false }: { page?: boolean }) {
+export default async function AboutIntro({ page = false }: { page?: boolean }) {
+  const { about, brand, images } = await getContent();
+  const { intro } = about;
   const Heading = page ? "h1" : "h2";
 
   return (
@@ -26,7 +28,7 @@ export default function AboutIntro({ page = false }: { page?: boolean }) {
               className="mb-6 text-sm font-semibold uppercase tracking-[0.22em]"
               style={{ color: ACCENT }}
             >
-              About us
+              {intro.eyebrow}
             </p>
           </Reveal>
           <Reveal delay={80}>
@@ -36,19 +38,14 @@ export default function AboutIntro({ page = false }: { page?: boolean }) {
               }`}
               style={{ fontFamily: FONT_DISPLAY }}
             >
-              A studio built to make your brand{" "}
+              {intro.title}{" "}
               <span className="font-normal" style={{ fontFamily: FONT_SCRIPT, color: ACCENT }}>
-                worth watching.
+                {intro.accent}
               </span>
             </Heading>
           </Reveal>
           <Reveal delay={160}>
-            <p className="mt-8 max-w-xl text-lg leading-relaxed text-[rgb(51,51,51)]">
-              Hi, we&apos;re {BRAND.name}. We started behind a camera and built the marketing side
-              so great footage stops dying in a folder. Photo, video, social and paid — one small
-              team that shoots it, cuts it and makes sure it gets seen, for brands from clinics
-              and gyms to cafés and barbershops.
-            </p>
+            <p className="mt-8 max-w-xl text-lg leading-relaxed text-[rgb(51,51,51)]">{intro.body}</p>
           </Reveal>
           <Reveal delay={240}>
             {page ? (
@@ -80,8 +77,8 @@ export default function AboutIntro({ page = false }: { page?: boolean }) {
               style={{ backgroundColor: ACCENT_WASH }}
             />
             <img
-              src={HERO_PHOTO}
-              alt={`${BRAND.founder}, founder of ${BRAND.name}`}
+              src={images.hero}
+              alt={`${brand.founder}, founder of ${brand.name}`}
               className="relative mx-auto max-h-[560px] lg:max-h-[680px]"
             />
           </Reveal>
@@ -89,7 +86,7 @@ export default function AboutIntro({ page = false }: { page?: boolean }) {
           <Reveal delay={120}>
             <div className="overflow-hidden rounded-[32px]">
               <img
-                src={STUDIO_PHOTO}
+                src={images.studio}
                 alt="On set with the Soltani Media crew"
                 loading="lazy"
                 className="aspect-[4/5] w-full object-cover"

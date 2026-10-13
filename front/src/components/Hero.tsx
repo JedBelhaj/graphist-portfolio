@@ -1,5 +1,6 @@
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
-import { HERO_ARROW, HERO_BURST_CLS, HERO_PHOTO, HERO_STICKERS } from "@/lib/content";
+import { getContent } from "@/lib/cms";
+import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKERS } from "@/lib/content";
 import HeroBurst from "./HeroBurst";
 import InViewGate from "./InViewGate";
 
@@ -14,11 +15,11 @@ const T_LOGO_STEP = 110;
    the desktop panel so both get the same entrance. The sticker and burst
    positions are percentages of this wrapper, which shrink-wraps the photo —
    so they stay tuned to the silhouette at any photo size. */
-function HeroFigure({ imgCls, enter }: { imgCls: string; enter: string }) {
+function HeroFigure({ src, imgCls, enter }: { src: string; imgCls: string; enter: string }) {
   return (
     <div className="relative flex items-end justify-center">
       <img
-        src={HERO_PHOTO}
+        src={src}
         alt="Soltani on set with a clapperboard"
         className={`${enter} relative z-[5] ${imgCls}`}
         style={{ animationDelay: `${T_PHOTO}ms` }}
@@ -44,7 +45,9 @@ function HeroFigure({ imgCls, enter }: { imgCls: string; enter: string }) {
   );
 }
 
-export default function Hero() {
+export default async function Hero() {
+  const { home, images } = await getContent();
+
   return (
     <section className="relative overflow-hidden bg-[rgb(254,254,254)] pt-28 lg:pt-15">
       <div className="mx-auto grid max-w-[1300px] grid-cols-1 items-center gap-10 px-5 sm:px-8 lg:min-h-screen lg:grid-cols-2 lg:gap-6 lg:px-[43px]">
@@ -54,20 +57,20 @@ export default function Hero() {
               className="text-[40px] font-semibold leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
               style={{ fontFamily: FONT_DISPLAY }}
             >
-              Sharp visuals.
+              {home.heroLine1}
             </h1>
             <h1
               className="text-[40px] font-black leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
               style={{ fontFamily: FONT_DISPLAY }}
             >
-              Sharper strategy.
+              {home.heroLine2}
             </h1>
             <div className="flex items-center gap-3">
               <h1
                 className="text-[40px] leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
                 style={{ fontFamily: FONT_SCRIPT }}
               >
-                All under one roof.
+                {home.heroLine3}
               </h1>
               <img src={HERO_ARROW} alt="" className="hidden h-10 sm:block lg:h-12" />
             </div>
@@ -77,15 +80,13 @@ export default function Hero() {
             className="hero-rise mb-3 text-xl font-semibold leading-snug tracking-tight sm:text-2xl"
             style={{ color: ACCENT, animationDelay: "120ms" }}
           >
-            Shot It, Cut It, Marketed It &nbsp;&mdash;&nbsp; Across 120+ Projects and Counting
+            {home.heroTagline}
           </p>
           <p
             className="hero-rise mb-8 max-w-xl text-lg leading-relaxed tracking-tight text-[rgb(10,11,16)] sm:text-xl"
             style={{ animationDelay: "200ms" }}
           >
-            Photo, video, websites, and the campaigns that actually put them to work. One studio, one brief,
-            no handoffs. What you see below is just a taste &mdash; there&apos;s a lot more where
-            that came from.
+            {home.heroIntro}
           </p>
 
           <a
@@ -93,7 +94,7 @@ export default function Hero() {
             className="hero-rise inline-block rounded-full bg-[rgb(10,11,16)] px-5 py-2.5 text-base font-medium text-white transition-transform hover:scale-[1.03]"
             style={{ animationDelay: "280ms" }}
           >
-            Book A Discovery Call
+            {home.heroButton}
           </a>
         </div>
 
@@ -106,7 +107,7 @@ export default function Hero() {
           {/* Gated: with the copy first, this card often starts below the fold,
               and the sticker sequence would finish before anyone saw it. */}
           <InViewGate className="mx-auto flex max-w-md items-end justify-center overflow-hidden rounded-3xl bg-[rgb(238,234,255)] px-10 pt-8">
-            <HeroFigure imgCls="max-h-[420px] sm:max-h-[480px]" enter="hero-rise" />
+            <HeroFigure src={images.hero} imgCls="max-h-[420px] sm:max-h-[480px]" enter="hero-rise" />
           </InViewGate>
         </div>
       </div>
@@ -114,7 +115,7 @@ export default function Hero() {
       {/* Desktop full-height photo panel */}
       <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-[rgb(238,234,255)] lg:flex">
         <div className="relative left-[-8%] xl:left-[-18%]">
-          <HeroFigure imgCls="max-h-[640px] xl:max-h-[760px]" enter="hero-in-right" />
+          <HeroFigure src={images.hero} imgCls="max-h-[640px] xl:max-h-[760px]" enter="hero-in-right" />
         </div>
       </div>
     </section>

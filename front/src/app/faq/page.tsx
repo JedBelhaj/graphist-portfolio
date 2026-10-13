@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getContent } from "@/lib/cms";
 import PageHero from "@/components/PageHero";
 import Faq from "@/components/Faq";
 
@@ -7,10 +8,14 @@ export const metadata: Metadata = {
   description: "Answers to common questions about working with Soltani Media.",
 };
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const { hero } = (await getContent()).faq;
+
   return (
     <>
-      <PageHero eyebrow="FAQ" title="Good questions," accent="straight answers." />
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} accent={hero.accent || undefined}>
+        {hero.body || undefined}
+      </PageHero>
 
       <Faq />
     </>

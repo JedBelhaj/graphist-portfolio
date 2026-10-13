@@ -1,17 +1,25 @@
-import { Camera, Clapperboard, Megaphone, TrendingUp } from "lucide-react";
+import { Camera, Clapperboard, Megaphone, MonitorSmartphone, TrendingUp } from "lucide-react";
 import { ACCENT, ACCENT_WASH, FONT_DISPLAY } from "@/lib/brand";
-import { SERVICE_GROUPS } from "@/lib/content";
+import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
 
-/* Icons pair with SERVICE_GROUPS by index — keep the order in step. */
-const ICONS = [Camera, Clapperboard, Megaphone, TrendingUp];
+/* Keys match the icon options on the Services page in the studio. */
+const ICONS = {
+  camera: Camera,
+  clapperboard: Clapperboard,
+  monitor: MonitorSmartphone,
+  megaphone: Megaphone,
+  trending: TrendingUp,
+};
 
-export default function ServiceGroups() {
+export default async function ServiceGroups() {
+  const { services } = await getContent();
+
   return (
     <section className="bg-white px-5 pb-20 sm:px-8 lg:pb-28">
       <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
-        {SERVICE_GROUPS.map((g, i) => {
-          const Icon = ICONS[i];
+        {services.groups.map((g, i) => {
+          const Icon = ICONS[g.icon as keyof typeof ICONS] ?? Camera;
           return (
             <Reveal key={g.title} delay={(i % 2) * 110}>
               <div className="flex h-full flex-col rounded-3xl border border-black/10 p-8 transition-colors duration-300 hover:border-[rgb(124,92,252)] lg:p-10">

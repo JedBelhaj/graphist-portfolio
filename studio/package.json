@@ -1,0 +1,28 @@
+{
+  "name": "soltani-media-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Admin for the Soltani Media site: Sanity Studio, hosted on sanity.studio",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "seed": "sanity exec scripts/seed.ts --with-user-token",
+    "typegen": "sanity schemas extract --force && sanity typegen generate",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sanity/orderable-document-list": "^2.0.27",
+    "@sanity/vision": "^6.18.0",
+    "lucide-react": "^1.56.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "sanity": "^6.18.0",
+    "styled-components": "^6.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "typescript": "^5.9.3"
+  }
+}

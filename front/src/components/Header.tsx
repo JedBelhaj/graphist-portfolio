@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Facebook, Instagram, Menu, X } from "lucide-react";
-import { BRAND } from "@/lib/brand";
 import { NAV } from "@/lib/content";
 import Logo from "./Logo";
 
@@ -12,12 +11,21 @@ import Logo from "./Logo";
    logo all settle together instead of arriving one after another. */
 const EASE = "duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]";
 
-const SOCIALS = [
-  { label: "Instagram", href: BRAND.instagram, Icon: Instagram },
-  { label: "Facebook", href: BRAND.facebook, Icon: Facebook },
-];
-
-export default function Header() {
+/* Brand details arrive as props from the layout, which reads them from the
+   CMS — this is a client component, so it can't fetch them itself. */
+export default function Header({
+  brandName,
+  instagram,
+  facebook,
+}: {
+  brandName: string;
+  instagram: string;
+  facebook: string;
+}) {
+  const SOCIALS = [
+    { label: "Instagram", href: instagram, Icon: Instagram },
+    { label: "Facebook", href: facebook, Icon: Facebook },
+  ];
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [workOpen, setWorkOpen] = useState(false);
@@ -69,7 +77,7 @@ export default function Header() {
       >
         <Link
           href="/"
-          aria-label={`${BRAND.name} home`}
+          aria-label={`${brandName} home`}
           className={`block shrink-0 origin-left transition-transform ${EASE} ${scrolled ? "scale-[0.85]" : ""}`}
         >
           <Logo className="h-[18px] sm:h-5 lg:h-[22px]" />

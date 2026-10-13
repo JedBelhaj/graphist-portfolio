@@ -1,10 +1,12 @@
 import { Check } from "lucide-react";
-import { BRAND, FONT_SCRIPT } from "@/lib/brand";
-import { FOUNDER_PORTRAIT } from "@/lib/content";
+import { FONT_SCRIPT } from "@/lib/brand";
+import { getContent } from "@/lib/cms";
 import FooterCol from "./FooterCol";
 import Logo from "./Logo";
 
-export default function SiteFooter() {
+export default async function SiteFooter() {
+  const { brand, footer, images } = await getContent();
+
   return (
     <footer id="contact" className="bg-[rgb(10,11,16)] px-5 pb-12 sm:px-8 lg:px-[72px]">
       <div className="mx-auto max-w-[1180px]">
@@ -15,13 +17,13 @@ export default function SiteFooter() {
             className="text-3xl font-normal leading-tight tracking-tight text-[rgb(254,254,254)]"
             style={{ fontFamily: FONT_SCRIPT }}
           >
-            Ready to look the part?
+            {footer.cta}
           </h3>
           <a
-            href={`mailto:${BRAND.email}`}
+            href={`mailto:${brand.email}`}
             className="rounded-full bg-[rgb(254,254,254)] px-6 py-2.5 text-base font-medium text-[rgb(124,92,252)] transition-transform hover:scale-[1.03]"
           >
-            Let&apos;s Chat
+            {footer.button}
           </a>
         </div>
 
@@ -29,18 +31,18 @@ export default function SiteFooter() {
         <div className="grid grid-cols-2 gap-10 lg:grid-cols-4">
           <div className="relative col-span-2 aspect-[2.88/3.2] max-w-[272px] overflow-hidden rounded-xl">
             <img
-              src={FOUNDER_PORTRAIT}
-              alt={`${BRAND.founder}, founder of ${BRAND.name}`}
+              src={images.founder}
+              alt={`${brand.founder}, founder of ${brand.name}`}
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-x-2 bottom-2 rounded-lg bg-[rgb(10,11,16)] px-3 py-2">
               <div className="flex items-center gap-1">
                 <span className="text-base font-semibold text-[rgb(254,254,254)]">
-                  {BRAND.founder}
+                  {brand.founder}
                 </span>
                 <Check size={14} className="text-[rgb(124,92,252)]" />
               </div>
-              <div className="text-sm text-[rgb(254,254,254)]">Behind the lens &amp; the plan</div>
+              <div className="text-sm text-[rgb(254,254,254)]">{footer.founderCaption}</div>
             </div>
           </div>
 
@@ -59,10 +61,10 @@ export default function SiteFooter() {
           <FooterCol
             title="Connect"
             links={[
-              ["Instagram", BRAND.instagram],
-              ["Facebook", BRAND.facebook],
-              ["LinkedIn", BRAND.linkedin],
-              [BRAND.email, `mailto:${BRAND.email}`],
+              ["Instagram", brand.instagram],
+              ["Facebook", brand.facebook],
+              ["LinkedIn", brand.linkedin],
+              [brand.email, `mailto:${brand.email}`],
             ]}
           />
         </div>
@@ -70,7 +72,7 @@ export default function SiteFooter() {
         {/* Bottom bar */}
         <div className="mt-8 flex flex-col gap-4 border-t border-[rgb(254,254,254)]/40 pt-6 sm:flex-row sm:items-end sm:justify-between">
           <p className="text-[rgb(254,254,254)]">
-            &copy; {BRAND.year} {BRAND.name}
+            &copy; {brand.year} {brand.name}
           </p>
           <div className="flex gap-6">
             <a href="#" className="text-[rgb(254,254,254)] underline">Terms</a>

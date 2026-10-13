@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getContent } from "@/lib/cms";
 import PageHero from "@/components/PageHero";
 import Videography from "@/components/Videography";
 
@@ -7,11 +8,13 @@ export const metadata: Metadata = {
   description: "Brand films, reels and event coverage shot and edited in-house by Soltani Media.",
 };
 
-export default function VideographyPage() {
+export default async function VideographyPage() {
+  const { hero } = (await getContent()).videography;
+
   return (
     <>
-      <PageHero eyebrow="Work / Videography" title="Videography">
-        Brand films, short-form verticals and event coverage — shot, directed and cut in-house.
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} accent={hero.accent || undefined}>
+        {hero.body || undefined}
       </PageHero>
 
       <Videography />

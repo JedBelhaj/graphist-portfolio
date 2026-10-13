@@ -1,6 +1,6 @@
 import { Quote, User } from "lucide-react";
 import { ACCENT, ACCENT_WASH } from "@/lib/brand";
-import { TESTIMONIALS, type Testimonial } from "@/lib/content";
+import type { Testimonial } from "@/lib/content";
 
 /* Seconds for one full pass of the card set. Higher = slower. */
 const LOOP_SECONDS = 60;
@@ -54,26 +54,26 @@ function Card({ t, hidden }: { t: Testimonial; hidden: boolean }) {
 /* One set of cards. Rendered twice so the -50% translate wraps seamlessly;
    spacing lives on the cards (mr-5) rather than a container gap, or the
    halfway point would land mid-gap and the loop would visibly jump. */
-function Row({ duplicate = false }: { duplicate?: boolean }) {
-  const cards = Array.from({ length: PASSES }, () => TESTIMONIALS).flat();
+function Row({ items, duplicate = false }: { items: Testimonial[]; duplicate?: boolean }) {
+  const cards = Array.from({ length: PASSES }, () => items).flat();
   return (
     /* Only the first pass of the first Row is announced; every repeat is
        decoration for the loop. */
     <div className="flex shrink-0 items-stretch">
       {cards.map((t, i) => (
-        <Card key={i} t={t} hidden={duplicate || i >= TESTIMONIALS.length} />
+        <Card key={i} t={t} hidden={duplicate || i >= items.length} />
       ))}
     </div>
   );
 }
 
 /* The drifting testimonial rail. Light cards, made for a pale ground. */
-export default function CommentCarousel() {
+export default function CommentCarousel({ items }: { items: Testimonial[] }) {
   return (
     <div className="testimonial-viewport overflow-hidden py-4">
       <div className="testimonial-track flex w-max" style={{ ["--loop" as string]: `${LOOP_SECONDS}s` }}>
-        <Row />
-        <Row duplicate />
+        <Row items={items} />
+        <Row items={items} duplicate />
       </div>
     </div>
   );
