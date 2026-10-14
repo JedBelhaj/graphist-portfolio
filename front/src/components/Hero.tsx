@@ -122,7 +122,7 @@ export default async function Hero() {
 
       {/* Desktop full-height photo panel */}
       <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-[rgb(238,234,255)] lg:flex">
-        <div className="relative left-[-8%] xl:left-[-18%]">
+        <div className="relative left-[2%] xl:left-[-8%]">
           <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[640px] xl:max-h-[760px]" enter="hero-in-right" />
         </div>
       </div>
