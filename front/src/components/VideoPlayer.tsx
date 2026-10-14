@@ -2,12 +2,15 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Maximize, Minimize, Pause, Play, Volume1, Volume2, VolumeX } from "lucide-react";
-import { ACCENT } from "@/lib/brand";
 
 const fmt = (s: number) => {
   if (!Number.isFinite(s)) return "0:00";
   return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 };
+
+/* A brighter, more electric take on the brand ACCENT (rgb(124,92,252)), which
+   reads a little flat against black video. Only the player uses it. */
+const PLAYER_ACCENT = "rgb(150,70,255)";
 
 /* Same frosted round button as the Lightbox's arrows and close. */
 const BUTTON =
@@ -17,7 +20,7 @@ const BUTTON =
 const INTERACTIVE = "button, a, input, textarea, select, [role='slider']";
 
 /* Draggable bar used for both the progress and the volume. The filled part is
-   the accent colour; a white handle shows on hover or keyboard focus. Arrow
+   PLAYER_ACCENT; a white handle shows on hover or keyboard focus. Arrow
    keys move it by `step` and stop there, so they don't also change slides. */
 function Slider({
   value,
@@ -75,7 +78,7 @@ function Slider({
       className={`group/bar relative flex h-4 cursor-pointer touch-none items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${className}`}
     >
       <div className="h-1 w-full overflow-hidden rounded-full bg-white/25 transition-[height] duration-200 group-hover/bar:h-1.5">
-        <div className="h-full" style={{ width: `${pct}%`, backgroundColor: ACCENT }} />
+        <div className="h-full" style={{ width: `${pct}%`, backgroundColor: PLAYER_ACCENT, boxShadow: `0 0 8px ${PLAYER_ACCENT}` }} />
       </div>
       <div
         className="absolute h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-white opacity-0 shadow transition-opacity group-hover/bar:opacity-100 group-focus-visible/bar:opacity-100"
