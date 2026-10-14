@@ -92,8 +92,9 @@ export const siteSettings = defineType({
       title: "Founder cut-out",
       type: "image",
       group: "images",
+      options: { hotspot: true },
       description:
-        "The transparent cut-out used in the home hero, the Services bubbles and the About page. The tool stickers are positioned around the current photo's silhouette, so a replacement needs the same framing (PNG, transparent, subject in the bottom 80%).",
+        "The transparent cut-out used in the home hero, the Services bubbles and the About page. The tool stickers are positioned around the current photo's silhouette, so a replacement or a crop needs the same framing (PNG, transparent, subject in the bottom 80%).",
     }),
     defineField({
       name: "studioPhoto",
