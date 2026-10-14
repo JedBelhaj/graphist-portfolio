@@ -145,7 +145,7 @@ export const homePage = defineType({
       type: "array",
       group: "hero",
       description:
-        "The app icons that pop in around the founder photo, in pop-in order. Each slot has a fixed spot tuned to the photo: 1 above the head, 2 left of the head, 3 and 4 down the left side. Square icons with a transparent background work best. Leave empty to keep the default Photoshop, After Effects, Premiere and AdSense icons.",
+        "The app icons that pop in around the founder photo, in pop-in order. Each slot has a fixed spot tuned to the photo: 1 above the head, 2 left of the head, 3 and 4 down the left side. Square icons with a transparent background work best. Leave empty to keep the default Photoshop, After Effects, Premiere and Google Ads icons.",
       of: [defineArrayMember({ type: "image" })],
       options: { layout: "grid" },
       validation: (r) => r.max(4),
