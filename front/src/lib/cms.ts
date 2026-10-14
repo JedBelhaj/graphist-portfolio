@@ -55,7 +55,8 @@ import {
 /* ---------- Output types ---------- */
 
 /* A tile in the photo/video mosaics. `video` is a loop clip that replaces the
-   still; `href` makes the tile a link (the full film). */
+   still; `href` is the full film, played in the
+   Lightbox when it is a YouTube/Vimeo link. */
 export type MediaTile = { src: string; alt: string; video?: string; href?: string };
 export type WebShot = { src: string; address: string; real: boolean };
 export type Lane = { title: string; blurb: string; tags: string[] };
@@ -222,8 +223,8 @@ function build(raw: Raw | null) {
       .filter((m) => m.recent)
       .sort((a, b) => b.at.localeCompare(a.at))
       .slice(0, 7)
-      .map((m) => m.tile.src),
-    WORK_IMAGES,
+      .map((m) => m.tile),
+    asTiles(WORK_IMAGES),
   );
 
   /* Real screenshots switch the wireframe overlay off (see BrowserFrame). */
