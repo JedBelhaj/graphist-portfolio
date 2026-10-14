@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { Maximize, Minimize, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Maximize, Minimize, Pause, Play, Volume1, Volume2, VolumeX } from "lucide-react";
+import { ACCENT } from "@/lib/brand";
 
 const fmt = (s: number) => {
   if (!Number.isFinite(s)) return "0:00";
@@ -15,21 +16,93 @@ const BUTTON =
 /* Keys pressed on these keep their own meaning instead of the shortcuts. */
 const INTERACTIVE = "button, a, input, textarea, select, [role='slider']";
 
+/* Draggable bar used for both the progress and the volume. The filled part is
+   the accent colour; a white handle shows on hover or keyboard focus. Arrow
+   keys move it by `step` and stop there, so they don't also change slides. */
+function Slider({
+  value,
+  max,
+  step,
+  label,
+  valueText,
+  onChange,
+  className = "",
+}: {
+  value: number;
+  max: number;
+  step: number;
+  label: string;
+  valueText: string;
+  onChange: (v: number) => void;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const pct = max ? Math.min(100, (value / max) * 100) : 0;
+
+  const set = (v: number) => {
+    if (max) onChange(Math.min(max, Math.max(0, v)));
+  };
+  const fromPointer = (e: PointerEvent<HTMLDivElement>) => {
+    const r = ref.current!.getBoundingClientRect();
+    set(((e.clientX - r.left) / r.width) * max);
+  };
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    const move = { ArrowRight: step, ArrowUp: step, ArrowLeft: -step, ArrowDown: -step }[e.key];
+    if (move !== undefined) set(value + move);
+    else if (e.key === "Home") set(0);
+    else if (e.key === "End") set(max);
+    else return;
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  return (
+    <div
+      ref={ref}
+      role="slider"
+      tabIndex={0}
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={max}
+      aria-valuenow={Math.round(value * 100) / 100}
+      aria-valuetext={valueText}
+      onPointerDown={(e) => {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        fromPointer(e);
+      }}
+      onPointerMove={(e) => e.currentTarget.hasPointerCapture(e.pointerId) && fromPointer(e)}
+      onKeyDown={onKey}
+      className={`group/bar relative flex h-4 cursor-pointer touch-none items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${className}`}
+    >
+      <div className="h-1 w-full overflow-hidden rounded-full bg-white/25 transition-[height] duration-200 group-hover/bar:h-1.5">
+        <div className="h-full" style={{ width: `${pct}%`, backgroundColor: ACCENT }} />
+      </div>
+      <div
+        className="absolute h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-white opacity-0 shadow transition-opacity group-hover/bar:opacity-100 group-focus-visible/bar:opacity-100"
+        style={{ left: `${pct}%` }}
+      />
+    </div>
+  );
+}
+
 /* The Lightbox's player for uploaded clips, in place of the browser's own
    controls, which look different in every browser and can't be styled.
 
    Clicking the picture plays or pauses it. While playing, the controls fade
    out after a moment without the pointer moving. Shortcuts: Space or K
-   play/pause, M mute, F fullscreen; on the progress bar, ←/→ seek 5s (and
-   stop there, so they don't also change slides). */
+   play/pause, M mute, ↑/↓ volume, F fullscreen; on the progress bar, ←/→
+   seek 5s. ←/→ elsewhere are the Lightbox's, for changing slides.
+
+   The volume slider is hidden on touch screens: phones set volume with their
+   own buttons, and iPhones ignore a page's volume setting entirely. */
 export default function VideoPlayer({ src, poster, label }: { src: string; poster?: string; label?: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
   const idleTimer = useRef(0);
 
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
+  const [volume, setVolume] = useState(1);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [full, setFull] = useState(false);
@@ -64,7 +137,24 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
     else v.pause();
   };
 
-  const toggleMute = () => setMuted((m) => !m);
+  /* Set on the element directly: React doesn't reliably keep the `muted`
+     attribute in sync after the first render. */
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = muted;
+    v.volume = volume;
+  }, [muted, volume]);
+
+  /* Dragging to zero mutes, and unmuting from zero comes back at full. */
+  const changeVolume = (v: number) => {
+    setVolume(v);
+    setMuted(v === 0);
+  };
+  const toggleMute = () => {
+    if (muted && volume === 0) setVolume(1);
+    setMuted(!muted);
+  };
 
   const toggleFull = () => {
     const wrap = wrapRef.current;
@@ -84,10 +174,15 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
         toggle();
       } else if (key === "m") toggleMute();
       else if (key === "f") toggleFull();
+      else if (key === "arrowup" || key === "arrowdown") {
+        e.preventDefault();
+        const next = Math.min(1, Math.max(0, (muted ? 0 : volume) + (key === "arrowup" ? 0.1 : -0.1)));
+        changeVolume(Math.round(next * 10) / 10);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [muted, volume]);
 
   /* Any pointer movement brings the controls back; they hide again 2.5s later. */
   const wake = () => {
@@ -104,22 +199,8 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
     setTime(v.currentTime);
   };
 
-  const seekToPointer = (e: PointerEvent<HTMLDivElement>) => {
-    const r = barRef.current!.getBoundingClientRect();
-    seekTo(((e.clientX - r.left) / r.width) * duration);
-  };
-
-  const onBarKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    const step = { ArrowRight: 5, ArrowLeft: -5, ArrowUp: 5, ArrowDown: -5 }[e.key];
-    if (step !== undefined) seekTo(time + step);
-    else if (e.key === "Home") seekTo(0);
-    else if (e.key === "End") seekTo(duration);
-    else return;
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const pct = duration ? (time / duration) * 100 : 0;
+  const level = muted ? 0 : volume;
+  const VolumeIcon = level === 0 ? VolumeX : level < 0.5 ? Volume1 : Volume2;
 
   return (
     <div
@@ -136,7 +217,6 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
         aria-label={label || undefined}
         autoPlay
         playsInline
-        muted={muted}
         onClick={toggle}
         onPlay={() => {
           setPlaying(true);
@@ -167,39 +247,31 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
           hidden ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
       >
-        <div
-          ref={barRef}
-          role="slider"
-          tabIndex={0}
-          aria-label="Seek"
-          aria-valuemin={0}
-          aria-valuemax={Math.round(duration)}
-          aria-valuenow={Math.round(time)}
-          aria-valuetext={`${fmt(time)} of ${fmt(duration)}`}
-          onPointerDown={(e) => {
-            e.currentTarget.setPointerCapture(e.pointerId);
-            seekToPointer(e);
-          }}
-          onPointerMove={(e) => e.currentTarget.hasPointerCapture(e.pointerId) && seekToPointer(e)}
-          onKeyDown={onBarKey}
-          className="group/bar relative flex h-4 cursor-pointer touch-none items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        >
-          <div className="h-1 w-full overflow-hidden rounded-full bg-white/25 transition-[height] duration-200 group-hover/bar:h-1.5">
-            <div className="h-full bg-white" style={{ width: `${pct}%` }} />
-          </div>
-          <div
-            className="absolute h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-white opacity-0 shadow transition-opacity group-hover/bar:opacity-100 group-focus-visible/bar:opacity-100"
-            style={{ left: `${pct}%` }}
-          />
-        </div>
+        <Slider
+          value={time}
+          max={duration}
+          step={5}
+          label="Seek"
+          valueText={`${fmt(time)} of ${fmt(duration)}`}
+          onChange={seekTo}
+        />
 
         <div className="flex items-center gap-2">
           <button type="button" aria-label={playing ? "Pause" : "Play"} onClick={toggle} className={BUTTON}>
             {playing ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
           </button>
           <button type="button" aria-label={muted ? "Unmute" : "Mute"} onClick={toggleMute} className={BUTTON}>
-            {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            <VolumeIcon size={16} />
           </button>
+          <Slider
+            value={level}
+            max={1}
+            step={0.1}
+            label="Volume"
+            valueText={`${Math.round(level * 100)}%`}
+            onChange={changeVolume}
+            className="w-20 [@media(hover:none)]:hidden"
+          />
           <span className="ml-1 text-xs tabular-nums text-white/85">
             {fmt(time)} / {fmt(duration)}
           </span>
