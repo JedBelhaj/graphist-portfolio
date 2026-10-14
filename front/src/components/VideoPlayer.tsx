@@ -110,6 +110,20 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
   const [duration, setDuration] = useState(0);
   const [full, setFull] = useState(false);
   const [idle, setIdle] = useState(false);
+  /* Waiting on the network: first load, buffering mid-play, or a seek into
+     a part that hasn't downloaded. `spinner` trails it by 250ms so a quick
+     hiccup doesn't flash the circle on and off. */
+  const [loading, setLoading] = useState(true);
+  const [spinner, setSpinner] = useState(false);
+
+  useEffect(() => {
+    if (!loading) {
+      setSpinner(false);
+      return;
+    }
+    const t = setTimeout(() => setSpinner(true), 250);
+    return () => clearTimeout(t);
+  }, [loading]);
 
   /* timeupdate only fires a few times a second, which makes the bar step;
      follow the frame rate while playing instead. */
@@ -233,13 +247,32 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
         }}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
+        onLoadStart={() => setLoading(true)}
+        onWaiting={() => setLoading(true)}
+        onSeeking={() => setLoading(true)}
+        onCanPlay={() => setLoading(false)}
+        onPlaying={() => setLoading(false)}
+        onSeeked={() => setLoading(false)}
+        onError={() => setLoading(false)}
         onDurationChange={(e) => setDuration(e.currentTarget.duration)}
         onTimeUpdate={(e) => !playing && setTime(e.currentTarget.currentTime)}
         className="block max-h-[80vh] max-w-[92vw] cursor-pointer [:fullscreen_&]:max-h-screen [:fullscreen_&]:max-w-[100vw]"
       />
 
-      {/* Paused: a big play button in the middle, like the gallery tiles. */}
-      {!playing && (
+      {/* Loading: an accent ring in the middle. It keeps spinning under reduced
+          motion, since here the motion is the information. */}
+      {spinner && (
+        <div role="status" aria-label="Loading" className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div
+            className="h-14 w-14 animate-spin rounded-full border-[3px] border-white/20"
+            style={{ borderTopColor: PLAYER_ACCENT }}
+          />
+        </div>
+      )}
+
+      {/* Paused: a big play button in the middle, like the gallery tiles.
+          Not while loading, so the two never sit on top of each other. */}
+      {!playing && !loading && (
         <button
           type="button"
           aria-label="Play"
