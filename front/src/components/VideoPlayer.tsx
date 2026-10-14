@@ -172,12 +172,18 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
       if (key === " " || key === "k") {
         e.preventDefault();
         toggle();
-      } else if (key === "m") toggleMute();
+      } else if (key === "m") {
+        /* toggleMute, inlined so this effect only depends on the two values. */
+        if (muted && volume === 0) setVolume(1);
+        setMuted(!muted);
+      }
       else if (key === "f") toggleFull();
       else if (key === "arrowup" || key === "arrowdown") {
         e.preventDefault();
         const next = Math.min(1, Math.max(0, (muted ? 0 : volume) + (key === "arrowup" ? 0.1 : -0.1)));
-        changeVolume(Math.round(next * 10) / 10);
+        const rounded = Math.round(next * 10) / 10;
+        setVolume(rounded);
+        setMuted(rounded === 0);
       }
     };
     window.addEventListener("keydown", onKey);
