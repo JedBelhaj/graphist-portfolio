@@ -1,7 +1,9 @@
 import { ACCENT } from "@/lib/brand";
 
-/* A brush-marker zigzag behind the hero cut-out's head: thick on the strokes
-   that climb up-right, thin on the ones that drop back down.
+/* A brush-marker zigzag climbing diagonally behind the hero cut-out's head.
+   The stroke swells from a thin start to its fullest in the middle and thins
+   out again at the end; along the way the upstrokes run a little heavier than
+   the ones that drop back down.
 
    The SVG is cropped tight to the drawing and keeps its own aspect ratio, so
    the caller places it with a left/top/width in percentages of the photo, the
@@ -15,8 +17,10 @@ const POINTS: [number, number][] = [
   [837, 715], [1214, 421], [1175, 730], [1539, 439], [1487, 685], [1617, 589],
 ];
 
-const W_THIN = 52; // stroke width on the downstrokes
-const W_THICK = 150; // ... and on the upstrokes
+const TILT = -16; // degrees the whole zigzag is turned, so it climbs to the right
+const W_THIN = 110; // stroke width at the fullest point, on a downstroke
+const W_THICK = 175; // ... and on an upstroke
+const W_ENDS = 0.18; // width at the two ends, as a share of the middle
 const STEP = 16; // spacing of the brush dabs along the line
 const BLUR = 7; // smoothing passes that round off the turns
 const SMOOTH = 90; // how far along the line a width change blends
@@ -80,10 +84,17 @@ function resample(line: [number, number][]) {
 /* The outline, as one filled path: a tapered capsule between each pair of
    neighbouring dabs. They are all wound the same way, so the default nonzero
    fill merges them into a single smooth stroke. */
+/* Turn a vector by TILT. */
+function turn([x, y]: [number, number]): [number, number] {
+  const a = (TILT * Math.PI) / 180;
+  return [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
+}
+
 function scribblePath() {
-  const pts = resample(spline(POINTS));
+  const pts = resample(spline(POINTS.map(turn)));
   const n = pts.length;
-  const up = [1 / Math.hypot(1, 0.6), -0.6 / Math.hypot(1, 0.6)];
+  /* The sketch's upstroke direction, turned along with it. */
+  const up = turn([1 / Math.hypot(1, 0.6), -0.6 / Math.hypot(1, 0.6)]);
 
   /* Raw width per dab from which way the line is heading. */
   let length = 0;
@@ -96,7 +107,8 @@ function scribblePath() {
     return { x, y, at: length, r: 0, raw: W_THIN + (W_THICK - W_THIN) * k * k * (3 - 2 * k) };
   });
 
-  /* Blend the widths along the line, and taper both ends like a brush. */
+  /* Blend the widths along the line, then swell them: thin at both ends,
+     fullest in the middle. */
   for (const d of dabs) {
     let sum = 0;
     let weight = 0;
@@ -106,8 +118,8 @@ function scribblePath() {
       weight += w;
     }
     const u = d.at / length;
-    const taper = Math.min(1, u / 0.05, (1 - u) / 0.04) ** 0.6;
-    d.r = ((sum / weight) * (0.35 + 0.65 * taper)) / 2;
+    const swell = W_ENDS + (1 - W_ENDS) * Math.sin(Math.PI * u) ** 0.8;
+    d.r = ((sum / weight) * swell) / 2;
   }
 
   const r = Math.round;

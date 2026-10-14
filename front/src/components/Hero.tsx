@@ -37,7 +37,7 @@ function HeroFigure({
       />
       {/* Scribble behind the head, then the tool logos pop in over it. It runs
           past the photo on the right; the panel or card edge crops it there. */}
-      <HeroScribble className="absolute left-[22%] top-[13%] w-[103%]" delay={T_SCRIBBLE} />
+      <HeroScribble className="absolute left-[24%] top-[3%] w-[104%]" delay={T_SCRIBBLE} />
 
       {/* The studio supplies the icons; each takes the tuned spot of its slot. */}
       {stickers.slice(0, HERO_STICKERS.length).map((sticker, i) => (
