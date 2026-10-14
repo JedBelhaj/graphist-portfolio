@@ -111,7 +111,7 @@ export const video = defineType({
       name: "link",
       title: "Full video link",
       type: "url",
-      description: "Optional. The full film. YouTube and Vimeo links play inside the site's viewer; any other page gets a "Watch the full film" link.",
+      description: "Optional. The full film. YouTube and Vimeo links play inside the site's viewer; any other page gets a 'Watch the full film' link.",
       validation: (r) => r.uri({ scheme: ["http", "https"] }),
     }),
     showInRecent,
