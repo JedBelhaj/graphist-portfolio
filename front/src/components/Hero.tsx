@@ -1,19 +1,20 @@
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
-import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKERS } from "@/lib/content";
-import HeroBurst from "./HeroBurst";
+import { HERO_ARROW, HERO_STICKERS } from "@/lib/content";
+import HeroScribble from "./HeroScribble";
 import InViewGate from "./InViewGate";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
-   in from the right, then the burst behind it, then the logos pop one by one. */
+   in from the right, then the scribble wipes in behind it, then the logos pop
+   one by one. */
 const T_PHOTO = 100;
-const T_BURST = 800;
+const T_SCRIBBLE = 700;
 const T_LOGOS = 1250;
 const T_LOGO_STEP = 110;
 
-/* The cut-out plus its burst and tool stickers, shared by the mobile card and
-   the desktop panel so both get the same entrance. The sticker and burst
-   positions are percentages of this wrapper, which shrink-wraps the photo —
+/* The cut-out plus its scribble and tool stickers, shared by the mobile card and
+   the desktop panel so both get the same entrance. The sticker and scribble
+   positions are relative to this wrapper, which shrink-wraps the photo —
    so they stay tuned to the silhouette at any photo size. */
 function HeroFigure({
   src,
@@ -34,13 +35,9 @@ function HeroFigure({
         className={`${enter} relative z-[5] ${imgCls}`}
         style={{ animationDelay: `${T_PHOTO}ms` }}
       />
-      {/* Burst behind the subject, then the tool logos pop in over it. */}
-      <div
-        className={`absolute ${HERO_BURST_CLS} ${enter}`}
-        style={{ animationDelay: `${T_BURST}ms` }}
-      >
-        <HeroBurst className="w-full" />
-      </div>
+      {/* Scribble behind the head, then the tool logos pop in over it. It runs
+          past the photo on the right; the panel or card edge crops it there. */}
+      <HeroScribble className="absolute left-[22%] top-[13%] w-[103%]" delay={T_SCRIBBLE} />
 
       {/* The studio supplies the icons; each takes the tuned spot of its slot. */}
       {stickers.slice(0, HERO_STICKERS.length).map((sticker, i) => (
