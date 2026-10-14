@@ -7,6 +7,7 @@
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { googleDriveSource } from "./assetSources/googleDrive";
 import { SINGLETONS, schemaTypes } from "./schemaTypes";
 import { structure } from "./structure";
 
@@ -33,6 +34,13 @@ export default defineConfig({
     types: schemaTypes,
     /* Singletons can't be created from the global "+" menu. */
     templates: (templates) => templates.filter(({ schemaType }) => !SINGLETONS.includes(schemaType)),
+  },
+
+  /* Adds "Google Drive link" next to the built-in sources in every image and
+     file field's Select menu. */
+  form: {
+    image: { assetSources: (prev) => [...prev, googleDriveSource] },
+    file: { assetSources: (prev) => [...prev, googleDriveSource] },
   },
 
   document: {
