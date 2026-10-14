@@ -1,6 +1,6 @@
 import { ACCENT } from "@/lib/brand";
 
-/* A brush-marker zigzag climbing diagonally behind the hero cut-out's head.
+/* A brush-marker zigzag running diagonally downhill behind the hero cut-out's head.
    The stroke swells from a thin start to its fullest in the middle and thins
    out again at the end; along the way the upstrokes run a little heavier than
    the ones that drop back down.
@@ -17,7 +17,7 @@ const POINTS: [number, number][] = [
   [837, 715], [1214, 421], [1175, 730], [1539, 439], [1487, 685], [1617, 589],
 ];
 
-const TILT = -16; // degrees the whole zigzag is turned, so it climbs to the right
+const TILT = 16; // degrees the whole zigzag is turned, so it runs downhill to the right
 const W_THIN = 110; // stroke width at the fullest point, on a downstroke
 const W_THICK = 175; // ... and on an upstroke
 const W_ENDS = 0.18; // width at the two ends, as a share of the middle
