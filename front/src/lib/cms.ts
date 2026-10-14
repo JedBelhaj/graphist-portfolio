@@ -13,6 +13,7 @@ import {
   FAQS,
   FOUNDER_PORTRAIT,
   HERO_PHOTO,
+  HERO_STICKERS,
   LOGO_CAPS,
   PACKAGES,
   PHOTO_DISCIPLINES,
@@ -358,6 +359,10 @@ function build(raw: Raw | null) {
       heroTagline: text(home.heroTagline, COPY.home.heroTagline),
       heroIntro: text(home.heroIntro, COPY.home.heroIntro),
       heroButton: text(home.heroButton, COPY.home.heroButton),
+      heroStickers: list(
+        (home.heroStickers ?? []).filter(hasImage).map((t) => imageUrl(t, 300)),
+        HERO_STICKERS.map((s) => s.id),
+      ),
       results: heading(home.results, COPY.home.results),
       projectsDelivered: text(home.projectsDelivered, COPY.home.projectsDelivered),
       testimonials: heading(home.testimonials, COPY.home.testimonials),

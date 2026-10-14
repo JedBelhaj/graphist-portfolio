@@ -382,6 +382,14 @@ export type HomePage = {
   heroTagline?: string;
   heroIntro?: string;
   heroButton?: string;
+  heroStickers?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
   results?: Heading;
   projectsDelivered?: string;
   testimonials?: Heading;
@@ -641,6 +649,14 @@ export type CONTENT_QUERY_RESULT = {
     heroTagline?: string;
     heroIntro?: string;
     heroButton?: string;
+    heroStickers?: Array<{
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+      _key: string;
+    }>;
     results?: Heading;
     projectsDelivered?: string;
     testimonials?: Heading;
