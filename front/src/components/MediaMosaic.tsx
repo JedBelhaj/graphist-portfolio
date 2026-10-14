@@ -18,7 +18,8 @@ import Reveal from "./Reveal";
    multiple of the pattern length (cms.ts trims CMS lists to whole blocks).
 
    Every tile opens the Lightbox, which steps through the whole set. Video
-   tiles (a clip or a film link) carry a play badge so they read as playable. */
+   tiles (a clip or a film link) show a play badge on hover, and always on
+   touch screens, which have no hover. */
 export default function MediaMosaic({ items, spans }: { items: MediaTile[]; spans: string[] }) {
   const [open, setOpen] = useState<number | null>(null);
 
@@ -46,11 +47,16 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
                     ? m.alt ? `Play: ${m.alt}` : "Play the video"
                     : m.alt ? `View: ${m.alt}` : "View the photo"
                 }
-                className="group relative block h-full w-full cursor-zoom-in"
+                className="group relative block h-full w-full cursor-pointer"
               >
-                <ParallaxImage src={m.src} video={m.video} alt={m.alt} />
+                <ParallaxImage
+                  src={m.src}
+                  video={m.video}
+                  alt={m.alt}
+                  className="transition-opacity duration-300 group-hover:opacity-90"
+                />
                 {isVideo && (
-                  <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md transition-transform duration-500 group-hover:scale-110">
+                  <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md opacity-0 transition-[opacity,transform] duration-500 group-hover:scale-110 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
                     <Play size={22} fill="currentColor" className="ml-1" />
                   </span>
                 )}

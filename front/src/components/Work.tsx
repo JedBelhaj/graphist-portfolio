@@ -64,15 +64,15 @@ export default function Work({ title, tabs, images }: { title: string; tabs: str
                 type="button"
                 onClick={() => setOpen(i)}
                 aria-label={m.alt ? `Open: ${m.alt}` : "Open in viewer"}
-                className="group relative block h-full w-full cursor-zoom-in overflow-hidden rounded-lg"
+                className="group relative block h-full w-full cursor-pointer overflow-hidden rounded-lg"
               >
                 <img
                   src={m.src}
                   alt={m.alt}
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  className="h-full w-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-[1.04] group-hover:opacity-90"
                 />
                 {(m.video || m.href) && (
-                  <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md transition-transform duration-500 group-hover:scale-110">
+                  <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md opacity-0 transition-[opacity,transform] duration-500 group-hover:scale-110 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
                     <Play size={20} fill="currentColor" className="ml-0.5" />
                   </span>
                 )}
