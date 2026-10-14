@@ -53,7 +53,7 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
                   src={m.src}
                   video={m.video}
                   alt={m.alt}
-                  className="transition-opacity duration-300 group-hover:opacity-90"
+                  className="transition-opacity duration-300 group-hover:opacity-50"
                 />
                 {isVideo && (
                   <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md opacity-0 transition-[opacity,transform] duration-500 group-hover:scale-110 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">

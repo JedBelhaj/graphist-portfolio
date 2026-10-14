@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import type { MediaTile } from "@/lib/cms";
+import VideoPlayer from "./VideoPlayer";
 
 /* Turns a YouTube or Vimeo link into its embeddable player, so the full film
    plays in place. Anything else (a client's own site, say) returns null and
@@ -61,20 +62,21 @@ export default function Lightbox({
   index: number | null;
   onIndex: (i: number | null) => void;
 }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const touchX = useRef<number | null>(null);
   const open = index !== null;
   const count = items.length;
 
   /* Lock the page behind, move focus into the viewer, and hand it back to
-     the tile that opened it on close. */
+     the tile that opened it on close. Focus goes to the dialog itself, not
+     the close button, so Space reaches the video player instead of closing. */
   useEffect(() => {
     if (!open) return;
     const opener = document.activeElement as HTMLElement | null;
     const root = document.documentElement;
     const overflow = root.style.overflow;
     root.style.overflow = "hidden";
-    closeRef.current?.focus();
+    rootRef.current?.focus();
     return () => {
       root.style.overflow = overflow;
       opener?.focus();
@@ -101,13 +103,15 @@ export default function Lightbox({
 
   return createPortal(
     <div
+      ref={rootRef}
+      tabIndex={-1}
       role="dialog"
       aria-modal="true"
       aria-label={m.alt || (m.video || m.href ? "Video viewer" : "Photo viewer")}
       onClick={() => onIndex(null)}
       onTouchStart={(e) => {
-        /* Not on the player: dragging its scrubber shouldn't change slides. */
-        touchX.current = (e.target as HTMLElement).closest("video") ? null : e.touches[0].clientX;
+        /* Not on the player's controls: dragging the scrubber shouldn't change slides. */
+        touchX.current = (e.target as HTMLElement).closest("[data-controls]") ? null : e.touches[0].clientX;
       }}
       onTouchEnd={(e) => {
         if (touchX.current === null || !multi) return;
@@ -115,7 +119,7 @@ export default function Lightbox({
         touchX.current = null;
         if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
       }}
-      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/80 backdrop-blur-sm motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
+      className="fixed inset-0 z-[1100] flex outline-none items-center justify-center bg-black/80 backdrop-blur-sm motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
     >
       {/* Keyed on the index so each slide mounts fresh: the previous video
           stops, and the next one starts from the top. */}
@@ -137,14 +141,7 @@ export default function Lightbox({
             }
           />
         ) : m.video ? (
-          <video
-            src={m.video}
-            poster={m.src}
-            controls
-            autoPlay
-            playsInline
-            className="max-h-[80vh] max-w-[92vw] rounded-lg bg-black"
-          />
+          <VideoPlayer src={m.video} poster={m.src} label={m.alt} />
         ) : (
           <img src={m.src} alt={m.alt} className="max-h-[80vh] max-w-[92vw] rounded-lg object-contain" />
         )}
@@ -174,7 +171,6 @@ export default function Lightbox({
       </figure>
 
       <button
-        ref={closeRef}
         type="button"
         aria-label="Close"
         onClick={(e) => {
