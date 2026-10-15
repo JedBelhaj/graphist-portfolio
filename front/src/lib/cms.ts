@@ -27,8 +27,11 @@ import {
   TESTIMONIALS,
   TOOLBOX,
   VIDEO_CAPABILITIES,
+  VIDEO_LAYOUTS,
+  VIDEO_SECTIONS,
   VIDEO_STATS,
   VIDEO_TILES,
+  VIDEO_TONES,
   WEB_CAPABILITIES,
   WEB_PROCESS,
   WEB_SHOTS,
@@ -39,6 +42,8 @@ import {
   type Heading,
   type ServiceColor,
   type Testimonial,
+  type VideoLayout,
+  type VideoTone,
 } from "./content";
 
 /* The site's one content source. Components call `await getContent()` and get
@@ -59,6 +64,18 @@ import {
    still; `href` is the full film, played in the
    Lightbox when it is a YouTube/Vimeo link. */
 export type MediaTile = { src: string; alt: string; video?: string; href?: string };
+/* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
+export type VideoTile = MediaTile & { tall: boolean };
+export type VideoSection = {
+  key: string;
+  title: string;
+  accent: string;
+  body: string;
+  image: { src: string; alt: string };
+  videos: VideoTile[];
+  layout: VideoLayout;
+  tone: VideoTone;
+};
 export type WebShot = { src: string; address: string; real: boolean };
 export type Lane = { title: string; blurb: string; tags: string[] };
 export type Country = { code: string; name: string; note: string | null };
@@ -89,7 +106,13 @@ const CONTENT_QUERY = defineQuery(`{
   "services": *[_type == "servicesPage" && _id == "servicesPage"][0],
   "work": *[_type == "workPage" && _id == "workPage"][0],
   "photography": *[_type == "photographyPage" && _id == "photographyPage"][0],
-  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0],
+  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{
+    ...,
+    "sections": sections[hidden != true]{
+      _key, title, accent, body, image, layout, tone,
+      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }
+    }
+  },
   "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],
   "faq": *[_type == "faqPage" && _id == "faqPage"][0],
   "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)
@@ -216,7 +239,7 @@ function build(raw: Raw | null) {
   }));
 
   const photoTiles = list(fullBlocks(photos.map((p) => p.tile)), asTiles(PHOTO_TILES));
-  const videoTiles = list(fullBlocks(videos.map((v) => v.tile)), asTiles(VIDEO_TILES));
+  const videoTiles = list(videos.map((v) => v.tile), asTiles(VIDEO_TILES));
 
   /* Newest first across both lanes, so a fresh upload leads the grid. */
   const recent = list(
@@ -325,6 +348,52 @@ function build(raw: Raw | null) {
     FAQS,
   );
 
+  /* A section needs a title and at least one visible video; a missing cover
+     falls back to its first poster. "auto" takes its layout and background
+     from the section's position, so a run of auto sections never repeats. */
+  const videoSections: VideoSection[] = list<Omit<VideoSection, "layout" | "tone"> & { layout?: string | null; tone?: string | null }>(
+    (videography.sections ?? []).flatMap((s) => {
+      const clips: VideoTile[] = (s.videos ?? []).flatMap((v) =>
+        v && hasImage(v.poster) && !v.hidden
+          ? [
+              {
+                src: imageUrl(v.poster, 1600),
+                alt: v.title ?? "",
+                video: v.clip ?? undefined,
+                href: v.link ?? undefined,
+                tall: v.format === "vertical",
+              },
+            ]
+          : [],
+      );
+      if (!s.title || clips.length === 0) return [];
+      return [
+        {
+          key: s._key,
+          title: s.title,
+          accent: s.accent ?? "",
+          body: s.body ?? "",
+          image: hasImage(s.image)
+            ? { src: imageUrl(s.image, 2200), alt: s.image.alt ?? "" }
+            : { src: clips[0].src, alt: "" },
+          videos: clips,
+          layout: s.layout,
+          tone: s.tone,
+        },
+      ];
+    }),
+    VIDEO_SECTIONS.map((s) => ({
+      ...s,
+      key: s.title,
+      image: { src: s.image, alt: "" },
+      videos: s.videos.map((v) => ({ ...v, alt: "" })),
+    })),
+  ).map((s, i) => ({
+    ...s,
+    layout: VIDEO_LAYOUTS.find((l) => l === s.layout) ?? VIDEO_LAYOUTS[i % VIDEO_LAYOUTS.length],
+    tone: VIDEO_TONES.find((t) => t === s.tone) ?? VIDEO_TONES[i % VIDEO_TONES.length],
+  }));
+
   const stats = list(
     (videography.stats ?? []).flatMap((x) => (x.figure && x.label ? [{ figure: x.figure, label: x.label }] : [])),
     VIDEO_STATS,
@@ -420,7 +489,7 @@ function build(raw: Raw | null) {
       heading: heading(videography.heading, COPY.videography.heading),
       capabilities: blurbs(videography.capabilities, VIDEO_CAPABILITIES),
       stats,
-      tiles: videoTiles,
+      sections: videoSections,
     },
 
     webDesign: {

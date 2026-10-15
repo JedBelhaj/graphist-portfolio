@@ -357,9 +357,8 @@ export const FAQS = [
 ];
 
 /* ---------- Videography (MOCK) ----------
-   Nine stills, which is one full repeat of the span pattern in Videography.tsx.
-   Add or remove in nines or the mosaic's bottom row stops sitting flush.
-   Source dimensions barely matter — every tile is object-cover cropped. */
+   Stand-in posters. The first one fronts the Videography card on the Work page
+   until a real video is published. */
 export const VIDEO_TILES = [
   MOCK_PHOTO("soltani-video-1", 1200, 900),
   MOCK_PHOTO("soltani-video-2", 1200, 900),
@@ -391,6 +390,69 @@ export const VIDEO_STATS = [
   { figure: "120+", label: "Projects delivered" },
   { figure: "6K", label: "Capture standard" },
   { figure: "72h", label: "Typical first cut" },
+];
+
+/* ---------- Videography sections (MOCK) ----------
+   The sections on the Videography page until the studio has its own. Each
+   layout and background is drawn in VideoSections.tsx; "auto" is resolved in
+   cms.ts from the section's position, so neighbours never match. */
+export const VIDEO_LAYOUTS = ["cinema", "split", "filmstrip", "collage"] as const;
+export const VIDEO_TONES = ["light", "dark", "lilac"] as const;
+export type VideoLayout = (typeof VIDEO_LAYOUTS)[number];
+export type VideoTone = (typeof VIDEO_TONES)[number];
+
+const mockVideos = (seed: string, formats: string) =>
+  [...formats].map((f, i) =>
+    f === "v"
+      ? { src: MOCK_PHOTO(`${seed}-${i}`, 900, 1600), tall: true }
+      : { src: MOCK_PHOTO(`${seed}-${i}`, 1600, 900), tall: false },
+  );
+
+export const VIDEO_SECTIONS: {
+  title: string;
+  accent: string;
+  body: string;
+  image: string;
+  videos: { src: string; tall: boolean }[];
+  layout: VideoLayout;
+  tone: VideoTone;
+}[] = [
+  {
+    title: "Brand films",
+    accent: "the long cut.",
+    body: "Two to three minutes on who you are and why it matters, cut so people actually finish it.",
+    image: MOCK_PHOTO("soltani-vs-brand", 2400, 1000),
+    videos: mockVideos("soltani-vs-brand", "lllll"),
+    layout: "cinema",
+    tone: "light",
+  },
+  {
+    title: "Short-form",
+    accent: "made for the scroll.",
+    body: "One shoot day, forty verticals. Hooked in the first second, captioned, sized per platform.",
+    image: MOCK_PHOTO("soltani-vs-short", 1000, 1250),
+    videos: mockVideos("soltani-vs-short", "vvvv"),
+    layout: "split",
+    tone: "dark",
+  },
+  {
+    title: "Events & venues",
+    accent: "the whole night.",
+    body: "Run-of-show capture that leaves you with a recap film and a month of clips, not a hard drive.",
+    image: MOCK_PHOTO("soltani-vs-event", 800, 800),
+    videos: mockVideos("soltani-vs-event", "llvllvl"),
+    layout: "filmstrip",
+    tone: "lilac",
+  },
+  {
+    title: "Product & motion",
+    accent: "up close.",
+    body: "Macro, motion graphics and the loops that sell the thing while it sits on a shelf.",
+    image: MOCK_PHOTO("soltani-vs-product", 1200, 900),
+    videos: mockVideos("soltani-vs-product", "lvllvl"),
+    layout: "collage",
+    tone: "light",
+  },
 ];
 
 /* ---------- Photography grid (MOCK) ----------

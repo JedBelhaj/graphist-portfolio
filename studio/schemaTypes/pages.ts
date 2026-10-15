@@ -376,7 +376,8 @@ export const videographyPage = defineType({
   icon: Film,
   groups: [
     { name: "hero", title: "Hero", default: true },
-    { name: "content", title: "Content" },
+    { name: "content", title: "Intro" },
+    { name: "sections", title: "Video sections" },
   ],
   fields: [
     hero,
@@ -389,6 +390,108 @@ export const videographyPage = defineType({
       group: "content",
       of: [defineArrayMember({ type: "stat" })],
       validation: (r) => r.max(3),
+    }),
+    defineField({
+      name: "sections",
+      title: "Video sections",
+      type: "array",
+      group: "sections",
+      description:
+        "The page shows these in order, below the intro. Drag to reorder. Only the videos added to a section appear on this page. Leave empty to keep the sample sections.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "videoSection",
+          fields: [
+            defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+            defineField({
+              name: "accent",
+              title: "Accent line",
+              type: "string",
+              description: "Optional second line, set in the handwritten script face.",
+            }),
+            defineField({ name: "body", title: "Intro text", type: "text", rows: 3 }),
+            defineField({
+              name: "image",
+              title: "Cover image",
+              type: "image",
+              options: { hotspot: true },
+              description:
+                "The section's big picture. Each layout crops it differently, so set the hotspot on the part that must stay in frame. Leave empty to use the first video's poster.",
+              fields: [
+                defineField({
+                  name: "alt",
+                  title: "Alt text",
+                  type: "string",
+                  description: "What's in the picture, for screen readers and search.",
+                }),
+              ],
+            }),
+            defineField({
+              name: "videos",
+              title: "Videos",
+              type: "array",
+              description:
+                "Pick from the Videos list, or use “Create new” to add one here. Videos switched to “Hide from website” are skipped.",
+              of: [defineArrayMember({ type: "reference", to: [{ type: "video" }], weak: true })],
+              validation: (r) => r.min(1).warning("A section with no videos is not shown."),
+            }),
+            defineField({
+              name: "layout",
+              title: "Layout",
+              type: "string",
+              description: "Auto picks a different layout from the sections next to it.",
+              options: {
+                list: [
+                  { title: "Auto", value: "auto" },
+                  { title: "Cinema: wide banner, videos below", value: "cinema" },
+                  { title: "Split: tall image beside the videos", value: "split" },
+                  { title: "Filmstrip: a reel you scroll sideways", value: "filmstrip" },
+                  { title: "Collage: staggered columns", value: "collage" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "auto",
+            }),
+            defineField({
+              name: "tone",
+              title: "Background",
+              type: "string",
+              description: "Auto alternates with the sections next to it.",
+              options: {
+                list: [
+                  { title: "Auto", value: "auto" },
+                  { title: "White", value: "light" },
+                  { title: "Dark", value: "dark" },
+                  { title: "Lilac", value: "lilac" },
+                ],
+                layout: "radio",
+                direction: "horizontal",
+              },
+              initialValue: "auto",
+            }),
+            defineField({
+              name: "hidden",
+              title: "Hide from website",
+              type: "boolean",
+              description: "Keeps this section in the studio but off the site.",
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: { title: "title", layout: "layout", videos: "videos", media: "image", hidden: "hidden" },
+            prepare: ({ title, layout, videos, media, hidden }) => {
+              const count = Array.isArray(videos) ? videos.length : 0;
+              const parts = [
+                hidden ? "Hidden" : null,
+                `${count} video${count === 1 ? "" : "s"}`,
+                layout && layout !== "auto" ? layout[0].toUpperCase() + layout.slice(1) : "Auto layout",
+              ];
+              return { title, subtitle: parts.filter(Boolean).join(" · "), media };
+            },
+          },
+        }),
+      ],
     }),
   ],
   preview: { prepare: () => ({ title: "Videography" }) },
