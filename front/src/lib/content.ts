@@ -38,8 +38,11 @@ export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
 
 /* Positions are tuned to the cut-out's silhouette: the head occupies x 45-75%
    from y 20-35%, the body x 10-85% below that. Anything that clips the subject
-   tucks behind it, since the photo carries a higher z-index. The scribble
-   behind the subject is drawn in HeroScribble.tsx and placed in Hero.tsx. */
+   tucks behind it, since the photo carries a higher z-index. */
+/* The burst is drawn by HeroBurst.tsx rather than loaded, so only its placement
+   lives here — same tuned position the remote asset used to sit at. */
+export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[0%]";
+
 /* Array order is the pop-in order — Hero.tsx staggers off the index, so moving
    an entry retimes it without touching its position, which rides on `cls`.
    Google Ads sits last on purpose: it lands the sequence on the marketing

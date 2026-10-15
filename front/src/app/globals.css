@@ -93,24 +93,10 @@ footer[id] {
   animation: hero-in-right 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Hero scribble: wipes in left to right, the way it was drawn. */
-@keyframes scribble-in {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-.scribble-in {
-  animation: scribble-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
 /* Entrances inside an InViewGate wait, invisible, until it is on screen.
    Swapping `animation: none` for the real keyframe starts it fresh, so each
    element's animation-delay counts from the moment the gate opens. */
-.in-view-gate:not(.is-shown) :is(.hero-rise, .hero-in-right, .pop-in, .scribble-in) {
+.in-view-gate:not(.is-shown) :is(.hero-rise, .hero-in-right, .pop-in) {
   animation: none;
   opacity: 0;
 }
@@ -160,7 +146,6 @@ footer[id] {
 
   .hero-rise,
   .hero-in-right,
-  .scribble-in,
   .pop-in,
   .reveal-in,
   .spin-slow,
