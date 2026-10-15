@@ -27,11 +27,10 @@ import {
   TESTIMONIALS,
   TOOLBOX,
   VIDEO_CAPABILITIES,
-  VIDEO_LAYOUTS,
   VIDEO_SECTIONS,
   VIDEO_STATS,
+  VIDEO_STYLES,
   VIDEO_TILES,
-  VIDEO_TONES,
   WEB_CAPABILITIES,
   WEB_PROCESS,
   WEB_SHOTS,
@@ -42,8 +41,8 @@ import {
   type Heading,
   type ServiceColor,
   type Testimonial,
-  type VideoLayout,
-  type VideoTone,
+  type VideoSide,
+  type VideoStyle,
 } from "./content";
 
 /* The site's one content source. Components call `await getContent()` and get
@@ -68,13 +67,11 @@ export type MediaTile = { src: string; alt: string; video?: string; href?: strin
 export type VideoTile = MediaTile & { tall: boolean };
 export type VideoSection = {
   key: string;
-  title: string;
-  accent: string;
-  body: string;
-  image: { src: string; alt: string };
+  client: string;
+  photo: string;
   videos: VideoTile[];
-  layout: VideoLayout;
-  tone: VideoTone;
+  style: VideoStyle;
+  side: VideoSide;
 };
 export type WebShot = { src: string; address: string; real: boolean };
 export type Lane = { title: string; blurb: string; tags: string[] };
@@ -109,7 +106,7 @@ const CONTENT_QUERY = defineQuery(`{
   "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{
     ...,
     "sections": sections[hidden != true]{
-      _key, title, accent, body, image, layout, tone,
+      _key, client, photo, style, side,
       "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }
     }
   },
@@ -348,10 +345,12 @@ function build(raw: Raw | null) {
     FAQS,
   );
 
-  /* A section needs a title and at least one visible video; a missing cover
-     falls back to its first poster. "auto" takes its layout and background
-     from the section's position, so a run of auto sections never repeats. */
-  const videoSections: VideoSection[] = list<Omit<VideoSection, "layout" | "tone"> & { layout?: string | null; tone?: string | null }>(
+  /* A section needs a client name and at least one visible video; a missing
+     photo falls back to the first poster. "auto" takes the style and side from
+     the section's position: the side alternates, the style rotates. */
+  const videoSections: VideoSection[] = list<
+    Omit<VideoSection, "style" | "side"> & { style?: string | null; side?: string | null }
+  >(
     (videography.sections ?? []).flatMap((s) => {
       const clips: VideoTile[] = (s.videos ?? []).flatMap((v) =>
         v && hasImage(v.poster) && !v.hidden
@@ -366,32 +365,23 @@ function build(raw: Raw | null) {
             ]
           : [],
       );
-      if (!s.title || clips.length === 0) return [];
+      if (!s.client || clips.length === 0) return [];
       return [
         {
           key: s._key,
-          title: s.title,
-          accent: s.accent ?? "",
-          body: s.body ?? "",
-          image: hasImage(s.image)
-            ? { src: imageUrl(s.image, 2200), alt: s.image.alt ?? "" }
-            : { src: clips[0].src, alt: "" },
+          client: s.client,
+          photo: img(s.photo, clips[0].src, 1600),
           videos: clips,
-          layout: s.layout,
-          tone: s.tone,
+          style: s.style,
+          side: s.side,
         },
       ];
     }),
-    VIDEO_SECTIONS.map((s) => ({
-      ...s,
-      key: s.title,
-      image: { src: s.image, alt: "" },
-      videos: s.videos.map((v) => ({ ...v, alt: "" })),
-    })),
+    VIDEO_SECTIONS.map((s) => ({ ...s, key: s.client, videos: s.videos.map((v) => ({ ...v, alt: "" })) })),
   ).map((s, i) => ({
     ...s,
-    layout: VIDEO_LAYOUTS.find((l) => l === s.layout) ?? VIDEO_LAYOUTS[i % VIDEO_LAYOUTS.length],
-    tone: VIDEO_TONES.find((t) => t === s.tone) ?? VIDEO_TONES[i % VIDEO_TONES.length],
+    style: VIDEO_STYLES.find((x) => x === s.style) ?? VIDEO_STYLES[i % VIDEO_STYLES.length],
+    side: s.side === "left" || s.side === "right" ? s.side : i % 2 ? "right" : "left",
   }));
 
   const stats = list(

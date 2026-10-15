@@ -377,7 +377,7 @@ export const videographyPage = defineType({
   groups: [
     { name: "hero", title: "Hero", default: true },
     { name: "content", title: "Intro" },
-    { name: "sections", title: "Video sections" },
+    { name: "sections", title: "Clients" },
   ],
   fields: [
     hero,
@@ -393,39 +393,30 @@ export const videographyPage = defineType({
     }),
     defineField({
       name: "sections",
-      title: "Video sections",
+      title: "Client sections",
       type: "array",
       group: "sections",
       description:
-        "The page shows these in order, below the intro. Drag to reorder. Only the videos added to a section appear on this page. Leave empty to keep the sample sections.",
+        "One section per client: their photo on one side, their videos on the other. Shown in this order below the intro; drag to reorder. Only videos added to a section appear on this page. Leave empty to keep the sample sections.",
       of: [
         defineArrayMember({
           type: "object",
-          name: "videoSection",
+          name: "clientSection",
           fields: [
-            defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
             defineField({
-              name: "accent",
-              title: "Accent line",
+              name: "client",
+              title: "Client",
               type: "string",
-              description: "Optional second line, set in the handwritten script face.",
+              description: "The company name. Shown as a small label above the videos.",
+              validation: (r) => r.required(),
             }),
-            defineField({ name: "body", title: "Intro text", type: "text", rows: 3 }),
             defineField({
-              name: "image",
-              title: "Cover image",
+              name: "photo",
+              title: "Photo",
               type: "image",
-              options: { hotspot: true },
               description:
-                "The section's big picture. Each layout crops it differently, so set the hotspot on the part that must stay in frame. Leave empty to use the first video's poster.",
-              fields: [
-                defineField({
-                  name: "alt",
-                  title: "Alt text",
-                  type: "string",
-                  description: "What's in the picture, for screen readers and search.",
-                }),
-              ],
+                "A photo with the client's logo already edited on it. Shown whole, never cropped, so any shape works; portrait (4:5) sits best beside the videos.",
+              validation: (r) => r.required(),
             }),
             defineField({
               name: "videos",
@@ -437,33 +428,31 @@ export const videographyPage = defineType({
               validation: (r) => r.min(1).warning("A section with no videos is not shown."),
             }),
             defineField({
-              name: "layout",
-              title: "Layout",
+              name: "style",
+              title: "Photo style",
               type: "string",
-              description: "Auto picks a different layout from the sections next to it.",
+              description: "Auto rotates through the styles, so sections next to each other differ.",
               options: {
                 list: [
                   { title: "Auto", value: "auto" },
-                  { title: "Cinema: wide banner, videos below", value: "cinema" },
-                  { title: "Split: tall image beside the videos", value: "split" },
-                  { title: "Filmstrip: a reel you scroll sideways", value: "filmstrip" },
-                  { title: "Collage: staggered columns", value: "collage" },
+                  { title: "Edge: runs to the edge of the screen", value: "edge" },
+                  { title: "Framed: rounded, on a purple plate", value: "framed" },
+                  { title: "Print: tilted, with a white border", value: "print" },
                 ],
                 layout: "radio",
               },
               initialValue: "auto",
             }),
             defineField({
-              name: "tone",
-              title: "Background",
+              name: "side",
+              title: "Photo side",
               type: "string",
-              description: "Auto alternates with the sections next to it.",
+              description: "Auto alternates left and right down the page.",
               options: {
                 list: [
                   { title: "Auto", value: "auto" },
-                  { title: "White", value: "light" },
-                  { title: "Dark", value: "dark" },
-                  { title: "Lilac", value: "lilac" },
+                  { title: "Left", value: "left" },
+                  { title: "Right", value: "right" },
                 ],
                 layout: "radio",
                 direction: "horizontal",
@@ -479,15 +468,11 @@ export const videographyPage = defineType({
             }),
           ],
           preview: {
-            select: { title: "title", layout: "layout", videos: "videos", media: "image", hidden: "hidden" },
-            prepare: ({ title, layout, videos, media, hidden }) => {
+            select: { title: "client", videos: "videos", media: "photo", hidden: "hidden" },
+            prepare: ({ title, videos, media, hidden }) => {
               const count = Array.isArray(videos) ? videos.length : 0;
-              const parts = [
-                hidden ? "Hidden" : null,
-                `${count} video${count === 1 ? "" : "s"}`,
-                layout && layout !== "auto" ? layout[0].toUpperCase() + layout.slice(1) : "Auto layout",
-              ];
-              return { title, subtitle: parts.filter(Boolean).join(" · "), media };
+              const subtitle = [hidden ? "Hidden" : null, `${count} video${count === 1 ? "" : "s"}`];
+              return { title, subtitle: subtitle.filter(Boolean).join(" · "), media };
             },
           },
         }),

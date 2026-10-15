@@ -392,14 +392,13 @@ export const VIDEO_STATS = [
   { figure: "72h", label: "Typical first cut" },
 ];
 
-/* ---------- Videography sections (MOCK) ----------
-   The sections on the Videography page until the studio has its own. Each
-   layout and background is drawn in VideoSections.tsx; "auto" is resolved in
-   cms.ts from the section's position, so neighbours never match. */
-export const VIDEO_LAYOUTS = ["cinema", "split", "filmstrip", "collage"] as const;
-export const VIDEO_TONES = ["light", "dark", "lilac"] as const;
-export type VideoLayout = (typeof VIDEO_LAYOUTS)[number];
-export type VideoTone = (typeof VIDEO_TONES)[number];
+/* ---------- Videography client sections (MOCK) ----------
+   One section per client on the Videography page, until the studio has its
+   own. VideoSections.tsx draws each photo style; "auto" style and side are
+   resolved in cms.ts from the section's position, so neighbours differ. */
+export const VIDEO_STYLES = ["edge", "framed", "print"] as const;
+export type VideoStyle = (typeof VIDEO_STYLES)[number];
+export type VideoSide = "left" | "right";
 
 const mockVideos = (seed: string, formats: string) =>
   [...formats].map((f, i) =>
@@ -408,51 +407,11 @@ const mockVideos = (seed: string, formats: string) =>
       : { src: MOCK_PHOTO(`${seed}-${i}`, 1600, 900), tall: false },
   );
 
-export const VIDEO_SECTIONS: {
-  title: string;
-  accent: string;
-  body: string;
-  image: string;
-  videos: { src: string; tall: boolean }[];
-  layout: VideoLayout;
-  tone: VideoTone;
-}[] = [
-  {
-    title: "Brand films",
-    accent: "the long cut.",
-    body: "Two to three minutes on who you are and why it matters, cut so people actually finish it.",
-    image: MOCK_PHOTO("soltani-vs-brand", 2400, 1000),
-    videos: mockVideos("soltani-vs-brand", "lllll"),
-    layout: "cinema",
-    tone: "light",
-  },
-  {
-    title: "Short-form",
-    accent: "made for the scroll.",
-    body: "One shoot day, forty verticals. Hooked in the first second, captioned, sized per platform.",
-    image: MOCK_PHOTO("soltani-vs-short", 1000, 1250),
-    videos: mockVideos("soltani-vs-short", "vvvv"),
-    layout: "split",
-    tone: "dark",
-  },
-  {
-    title: "Events & venues",
-    accent: "the whole night.",
-    body: "Run-of-show capture that leaves you with a recap film and a month of clips, not a hard drive.",
-    image: MOCK_PHOTO("soltani-vs-event", 800, 800),
-    videos: mockVideos("soltani-vs-event", "llvllvl"),
-    layout: "filmstrip",
-    tone: "lilac",
-  },
-  {
-    title: "Product & motion",
-    accent: "up close.",
-    body: "Macro, motion graphics and the loops that sell the thing while it sits on a shelf.",
-    image: MOCK_PHOTO("soltani-vs-product", 1200, 900),
-    videos: mockVideos("soltani-vs-product", "lvllvl"),
-    layout: "collage",
-    tone: "light",
-  },
+export const VIDEO_SECTIONS: { client: string; photo: string; videos: { src: string; tall: boolean }[] }[] = [
+  { client: "Café Nomad", photo: MOCK_PHOTO("soltani-vc-1", 1000, 1250), videos: mockVideos("soltani-vc-1", "l") },
+  { client: "Harbour Fitness", photo: MOCK_PHOTO("soltani-vc-2", 1000, 1250), videos: mockVideos("soltani-vc-2", "vv") },
+  { client: "Maison Lune", photo: MOCK_PHOTO("soltani-vc-3", 1000, 1250), videos: mockVideos("soltani-vc-3", "vvv") },
+  { client: "Northside Dental", photo: MOCK_PHOTO("soltani-vc-4", 1000, 1250), videos: mockVideos("soltani-vc-4", "ll") },
 ];
 
 /* ---------- Photography grid (MOCK) ----------
