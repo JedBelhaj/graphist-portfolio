@@ -376,7 +376,8 @@ export const videographyPage = defineType({
   icon: Film,
   groups: [
     { name: "hero", title: "Hero", default: true },
-    { name: "content", title: "Content" },
+    { name: "content", title: "Intro" },
+    { name: "sections", title: "Clients" },
   ],
   fields: [
     hero,
@@ -389,6 +390,93 @@ export const videographyPage = defineType({
       group: "content",
       of: [defineArrayMember({ type: "stat" })],
       validation: (r) => r.max(3),
+    }),
+    defineField({
+      name: "sections",
+      title: "Client sections",
+      type: "array",
+      group: "sections",
+      description:
+        "One section per client: their photo on one side, their videos on the other. Shown in this order below the intro; drag to reorder. Only videos added to a section appear on this page. Leave empty to keep the sample sections.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "clientSection",
+          fields: [
+            defineField({
+              name: "client",
+              title: "Client",
+              type: "string",
+              description: "The company name. Shown as a small label above the videos.",
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "photo",
+              title: "Photo",
+              type: "image",
+              description:
+                "A photo with the client's logo already edited on it. Shown whole, never cropped, so any shape works; portrait (4:5) sits best beside the videos.",
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "videos",
+              title: "Videos",
+              type: "array",
+              description:
+                "Pick from the Videos list, or use “Create new” to add one here. Videos switched to “Hide from website” are skipped.",
+              of: [defineArrayMember({ type: "reference", to: [{ type: "video" }], weak: true })],
+              validation: (r) => r.min(1).warning("A section with no videos is not shown."),
+            }),
+            defineField({
+              name: "style",
+              title: "Photo style",
+              type: "string",
+              description: "Auto rotates through the styles, so sections next to each other differ.",
+              options: {
+                list: [
+                  { title: "Auto", value: "auto" },
+                  { title: "Edge: runs to the edge of the screen", value: "edge" },
+                  { title: "Framed: rounded, on a purple plate", value: "framed" },
+                  { title: "Print: tilted, with a white border", value: "print" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "auto",
+            }),
+            defineField({
+              name: "side",
+              title: "Photo side",
+              type: "string",
+              description: "Auto alternates left and right down the page.",
+              options: {
+                list: [
+                  { title: "Auto", value: "auto" },
+                  { title: "Left", value: "left" },
+                  { title: "Right", value: "right" },
+                ],
+                layout: "radio",
+                direction: "horizontal",
+              },
+              initialValue: "auto",
+            }),
+            defineField({
+              name: "hidden",
+              title: "Hide from website",
+              type: "boolean",
+              description: "Keeps this section in the studio but off the site.",
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: { title: "client", videos: "videos", media: "photo", hidden: "hidden" },
+            prepare: ({ title, videos, media, hidden }) => {
+              const count = Array.isArray(videos) ? videos.length : 0;
+              const subtitle = [hidden ? "Hidden" : null, `${count} video${count === 1 ? "" : "s"}`];
+              return { title, subtitle: subtitle.filter(Boolean).join(" · "), media };
+            },
+          },
+        }),
+      ],
     }),
   ],
   preview: { prepare: () => ({ title: "Videography" }) },

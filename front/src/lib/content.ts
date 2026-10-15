@@ -357,9 +357,8 @@ export const FAQS = [
 ];
 
 /* ---------- Videography (MOCK) ----------
-   Nine stills, which is one full repeat of the span pattern in Videography.tsx.
-   Add or remove in nines or the mosaic's bottom row stops sitting flush.
-   Source dimensions barely matter — every tile is object-cover cropped. */
+   Stand-in posters. The first one fronts the Videography card on the Work page
+   until a real video is published. */
 export const VIDEO_TILES = [
   MOCK_PHOTO("soltani-video-1", 1200, 900),
   MOCK_PHOTO("soltani-video-2", 1200, 900),
@@ -391,6 +390,28 @@ export const VIDEO_STATS = [
   { figure: "120+", label: "Projects delivered" },
   { figure: "6K", label: "Capture standard" },
   { figure: "72h", label: "Typical first cut" },
+];
+
+/* ---------- Videography client sections (MOCK) ----------
+   One section per client on the Videography page, until the studio has its
+   own. VideoSections.tsx draws each photo style; "auto" style and side are
+   resolved in cms.ts from the section's position, so neighbours differ. */
+export const VIDEO_STYLES = ["edge", "framed", "print"] as const;
+export type VideoStyle = (typeof VIDEO_STYLES)[number];
+export type VideoSide = "left" | "right";
+
+const mockVideos = (seed: string, formats: string) =>
+  [...formats].map((f, i) =>
+    f === "v"
+      ? { src: MOCK_PHOTO(`${seed}-${i}`, 900, 1600), tall: true }
+      : { src: MOCK_PHOTO(`${seed}-${i}`, 1600, 900), tall: false },
+  );
+
+export const VIDEO_SECTIONS: { client: string; photo: string; videos: { src: string; tall: boolean }[] }[] = [
+  { client: "Café Nomad", photo: MOCK_PHOTO("soltani-vc-1", 1000, 1250), videos: mockVideos("soltani-vc-1", "l") },
+  { client: "Harbour Fitness", photo: MOCK_PHOTO("soltani-vc-2", 1000, 1250), videos: mockVideos("soltani-vc-2", "vv") },
+  { client: "Maison Lune", photo: MOCK_PHOTO("soltani-vc-3", 1000, 1250), videos: mockVideos("soltani-vc-3", "vvv") },
+  { client: "Northside Dental", photo: MOCK_PHOTO("soltani-vc-4", 1000, 1250), videos: mockVideos("soltani-vc-4", "ll") },
 ];
 
 /* ---------- Photography grid (MOCK) ----------
