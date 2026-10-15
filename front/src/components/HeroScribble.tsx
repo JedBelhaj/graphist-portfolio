@@ -17,13 +17,13 @@ const POINTS: [number, number][] = [
   [837, 715], [1214, 421], [1175, 730], [1539, 439], [1487, 685], [1617, 589],
 ];
 
-const TILT = 16; // degrees the whole zigzag is turned, so it runs downhill to the right
-const W_THIN = 110; // stroke width at the fullest point, on a downstroke
-const W_THICK = 175; // ... and on an upstroke
-const W_ENDS = 0.18; // width at the two ends, as a share of the middle
-const STEP = 16; // spacing of the brush dabs along the line
-const BLUR = 7; // smoothing passes that round off the turns
-const SMOOTH = 90; // how far along the line a width change blends
+const TILT = 30; // degrees the whole zigzag is turned, so it runs downhill to the right
+const W_THIN = 80; // stroke width at the fullest point, on a downstroke
+const W_THICK = 150; // ... and on an upstroke
+const W_ENDS = 0; // width at the two ends, as a share of the middle
+const STEP = 17; // spacing of the brush dabs along the line
+const BLUR = 100; // smoothing passes that round off the turns
+const SMOOTH = 200; // how far along the line a width change blends
 
 /* Centripetal Catmull-Rom through the points: a smooth line that stays close
    to the sketch without overshooting at the turns. */
