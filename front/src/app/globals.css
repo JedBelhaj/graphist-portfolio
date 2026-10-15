@@ -110,14 +110,10 @@ footer[id] {
   animation-play-state: paused;
 }
 
-/* Client logo band: same drift, but the ends fade into the page so marks
-   don't get sliced off at a hard edge. */
+/* Client logo band: same drift, but it keeps moving under the cursor, and
+   the ends fade into the page so marks don't get sliced off at a hard edge. */
 .logo-track {
   animation: marquee var(--loop, 50s) linear infinite;
-}
-
-.logo-viewport:hover .logo-track {
-  animation-play-state: paused;
 }
 
 .logo-viewport {

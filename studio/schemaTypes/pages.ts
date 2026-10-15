@@ -92,8 +92,9 @@ export const siteSettings = defineType({
       title: "Founder cut-out",
       type: "image",
       group: "images",
+      options: { hotspot: true },
       description:
-        "The transparent cut-out used in the home hero, the Services bubbles and the About page. The tool stickers are positioned around the current photo's silhouette, so a replacement needs the same framing (PNG, transparent, subject in the bottom 80%).",
+        "The transparent cut-out used in the home hero, the Services bubbles and the About page. The tool stickers are positioned around the current photo's silhouette, so a replacement or a crop needs the same framing (PNG, transparent, subject in the bottom 80%).",
     }),
     defineField({
       name: "studioPhoto",
@@ -138,6 +139,17 @@ export const homePage = defineType({
     defineField({ name: "heroTagline", title: "Purple tagline", type: "string", group: "hero" }),
     defineField({ name: "heroIntro", title: "Intro paragraph", type: "text", rows: 3, group: "hero" }),
     defineField({ name: "heroButton", title: "Button", type: "string", group: "hero" }),
+    defineField({
+      name: "heroStickers",
+      title: "Tool stickers",
+      type: "array",
+      group: "hero",
+      description:
+        "The app icons that pop in around the founder photo, in pop-in order. Each slot has a fixed spot tuned to the photo: 1 above the head, 2 left of the head, 3 and 4 down the left side. Square icons with a transparent background work best. Leave empty to keep the default Photoshop, After Effects, Premiere and Google Ads icons.",
+      of: [defineArrayMember({ type: "image" })],
+      options: { layout: "grid" },
+      validation: (r) => r.max(4),
+    }),
 
     defineField({ name: "results", title: "Results", type: "heading", group: "sections" }),
     defineField({

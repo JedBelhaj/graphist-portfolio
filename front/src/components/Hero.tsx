@@ -15,7 +15,17 @@ const T_LOGO_STEP = 110;
    the desktop panel so both get the same entrance. The sticker and burst
    positions are percentages of this wrapper, which shrink-wraps the photo —
    so they stay tuned to the silhouette at any photo size. */
-function HeroFigure({ src, imgCls, enter }: { src: string; imgCls: string; enter: string }) {
+function HeroFigure({
+  src,
+  stickers,
+  imgCls,
+  enter,
+}: {
+  src: string;
+  stickers: string[];
+  imgCls: string;
+  enter: string;
+}) {
   return (
     <div className="relative flex items-end justify-center">
       <img
@@ -32,13 +42,14 @@ function HeroFigure({ src, imgCls, enter }: { src: string; imgCls: string; enter
         <HeroBurst className="w-full" />
       </div>
 
-      {HERO_STICKERS.map((s, i) => (
+      {/* The studio supplies the icons; each takes the tuned spot of its slot. */}
+      {stickers.slice(0, HERO_STICKERS.length).map((sticker, i) => (
         <div
           key={i}
-          className={`absolute ${s.cls} pop-in`}
+          className={`absolute ${HERO_STICKERS[i].cls} pop-in`}
           style={{ animationDelay: `${T_LOGOS + i * T_LOGO_STEP}ms` }}
         >
-          <img src={s.id} alt="" className="w-full" />
+          <img src={sticker} alt="" className="w-full" />
         </div>
       ))}
     </div>
@@ -107,15 +118,15 @@ export default async function Hero() {
           {/* Gated: with the copy first, this card often starts below the fold,
               and the sticker sequence would finish before anyone saw it. */}
           <InViewGate className="mx-auto flex max-w-md items-end justify-center overflow-hidden rounded-3xl bg-[rgb(238,234,255)] px-10 pt-8">
-            <HeroFigure src={images.hero} imgCls="max-h-[420px] sm:max-h-[480px]" enter="hero-rise" />
+            <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[420px] sm:max-h-[480px]" enter="hero-rise" />
           </InViewGate>
         </div>
       </div>
 
       {/* Desktop full-height photo panel */}
       <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-[rgb(238,234,255)] lg:flex">
-        <div className="relative left-[-8%] xl:left-[-18%]">
-          <HeroFigure src={images.hero} imgCls="max-h-[640px] xl:max-h-[760px]" enter="hero-in-right" />
+        <div className="relative left-[2%] xl:left-[-8%]">
+          <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[640px] xl:max-h-[760px]" enter="hero-in-right" />
         </div>
       </div>
     </section>

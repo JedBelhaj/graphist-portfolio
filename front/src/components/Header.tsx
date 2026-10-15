@@ -80,7 +80,7 @@ export default function Header({
           aria-label={`${brandName} home`}
           className={`block shrink-0 origin-left transition-transform ${EASE} ${scrolled ? "scale-[0.85]" : ""}`}
         >
-          <Logo className="h-[18px] sm:h-5 lg:h-[22px]" />
+          <Logo className="h-[13px] sm:h-[14px] lg:h-4" />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">

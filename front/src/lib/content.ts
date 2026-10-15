@@ -41,11 +41,11 @@ export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
    tucks behind it, since the photo carries a higher z-index. */
 /* The burst is drawn by HeroBurst.tsx rather than loaded, so only its placement
    lives here — same tuned position the remote asset used to sit at. */
-export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[0%]";
+export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[20%]";
 
 /* Array order is the pop-in order — Hero.tsx staggers off the index, so moving
    an entry retimes it without touching its position, which rides on `cls`.
-   Google AdSense sits last on purpose: it lands the sequence on the marketing
+   Google Ads sits last on purpose: it lands the sequence on the marketing
    side of the kit rather than another Adobe app. */
 export const HERO_STICKERS = [
   { id: PHOTOSHOP, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
@@ -161,18 +161,39 @@ export const CLIENT_LOGOS: ClientLogo[] = [
     src: "/logos/real/6893857a2382a9206011c316_3f4523b58e85c71272303ee2baceb340e9ce79ac.png",
     cap: "max-h-9",
   },
-  { name: "Bailey Anne Studios", src: "/logos/real/BaileyAnneStudios-Whitecrop.webp", cap: "max-h-10" },
+  {
+    name: "Bailey Anne Studios",
+    src: "/logos/real/BaileyAnneStudios-Whitecrop.webp",
+    cap: "max-h-10",
+  },
   { name: "Tyler's", src: "/logos/real/tylers-logo.png", cap: "max-h-14" },
-  { name: "Easy Dental Marketing", src: "/logos/real/edm-logo.webp", cap: "max-h-12" },
+  {
+    name: "Easy Dental Marketing",
+    src: "/logos/real/edm-logo.webp",
+    cap: "max-h-12",
+  },
   { name: "Leadfox", src: "/logos/real/leadfox%20logo.svg", cap: "max-h-9" },
-  { name: "BSense", src: "/logos/real/bsense-logo.webp", cap: "max-h-14", tone: "grayscale" },
+  {
+    name: "BSense",
+    src: "/logos/real/bsense-logo.webp",
+    cap: "max-h-14",
+    tone: "grayscale",
+  },
   { name: "P4M", src: "/logos/real/logo-p4m.webp", cap: "max-h-16" },
   { name: "Son & Bear", src: "/logos/real/Asset-4_375x.webp", cap: "max-h-6" },
   { name: "F45", src: "/logos/real/F45-logo-desktop.svg", cap: "max-h-11" },
   { name: "Canimoov", src: "/logos/real/canimoov.png", cap: "max-h-14" },
-  { name: "FCBB", src: "/logos/real/FCBB+Logo+(White)-399w.webp", cap: "max-h-8" },
+  {
+    name: "FCBB",
+    src: "/logos/real/FCBB+Logo+(White)-399w.webp",
+    cap: "max-h-8",
+  },
   { name: "Reedz", src: "/logos/real/logo-reedz1.png", cap: "max-h-12" },
-  { name: "Lumeniri", src: "/logos/real/Lumeniri_Header_Soft_Chambray.webp", cap: "max-h-12" },
+  {
+    name: "Lumeniri",
+    src: "/logos/real/Lumeniri_Header_Soft_Chambray.webp",
+    cap: "max-h-12",
+  },
   { name: "FitLife", src: "/logos/real/fitlife.png", cap: "max-h-14" },
   {
     name: "Lipfi's Barbershop",
@@ -270,19 +291,34 @@ export const SERVICE_GROUPS = [
     title: "Photography",
     icon: "camera",
     body: "Stills lit for where they are going — the grid, the menu, the website, the ad set.",
-    items: ["Brand & campaign", "Product & menu", "Portrait & team", "Event & venue"],
+    items: [
+      "Brand & campaign",
+      "Product & menu",
+      "Portrait & team",
+      "Event & venue",
+    ],
   },
   {
     title: "Video",
     icon: "clapperboard",
     body: "Shot, directed and cut in-house, so the person framing the shot knows where it lands.",
-    items: ["Brand films", "Reels & short-form", "Event recaps", "Testimonial videos"],
+    items: [
+      "Brand films",
+      "Reels & short-form",
+      "Event recaps",
+      "Testimonial videos",
+    ],
   },
   {
     title: "Social",
     icon: "megaphone",
     body: "A plan for what goes out, when, and why — then the posting, so you don't have to.",
-    items: ["Strategy & calendar", "Content creation", "Community management", "Reporting"],
+    items: [
+      "Strategy & calendar",
+      "Content creation",
+      "Community management",
+      "Reporting",
+    ],
   },
   {
     title: "Growth",
@@ -410,10 +446,22 @@ export const WEB_CAPABILITIES = [
 ];
 
 export const WEB_PROCESS = [
-  { step: "Plan", body: "What the site has to do, who it's for, and the pages it needs to get there." },
-  { step: "Design", body: "Layouts in your brand, with real content from the shoot, not stock filler." },
-  { step: "Build", body: "Fast, responsive and editable, tested on every screen size before it ships." },
-  { step: "Launch", body: "Domain, analytics and handover, then we stay on for fixes and growth." },
+  {
+    step: "Plan",
+    body: "What the site has to do, who it's for, and the pages it needs to get there.",
+  },
+  {
+    step: "Design",
+    body: "Layouts in your brand, with real content from the shoot, not stock filler.",
+  },
+  {
+    step: "Build",
+    body: "Fast, responsive and editable, tested on every screen size before it ships.",
+  },
+  {
+    step: "Launch",
+    body: "Domain, analytics and handover, then we stay on for fixes and growth.",
+  },
 ];
 
 /* ---------- Team (MOCK) ---------- */
@@ -510,10 +558,21 @@ export const NAV: NavItem[] = [
 
    Headings share one shape: `eyebrow` is the small purple label, `accent`
    the script-face second line. A part the design doesn't show is "". */
-export type Heading = { eyebrow: string; title: string; accent: string; body: string };
+export type Heading = {
+  eyebrow: string;
+  title: string;
+  accent: string;
+  body: string;
+};
 export type Blurb = { title: string; body: string };
 
-const heading = (h: Partial<Heading>): Heading => ({ eyebrow: "", title: "", accent: "", body: "", ...h });
+const heading = (h: Partial<Heading>): Heading => ({
+  eyebrow: "",
+  title: "",
+  accent: "",
+  body: "",
+  ...h,
+});
 
 export const COPY = {
   site: {
@@ -530,7 +589,8 @@ export const COPY = {
     heroLine2: "Sharper strategy.",
     heroLine3: "All under one roof.",
     /* The non-breaking spaces keep the dash from starting a line. */
-    heroTagline: "Shot It, Cut It, Marketed It  —  Across 120+ Projects and Counting",
+    heroTagline:
+      "Shot It, Cut It, Marketed It  —  Across 120+ Projects and Counting",
     heroIntro:
       "Photo, video, websites, and the campaigns that actually put them to work. One studio, one brief, no handoffs. What you see below is just a taste — there's a lot more where that came from.",
     heroButton: "Book A Discovery Call",
@@ -541,10 +601,21 @@ export const COPY = {
       body: "Real messages from real clients, sent the day the work landed. No staging, no rewrites.",
     }),
     projectsDelivered: "120+",
-    testimonials: heading({ eyebrow: "Testimonials", title: "Wall of Love", accent: "[in their words]" }),
-    work: heading({ eyebrow: "My work", title: "Three lanes,", accent: "one standard." }),
+    testimonials: heading({
+      eyebrow: "Testimonials",
+      title: "Wall of Love",
+      accent: "[in their words]",
+    }),
+    work: heading({
+      eyebrow: "My work",
+      title: "Three lanes,",
+      accent: "one standard.",
+    }),
     marqueeOne: "Content that looks good and does the work",
-    services: heading({ title: "THE SH** WE GET DONE", accent: "[aka what we do]" }),
+    services: heading({
+      title: "THE SH** WE GET DONE",
+      accent: "[aka what we do]",
+    }),
     marqueeTwo:
       "Media & Marketing [noun]: Making something worth watching — then making sure it gets seen.",
   },
@@ -594,8 +665,13 @@ export const COPY = {
       body: "Four disciplines, one team. Pick the pieces you need, or hand over the whole content side and we'll run it end to end.",
     }),
     toolboxTitle: "What's in our kit",
-    packagesHeading: heading({ eyebrow: "Packages", title: "Pick your pace", accent: "[or we'll build one]" }),
-    packagesFootnote: "Need a one-off shoot instead? Every project can be quoted on its own.",
+    packagesHeading: heading({
+      eyebrow: "Packages",
+      title: "Pick your pace",
+      accent: "[or we'll build one]",
+    }),
+    packagesFootnote:
+      "Need a one-off shoot instead? Every project can be quoted on its own.",
   },
 
   work: {
@@ -663,11 +739,18 @@ export const COPY = {
       body: "The photos and video are built to travel; the website is where they land. We design and build it around the shoot, so the site looks like the brand on day one.",
     }),
     capabilitiesTitle: "What we build",
-    processHeading: heading({ title: "How a build runs", accent: "four steps, no surprises." }),
+    processHeading: heading({
+      title: "How a build runs",
+      accent: "four steps, no surprises.",
+    }),
   },
 
   faq: {
-    hero: heading({ eyebrow: "FAQ", title: "Good questions,", accent: "straight answers." }),
+    hero: heading({
+      eyebrow: "FAQ",
+      title: "Good questions,",
+      accent: "straight answers.",
+    }),
     ctaTitle: "Still have a question?",
     ctaButton: "Work with us",
   },
