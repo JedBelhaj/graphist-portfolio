@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { Play } from "lucide-react";
 import { ACCENT, FONT_SCRIPT } from "@/lib/brand";
 import type { VideoSection, VideoTile } from "@/lib/cms";
@@ -35,24 +35,82 @@ export default function VideoSections({ sections }: { sections: VideoSection[] }
   );
 }
 
+/* Scroll-linked drift for the client photo, in place of pinning it.
+
+   The photo's column is stretched to the row, so when the videos run taller
+   than the photo there is `slack` below it. As the section crosses the screen
+   (progress 0 entering at the bottom, 1 leaving at the top) the photo slides
+   down that slack, plus DRIFT px centred on its resting place. Its rate is
+   always under the scroll rate, so on screen it keeps moving, just slower than
+   the page, and never parks. DRIFT keeps it moving when there's no slack; half
+   of it is the most the photo leaves its column, well inside the section
+   padding. Off under reduced motion, where the photo simply sits at the top. */
+const DRIFT = 60;
+
+function useDrift() {
+  const colRef = useRef<HTMLDivElement>(null);
+  const photoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const col = colRef.current;
+    const photo = photoRef.current;
+    if (!col || !photo) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const rect = col.getBoundingClientRect();
+      const viewport = window.innerHeight;
+      const slack = Math.max(0, rect.height - photo.offsetHeight);
+      const progress = Math.max(0, Math.min(1, (viewport - rect.top) / (viewport + rect.height)));
+      photo.style.transform = `translate3d(0, ${(progress * slack + (progress - 0.5) * DRIFT).toFixed(1)}px, 0)`;
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+
+    /* Heights change as the photo and posters load, not only on resize. */
+    const ro = new ResizeObserver(schedule);
+    ro.observe(col);
+    ro.observe(photo);
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return { colRef, photoRef };
+}
+
 function Section({ s, n }: { s: VideoSection; n: number }) {
   const [open, setOpen] = useState<number | null>(null);
+  const { colRef, photoRef } = useDrift();
   const left = s.side === "left";
   const edge = s.style === "edge";
 
   return (
     <section aria-labelledby={`client-${n}`} className="py-16 lg:py-24">
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-        {/* Stretched to the row so the photo can stick while a long run of
-            videos scrolls past; centred against a short one. */}
+        {/* Stretched to the row, so the photo has room to drift down beside a
+            long run of videos; the videos centre against a short photo. */}
         <div
+          ref={colRef}
           className={`self-stretch lg:col-span-5 ${left ? "" : "lg:order-last"} ${
             edge ? "" : `${GUTTER} ${left ? `${OUTER_L} lg:pr-0` : `${OUTER_R} lg:pl-0`}`
           }`}
         >
-          <Reveal className="lg:sticky lg:top-28">
-            <Photo s={s} left={left} />
-          </Reveal>
+          <div ref={photoRef} style={{ willChange: "transform" }}>
+            <Reveal>
+              <Photo s={s} left={left} />
+            </Reveal>
+          </div>
         </div>
 
         <div className={`self-center lg:col-span-7 ${GUTTER} ${left ? `${OUTER_R} lg:pl-0` : `${OUTER_L} lg:pr-0`}`}>
