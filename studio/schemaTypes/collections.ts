@@ -85,12 +85,28 @@ export const video = defineType({
   title: "Video",
   type: "document",
   icon: Film,
-  description: MOSAIC_NOTE,
+  description:
+    "A video shows on the Videography page once it is added to one of that page's sections. The first one in this list also fronts the Videography card on the Work page.",
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "video" }),
     hidden,
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({
+      name: "format",
+      title: "Format",
+      type: "string",
+      description: "Vertical for Reels, TikToks and Shorts, so they are not cropped to a wide frame.",
+      options: {
+        list: [
+          { title: "Landscape (16:9)", value: "landscape" },
+          { title: "Vertical (9:16)", value: "vertical" },
+        ],
+        layout: "radio",
+        direction: "horizontal",
+      },
+      initialValue: "landscape",
+    }),
     defineField({
       name: "poster",
       title: "Poster frame",
