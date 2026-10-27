@@ -1,58 +1,49 @@
-import { Camera, Clapperboard, Megaphone, MonitorSmartphone, TrendingUp } from "lucide-react";
-import { ACCENT, ACCENT_WASH, FONT_DISPLAY } from "@/lib/brand";
+import { ACCENT_TINT, FONT_DISPLAY, INK } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
 
-/* Keys match the icon options on the Services page in the studio. */
-const ICONS = {
-  camera: Camera,
-  clapperboard: Clapperboard,
-  monitor: MonitorSmartphone,
-  megaphone: Megaphone,
-  trending: TrendingUp,
-};
-
+/* Photo-topped cards on a dark band: the picture does the explaining, the
+   tinted panel below carries the copy. The cards sit close together so the
+   row reads as one strip of work. */
 export default async function ServiceGroups() {
   const { services } = await getContent();
 
   return (
-    <section className="bg-white px-5 pb-20 sm:px-8 lg:pb-28">
-      <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
-        {services.groups.map((g, i) => {
-          const Icon = ICONS[g.icon as keyof typeof ICONS] ?? Camera;
-          return (
-            <Reveal key={g.title} delay={(i % 2) * 110}>
-              <div className="flex h-full flex-col rounded-3xl border border-black/10 p-8 transition-colors duration-300 hover:border-[rgb(124,92,252)] lg:p-10">
-                <div className="mb-8 flex items-center justify-between">
-                  <span
-                    className="flex h-14 w-14 items-center justify-center rounded-2xl"
-                    style={{ backgroundColor: ACCENT_WASH, color: ACCENT }}
-                  >
-                    <Icon size={26} />
-                  </span>
-                  <span className="text-sm tabular-nums text-[rgb(122,122,132)]">0{i + 1}</span>
-                </div>
+    <section className="px-5 py-14 sm:px-8 lg:py-20" style={{ backgroundColor: INK }}>
+      <div className="mx-auto grid max-w-[1300px] grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {services.groups.map((g, i) => (
+          <Reveal key={g.title} delay={i * 90}>
+            <article className="group flex h-full flex-col overflow-hidden rounded-lg" style={{ backgroundColor: ACCENT_TINT }}>
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={g.photo}
+                  alt=""
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="flex flex-1 flex-col px-7 pb-9 pt-8 lg:px-8">
                 <h2
-                  className="text-3xl font-bold tracking-tight text-[rgb(10,11,16)] lg:text-4xl"
-                  style={{ fontFamily: FONT_DISPLAY }}
+                  className="text-3xl font-semibold leading-[1.05] tracking-tight lg:text-4xl"
+                  style={{ fontFamily: FONT_DISPLAY, color: INK }}
                 >
                   {g.title}
                 </h2>
-                <p className="mt-3 text-base leading-relaxed text-[rgb(74,74,86)]">{g.body}</p>
-                <ul className="mt-8 flex flex-wrap gap-2">
+                <p className="mt-4 text-base leading-relaxed text-[rgb(10,11,16)]/75">{g.body}</p>
+                <ul className="mt-auto flex flex-wrap gap-2 pt-8">
                   {g.items.map((item) => (
                     <li
                       key={item}
-                      className="rounded-full border border-black/10 px-4 py-2 text-sm font-semibold text-[rgb(10,11,16)]"
+                      className="rounded-full bg-white/60 px-3.5 py-1.5 text-sm font-semibold"
+                      style={{ color: INK }}
                     >
                       {item}
                     </li>
                   ))}
                 </ul>
               </div>
-            </Reveal>
-          );
-        })}
+            </article>
+          </Reveal>
+        ))}
       </div>
     </section>
   );

@@ -79,7 +79,7 @@ export type Country = { code: string; name: string; note: string | null };
 export type ResultShot = { src: string; alt: string; label: string };
 export type TeamMember = { name: string; role: string; focus: string; photo: string };
 export type ServiceBubble = { label: string; bg: string; fg: string };
-export type ServiceGroup = { title: string; icon: string; body: string; items: string[] };
+export type ServiceGroup = { title: string; photo: string; body: string; items: string[] };
 export type Package = (typeof PACKAGES)[number];
 export type Faq = { q: string; a: string };
 
@@ -311,8 +311,18 @@ function build(raw: Raw | null) {
   ).map((b) => ({ label: b.label, ...SERVICE_COLORS[b.color] }));
 
   const groups: ServiceGroup[] = list(
-    (services.groups ?? []).flatMap((g) =>
-      g.title ? [{ title: g.title, icon: g.icon ?? "camera", body: g.body ?? "", items: strings(g.items, []) }] : [],
+    (services.groups ?? []).flatMap((g, i) =>
+      g.title
+        ? [
+            {
+              title: g.title,
+              // A group without a photo borrows the placeholder from the default in its slot.
+              photo: img(g.photo, SERVICE_GROUPS[i % SERVICE_GROUPS.length].photo, 1000),
+              body: g.body ?? "",
+              items: strings(g.items, []),
+            },
+          ]
+        : [],
     ),
     SERVICE_GROUPS,
   );

@@ -251,9 +251,18 @@ export const servicesPage = defineType({
           fields: [
             defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
             defineField({
+              name: "photo",
+              title: "Photo",
+              type: "image",
+              description: "Shown across the top of the card, cropped to 4:3. Leave empty for a placeholder.",
+              options: { hotspot: true },
+            }),
+            // Replaced by the photo; kept hidden so existing groups don't flag it as an unknown field.
+            defineField({
               name: "icon",
               title: "Icon",
               type: "string",
+              hidden: true,
               options: {
                 list: [
                   { title: "Camera", value: "camera" },

@@ -307,11 +307,11 @@ export const PACKAGES = [
 ];
 
 /* ---------- Services page ----------
-   `icon` is a key into the icon map in ServiceGroups.tsx. */
+   Photos are MOCK placeholders until real ones are uploaded in the studio. */
 export const SERVICE_GROUPS = [
   {
     title: "Photography",
-    icon: "camera",
+    photo: MOCK_PHOTO("soltani-svc-photo", 800, 600),
     body: "Stills lit for where they are going — the grid, the menu, the website, the ad set.",
     items: [
       "Brand & campaign",
@@ -322,7 +322,7 @@ export const SERVICE_GROUPS = [
   },
   {
     title: "Video",
-    icon: "clapperboard",
+    photo: MOCK_PHOTO("soltani-svc-video", 800, 600),
     body: "Shot, directed and cut in-house, so the person framing the shot knows where it lands.",
     items: [
       "Brand films",
@@ -333,7 +333,7 @@ export const SERVICE_GROUPS = [
   },
   {
     title: "Social",
-    icon: "megaphone",
+    photo: MOCK_PHOTO("soltani-svc-social", 800, 600),
     body: "A plan for what goes out, when, and why — then the posting, so you don't have to.",
     items: [
       "Strategy & calendar",
@@ -344,7 +344,7 @@ export const SERVICE_GROUPS = [
   },
   {
     title: "Growth",
-    icon: "trending",
+    photo: MOCK_PHOTO("soltani-svc-growth", 800, 600),
     body: "Paid creative built from the same shoot, tested until something beats the control.",
     items: ["Paid ads", "Creative testing", "Email & automation", "Analytics"],
   },

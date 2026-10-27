@@ -351,6 +351,13 @@ export type ServicesPage = {
   }>;
   groups?: Array<{
     title?: string;
+    photo?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
     icon?: "camera" | "clapperboard" | "monitor" | "megaphone" | "trending";
     body?: string;
     items?: Array<string>;
@@ -726,6 +733,13 @@ export type CONTENT_QUERY_RESULT = {
     }>;
     groups?: Array<{
       title?: string;
+      photo?: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+      };
       icon?: "camera" | "clapperboard" | "megaphone" | "monitor" | "trending";
       body?: string;
       items?: Array<string>;
