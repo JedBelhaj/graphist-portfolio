@@ -43,7 +43,7 @@ function HeroFigure({
         <HeroBurst className="w-full" />
       </div>
 
-      {/* The studio supplies the icons; they circle the head on a tilted ring. */}
+      {/* The studio supplies the icons; they stream from behind the head to behind the laptop. */}
       <HeroOrbit stickers={stickers} delay={T_LOGOS} step={T_LOGO_STEP} />
     </div>
   );
