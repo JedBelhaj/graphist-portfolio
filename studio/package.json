@@ -8,6 +8,7 @@
     "build": "sanity build",
     "deploy": "sanity deploy",
     "seed": "sanity exec scripts/seed.ts --with-user-token",
+    "migrate:video-sections": "sanity exec scripts/migrate-video-sections.ts --with-user-token",
     "typegen": "sanity schemas extract --force && sanity typegen generate",
     "typecheck": "tsc --noEmit"
   },
