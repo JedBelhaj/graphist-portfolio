@@ -17,9 +17,6 @@ export const HERO_ARROW = A(
 );
 
 /* ---------- Real assets (front/public) ---------- */
-/* Circular SM badge: big in About, and the marquee separator. */
-export const LOGO_MARK = "/logo.png";
-
 /* Wordmark lockups, cut from public/soltani_logo.png (see Logo.tsx). */
 export const LOGO_FULL = "/soltani-logo.png";
 export const LOGO_WORDMARK = "/soltani-wordmark.png";

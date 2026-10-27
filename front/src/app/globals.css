@@ -120,20 +120,6 @@ footer[id] {
   mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
 
-/* Continuous rotation for the circular badge. */
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.spin-slow {
-  animation: spin-slow 18s linear infinite;
-}
-
 /* overshoots slightly at the top of the curve so elements pop */
 .pop-in {
   animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
@@ -169,7 +155,6 @@ footer[id] {
   .pop-in,
   .bubble-float,
   .reveal-in,
-  .spin-slow,
   .testimonial-track,
   .logo-track {
     animation: none;

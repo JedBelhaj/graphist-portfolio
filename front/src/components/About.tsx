@@ -1,6 +1,5 @@
 import { FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
-import { LOGO_MARK } from "@/lib/content";
 import AboutBlock from "./AboutBlock";
 import Highlight from "./Highlight";
 import Reveal from "./Reveal";
@@ -53,13 +52,6 @@ export default async function About() {
             <AboutBlock num="03" title={why.title}>
               <Highlight text={why.body} />
             </AboutBlock>
-          </Reveal>
-
-          <Reveal
-            delay={300}
-            className="hidden items-end justify-center lg:col-start-3 lg:row-start-3 lg:flex"
-          >
-            <img src={LOGO_MARK} alt="" className="spin-slow w-40 invert" />
           </Reveal>
         </div>
       </div>
