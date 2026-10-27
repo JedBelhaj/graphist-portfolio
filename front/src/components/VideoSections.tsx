@@ -1,182 +1,57 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Play } from "lucide-react";
-import { ACCENT, FONT_SCRIPT } from "@/lib/brand";
+import { ACCENT, FONT_DISPLAY } from "@/lib/brand";
 import type { VideoSection, VideoTile } from "@/lib/cms";
 import Lightbox from "./Lightbox";
 import ParallaxImage from "./ParallaxImage";
 import Reveal from "./Reveal";
 
-/* The Videography page's client sections: one per client, their photo (logo
-   already edited on) on one side and their videos on the other, with a hairline
-   between clients. The side alternates and the photo style rotates (cms.ts
-   resolves "auto"), so no two neighbours look the same. The photo is never
-   cropped beyond a height cap, so the logo on it always survives. */
-
-/* Padding that lines a column's outer edge up with the page's content column
-   on wide screens; on small screens every column gets the plain gutter. */
-const GUTTER = "px-5 sm:px-8";
-const OUTER_L = "lg:pl-[max(2rem,calc((100vw_-_1180px)/2_+_2rem))]";
-const OUTER_R = "lg:pr-[max(2rem,calc((100vw_-_1180px)/2_+_2rem))]";
-
+/* The Videography page's categories (Restaurants, Medical…): a hairline
+   carrying the number and video count, the category in big type, then its
+   videos across the full content width. Nothing else, so the work carries
+   the page. */
 export default function VideoSections({ sections }: { sections: VideoSection[] }) {
   return (
     <div className="bg-[rgb(10,11,16)] pb-10 lg:pb-16">
       {sections.map((s, i) => (
-        <Fragment key={s.key}>
-          <div className={`mx-auto max-w-[1180px] ${GUTTER}`}>
-            <hr className="border-white/10" />
-          </div>
-          <Section s={s} n={i + 1} />
-        </Fragment>
+        <Section key={s.key} s={s} n={i + 1} />
       ))}
     </div>
   );
 }
 
-/* Scroll-linked drift for the client photo, in place of pinning it.
-
-   The photo's column is stretched to the row, so when the videos run taller
-   than the photo there is `slack` below it. As the section crosses the screen
-   (progress 0 entering at the bottom, 1 leaving at the top) the photo slides
-   down that slack, plus DRIFT px centred on its resting place. Its rate is
-   always under the scroll rate, so on screen it keeps moving, just slower than
-   the page, and never parks. DRIFT keeps it moving when there's no slack; half
-   of it is the most the photo leaves its column, well inside the section
-   padding. Off under reduced motion, where the photo simply sits at the top. */
-const DRIFT = 60;
-
-function useDrift() {
-  const colRef = useRef<HTMLDivElement>(null);
-  const photoRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const col = colRef.current;
-    const photo = photoRef.current;
-    if (!col || !photo) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const rect = col.getBoundingClientRect();
-      const viewport = window.innerHeight;
-      const slack = Math.max(0, rect.height - photo.offsetHeight);
-      const progress = Math.max(0, Math.min(1, (viewport - rect.top) / (viewport + rect.height)));
-      photo.style.transform = `translate3d(0, ${(progress * slack + (progress - 0.5) * DRIFT).toFixed(1)}px, 0)`;
-    };
-    const schedule = () => {
-      if (!raf) raf = requestAnimationFrame(update);
-    };
-
-    /* Heights change as the photo and posters load, not only on resize. */
-    const ro = new ResizeObserver(schedule);
-    ro.observe(col);
-    ro.observe(photo);
-    update();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  return { colRef, photoRef };
-}
-
 function Section({ s, n }: { s: VideoSection; n: number }) {
   const [open, setOpen] = useState<number | null>(null);
-  const { colRef, photoRef } = useDrift();
-  const left = s.side === "left";
-  const edge = s.style === "edge";
 
   return (
-    <section aria-labelledby={`client-${n}`} className="py-16 lg:py-24">
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-        {/* Stretched to the row, so the photo has room to drift down beside a
-            long run of videos; the videos centre against a short photo. */}
-        <div
-          ref={colRef}
-          className={`self-stretch lg:col-span-5 ${left ? "" : "lg:order-last"} ${
-            edge ? "" : `${GUTTER} ${left ? `${OUTER_L} lg:pr-0` : `${OUTER_R} lg:pl-0`}`
-          }`}
+    <section aria-labelledby={`category-${n}`} className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8 lg:py-24">
+      <Reveal>
+        <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/45">
+          <span className="tabular-nums" style={{ color: ACCENT }}>
+            {String(n).padStart(2, "0")}
+          </span>
+          <span aria-hidden className="h-px flex-1 bg-white/15" />
+          <span>
+            {s.videos.length} {s.videos.length === 1 ? "video" : "videos"}
+          </span>
+        </div>
+        <h2
+          id={`category-${n}`}
+          className="mt-5 text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-white sm:text-7xl lg:text-[128px]"
+          style={{ fontFamily: FONT_DISPLAY }}
         >
-          <div ref={photoRef} style={{ willChange: "transform" }}>
-            <Reveal>
-              <Photo s={s} left={left} />
-            </Reveal>
-          </div>
+          {s.title}
+        </h2>
+      </Reveal>
+      <Reveal delay={120}>
+        <div className="mt-10 lg:mt-14">
+          <Videos videos={s.videos} open={setOpen} />
         </div>
-
-        <div className={`self-center lg:col-span-7 ${GUTTER} ${left ? `${OUTER_R} lg:pl-0` : `${OUTER_L} lg:pr-0`}`}>
-          <Reveal>
-            <h2
-              id={`client-${n}`}
-              className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold uppercase tracking-[0.22em] text-white"
-            >
-              <span aria-hidden className="tabular-nums" style={{ color: ACCENT }}>
-                {String(n).padStart(2, "0")}
-              </span>
-              <span aria-hidden className="h-px w-8 bg-white/30" />
-              {s.client}
-              <span className="font-normal text-white/45">
-                · {s.videos.length} {s.videos.length === 1 ? "video" : "videos"}
-              </span>
-            </h2>
-          </Reveal>
-          <Reveal delay={120}>
-            <Videos videos={s.videos} open={setOpen} />
-          </Reveal>
-        </div>
-      </div>
+      </Reveal>
       <Lightbox items={s.videos} index={open} onIndex={setOpen} />
     </section>
-  );
-}
-
-/* ---------- The photo, in its three styles ---------- */
-
-function Photo({ s, left }: { s: VideoSection; left: boolean }) {
-  const img = (cls: string) => (
-    <img src={s.photo} alt={s.client} loading="lazy" className={`block max-h-[85vh] w-full object-cover ${cls}`} />
-  );
-
-  /* Edge: square corners, running off the side of the screen. */
-  if (s.style === "edge") return img("");
-
-  /* Framed: rounded, over a purple plate knocked out towards the videos. */
-  if (s.style === "framed")
-    return (
-      <div className="relative">
-        <div
-          aria-hidden
-          className={`absolute inset-0 translate-y-3 rounded-3xl lg:translate-y-5 ${
-            left ? "translate-x-3 lg:translate-x-5" : "-translate-x-3 lg:-translate-x-5"
-          }`}
-          style={{ background: ACCENT }}
-        />
-        {img("relative rounded-3xl")}
-      </div>
-    );
-
-  /* Print: a white-bordered print, tilted away from the videos, the client's
-     name handwritten along the bottom border. */
-  return (
-    <div
-      className={`mx-auto max-w-md rounded-md bg-white p-2.5 pb-3 shadow-[0_30px_60px_-24px_rgba(0,0,0,0.7)] ${
-        left ? "-rotate-2" : "rotate-2"
-      }`}
-    >
-      {img("rounded-sm")}
-      <p className="mt-2 text-center text-2xl text-[rgb(10,11,16)]" style={{ fontFamily: FONT_SCRIPT }}>
-        {s.client}
-      </p>
-    </div>
   );
 }
 
@@ -211,13 +86,14 @@ function Tile({ v, onOpen }: { v: VideoTile; onOpen: () => void }) {
   );
 }
 
-/* The column count follows what the client sent: verticals sit up to three
-   abreast, one or two landscape films stack full width, and anything else
-   splits into two columns. A lone vertical is held to a phone-ish width
-   rather than filling the column at 9:16. */
+/* The column count follows what the category holds, now the videos have the
+   full width: verticals sit up to four abreast, landscape films two (or one
+   alone), and a mix splits into three. A lone vertical is held to a
+   phone-ish width rather than filling the row at 9:16. */
 function Videos({ videos, open }: { videos: VideoTile[]; open: (i: number) => void }) {
   const tall = videos.filter((v) => v.tall).length;
-  const cols = tall === videos.length ? Math.min(3, videos.length) : tall === 0 && videos.length <= 2 ? 1 : 2;
+  const cols =
+    tall === videos.length ? Math.min(4, videos.length) : tall === 0 ? Math.min(2, videos.length) : 3;
 
   return (
     <div className={tall === 1 && videos.length === 1 ? "max-w-xs" : ""}>

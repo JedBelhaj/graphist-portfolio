@@ -417,14 +417,10 @@ export const VIDEO_STATS = [
   { figure: "72h", label: "Typical first cut" },
 ];
 
-/* ---------- Videography client sections (MOCK) ----------
-   One section per client on the Videography page, until the studio has its
-   own. VideoSections.tsx draws each photo style; "auto" style and side are
-   resolved in cms.ts from the section's position, so neighbours differ. */
-export const VIDEO_STYLES = ["edge", "framed", "print"] as const;
-export type VideoStyle = (typeof VIDEO_STYLES)[number];
-export type VideoSide = "left" | "right";
-
+/* ---------- Videography categories (MOCK) ----------
+   One section per category on the Videography page, until the studio has its
+   own: a big title, then the videos (VideoSections.tsx). The format strings
+   mix verticals (v) and landscapes (l) so every grid shape gets exercised. */
 const mockVideos = (seed: string, formats: string) =>
   [...formats].map((f, i) =>
     f === "v"
@@ -433,30 +429,13 @@ const mockVideos = (seed: string, formats: string) =>
   );
 
 export const VIDEO_SECTIONS: {
-  client: string;
-  photo: string;
+  title: string;
   videos: { src: string; tall: boolean }[];
 }[] = [
-  {
-    client: "Café Nomad",
-    photo: MOCK_PHOTO("soltani-vc-1", 1000, 1250),
-    videos: mockVideos("soltani-vc-1", "l"),
-  },
-  {
-    client: "Harbour Fitness",
-    photo: MOCK_PHOTO("soltani-vc-2", 1000, 1250),
-    videos: mockVideos("soltani-vc-2", "vv"),
-  },
-  {
-    client: "Maison Lune",
-    photo: MOCK_PHOTO("soltani-vc-3", 1000, 1250),
-    videos: mockVideos("soltani-vc-3", "vvv"),
-  },
-  {
-    client: "Northside Dental",
-    photo: MOCK_PHOTO("soltani-vc-4", 1000, 1250),
-    videos: mockVideos("soltani-vc-4", "ll"),
-  },
+  { title: "Restaurants", videos: mockVideos("soltani-vc-1", "vvvv") },
+  { title: "Medical", videos: mockVideos("soltani-vc-2", "ll") },
+  { title: "Financial", videos: mockVideos("soltani-vc-3", "vvv") },
+  { title: "IT", videos: mockVideos("soltani-vc-4", "lvv") },
 ];
 
 /* ---------- Photography grid (MOCK) ----------

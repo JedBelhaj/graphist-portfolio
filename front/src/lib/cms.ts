@@ -29,7 +29,6 @@ import {
   VIDEO_CAPABILITIES,
   VIDEO_SECTIONS,
   VIDEO_STATS,
-  VIDEO_STYLES,
   VIDEO_TILES,
   WEB_CAPABILITIES,
   WEB_PROCESS,
@@ -41,8 +40,6 @@ import {
   type Heading,
   type ServiceColor,
   type Testimonial,
-  type VideoSide,
-  type VideoStyle,
 } from "./content";
 
 /* The site's one content source. Components call `await getContent()` and get
@@ -65,14 +62,7 @@ import {
 export type MediaTile = { src: string; alt: string; video?: string; href?: string };
 /* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
 export type VideoTile = MediaTile & { tall: boolean };
-export type VideoSection = {
-  key: string;
-  client: string;
-  photo: string;
-  videos: VideoTile[];
-  style: VideoStyle;
-  side: VideoSide;
-};
+export type VideoSection = { key: string; title: string; videos: VideoTile[] };
 export type WebShot = { src: string; address: string; real: boolean };
 export type Lane = { title: string; blurb: string; tags: string[] };
 export type Country = { code: string; name: string; note: string | null };
@@ -105,8 +95,8 @@ const CONTENT_QUERY = defineQuery(`{
   "photography": *[_type == "photographyPage" && _id == "photographyPage"][0],
   "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{
     ...,
-    "sections": sections[hidden != true]{
-      _key, client, photo, style, side,
+    "sections": sections[_type == "categorySection" && hidden != true]{
+      _key, title,
       "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }
     }
   },
@@ -355,12 +345,8 @@ function build(raw: Raw | null) {
     FAQS,
   );
 
-  /* A section needs a client name and at least one visible video; a missing
-     photo falls back to the first poster. "auto" takes the style and side from
-     the section's position: the side alternates, the style rotates. */
-  const videoSections: VideoSection[] = list<
-    Omit<VideoSection, "style" | "side"> & { style?: string | null; side?: string | null }
-  >(
+  /* A category needs a title and at least one visible video. */
+  const videoSections: VideoSection[] = list(
     (videography.sections ?? []).flatMap((s) => {
       const clips: VideoTile[] = (s.videos ?? []).flatMap((v) =>
         v && hasImage(v.poster) && !v.hidden
@@ -375,24 +361,10 @@ function build(raw: Raw | null) {
             ]
           : [],
       );
-      if (!s.client || clips.length === 0) return [];
-      return [
-        {
-          key: s._key,
-          client: s.client,
-          photo: img(s.photo, clips[0].src, 1600),
-          videos: clips,
-          style: s.style,
-          side: s.side,
-        },
-      ];
+      return s.title && clips.length > 0 ? [{ key: s._key, title: s.title, videos: clips }] : [];
     }),
-    VIDEO_SECTIONS.map((s) => ({ ...s, key: s.client, videos: s.videos.map((v) => ({ ...v, alt: "" })) })),
-  ).map((s, i) => ({
-    ...s,
-    style: VIDEO_STYLES.find((x) => x === s.style) ?? VIDEO_STYLES[i % VIDEO_STYLES.length],
-    side: s.side === "left" || s.side === "right" ? s.side : i % 2 ? "right" : "left",
-  }));
+    VIDEO_SECTIONS.map((s) => ({ ...s, key: s.title, videos: s.videos.map((v) => ({ ...v, alt: "" })) })),
+  );
 
   const stats = list(
     (videography.stats ?? []).flatMap((x) => (x.figure && x.label ? [{ figure: x.figure, label: x.label }] : [])),

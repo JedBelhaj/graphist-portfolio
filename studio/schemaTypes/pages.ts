@@ -386,7 +386,7 @@ export const videographyPage = defineType({
   groups: [
     { name: "hero", title: "Hero", default: true },
     { name: "content", title: "Intro" },
-    { name: "sections", title: "Clients" },
+    { name: "sections", title: "Categories" },
   ],
   fields: [
     hero,
@@ -402,29 +402,21 @@ export const videographyPage = defineType({
     }),
     defineField({
       name: "sections",
-      title: "Client sections",
+      title: "Categories",
       type: "array",
       group: "sections",
       description:
-        "One section per client: their photo on one side, their videos on the other. Shown in this order below the intro; drag to reorder. Only videos added to a section appear on this page. Leave empty to keep the sample sections.",
+        "One section per category (Restaurants, Medical…): a big title, then its videos. Shown in this order below the intro; drag to reorder. Only videos added to a category appear on this page. Leave empty to keep the sample categories.",
       of: [
         defineArrayMember({
           type: "object",
-          name: "clientSection",
+          name: "categorySection",
           fields: [
             defineField({
-              name: "client",
-              title: "Client",
+              name: "title",
+              title: "Title",
               type: "string",
-              description: "The company name. Shown as a small label above the videos.",
-              validation: (r) => r.required(),
-            }),
-            defineField({
-              name: "photo",
-              title: "Photo",
-              type: "image",
-              description:
-                "A photo with the client's logo already edited on it. Shown whole, never cropped, so any shape works; portrait (4:5) sits best beside the videos.",
+              description: "The category, shown big above its videos. Keep it short: one or two words.",
               validation: (r) => r.required(),
             }),
             defineField({
@@ -434,54 +426,22 @@ export const videographyPage = defineType({
               description:
                 "Pick from the Videos list, or use “Create new” to add one here. Videos switched to “Hide from website” are skipped.",
               of: [defineArrayMember({ type: "reference", to: [{ type: "video" }], weak: true })],
-              validation: (r) => r.min(1).warning("A section with no videos is not shown."),
-            }),
-            defineField({
-              name: "style",
-              title: "Photo style",
-              type: "string",
-              description: "Auto rotates through the styles, so sections next to each other differ.",
-              options: {
-                list: [
-                  { title: "Auto", value: "auto" },
-                  { title: "Edge: runs to the edge of the screen", value: "edge" },
-                  { title: "Framed: rounded, on a purple plate", value: "framed" },
-                  { title: "Print: tilted, with a white border", value: "print" },
-                ],
-                layout: "radio",
-              },
-              initialValue: "auto",
-            }),
-            defineField({
-              name: "side",
-              title: "Photo side",
-              type: "string",
-              description: "Auto alternates left and right down the page.",
-              options: {
-                list: [
-                  { title: "Auto", value: "auto" },
-                  { title: "Left", value: "left" },
-                  { title: "Right", value: "right" },
-                ],
-                layout: "radio",
-                direction: "horizontal",
-              },
-              initialValue: "auto",
+              validation: (r) => r.min(1).warning("A category with no videos is not shown."),
             }),
             defineField({
               name: "hidden",
               title: "Hide from website",
               type: "boolean",
-              description: "Keeps this section in the studio but off the site.",
+              description: "Keeps this category in the studio but off the site.",
               initialValue: false,
             }),
           ],
           preview: {
-            select: { title: "client", videos: "videos", media: "photo", hidden: "hidden" },
-            prepare: ({ title, videos, media, hidden }) => {
+            select: { title: "title", videos: "videos", hidden: "hidden" },
+            prepare: ({ title, videos, hidden }) => {
               const count = Array.isArray(videos) ? videos.length : 0;
               const subtitle = [hidden ? "Hidden" : null, `${count} video${count === 1 ? "" : "s"}`];
-              return { title, subtitle: subtitle.filter(Boolean).join(" · "), media };
+              return { title, subtitle: subtitle.filter(Boolean).join(" · ") };
             },
           },
         }),
