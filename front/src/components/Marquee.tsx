@@ -1,21 +1,30 @@
 import { LOGO_MARK } from "@/lib/content";
+import Logo from "./Logo";
 
+/* `mark` is the separator between phrases: the round SM badge, or the nav's
+   wordmark sized to the caps so it reads as part of the line. */
 export default function Marquee({
   items,
   bg,
   textColor,
   duration = 30,
+  mark = "badge",
 }: {
   items: string[];
   bg: string;
   textColor?: string;
   duration?: number;
+  mark?: "badge" | "wordmark";
 }) {
   const row = (
     <div className="flex shrink-0 items-center">
       {items.map((t, i) => (
         <div key={i} className="flex items-center">
-          <img src={LOGO_MARK} alt="" className="mx-3 h-6 w-6 sm:mx-4 sm:h-8 sm:w-8" />
+          {mark === "wordmark" ? (
+            <Logo className="mx-5 h-[13px] sm:mx-6 sm:h-[15px] lg:mx-8 lg:h-[18px]" />
+          ) : (
+            <img src={LOGO_MARK} alt="" className="mx-3 h-6 w-6 sm:mx-4 sm:h-8 sm:w-8" />
+          )}
           <span
             className="whitespace-nowrap text-lg font-bold uppercase sm:text-xl lg:text-2xl"
             style={{ color: textColor }}
