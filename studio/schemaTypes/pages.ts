@@ -145,7 +145,7 @@ export const homePage = defineType({
       type: "array",
       group: "hero",
       description:
-        "The app icons that stream from behind the founder's head to behind the laptop, in this order. Square icons with a transparent background work best. Leave empty to keep the default Premiere, After Effects, CapCut, Higgsfield and Meta icons.",
+        "The app icons that move around the founder photo, in this order. Square icons with a transparent background work best. Leave empty to keep the default Premiere, After Effects, CapCut, Higgsfield and Meta icons.",
       of: [defineArrayMember({ type: "image" })],
       options: { layout: "grid" },
       validation: (r) => r.max(5),

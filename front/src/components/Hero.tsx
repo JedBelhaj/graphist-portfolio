@@ -1,8 +1,9 @@
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
-import { HERO_ARROW, HERO_BURST_CLS } from "@/lib/content";
+import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKER_MOTION } from "@/lib/content";
 import HeroBurst from "./HeroBurst";
 import HeroOrbit from "./HeroOrbit";
+import HeroStream from "./HeroStream";
 import InViewGate from "./InViewGate";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
@@ -43,8 +44,12 @@ function HeroFigure({
         <HeroBurst className="w-full" />
       </div>
 
-      {/* The studio supplies the icons; they stream from behind the head to behind the laptop. */}
-      <HeroOrbit stickers={stickers} delay={T_LOGOS} step={T_LOGO_STEP} />
+      {/* The studio supplies the icons; HERO_STICKER_MOTION picks how they move. */}
+      {HERO_STICKER_MOTION === "stream" ? (
+        <HeroStream stickers={stickers} delay={T_LOGOS} step={T_LOGO_STEP} />
+      ) : (
+        <HeroOrbit stickers={stickers} delay={T_LOGOS} step={T_LOGO_STEP} />
+      )}
     </div>
   );
 }
