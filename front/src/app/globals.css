@@ -139,6 +139,26 @@ footer[id] {
   animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+/* Services bubbles bob gently once they're in. It runs on an inner layer, so
+   it never fights the pop-in on the outer one. Services.tsx gives each bubble
+   its own duration and phase so the ring never moves in step. */
+@keyframes bubble-float {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(4px, -10px) rotate(1.5deg);
+  }
+  66% {
+    transform: translate(-4px, 6px) rotate(-1deg);
+  }
+}
+
+.bubble-float {
+  animation: bubble-float var(--float-dur, 6s) ease-in-out var(--float-delay, 0s) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -147,6 +167,7 @@ footer[id] {
   .hero-rise,
   .hero-in-right,
   .pop-in,
+  .bubble-float,
   .reveal-in,
   .spin-slow,
   .testimonial-track,
