@@ -17,9 +17,6 @@ export const HERO_ARROW = A(
 );
 
 /* ---------- Real assets (front/public) ---------- */
-/* Circular SM badge: big in About, and the marquee separator. */
-export const LOGO_MARK = "/logo.png";
-
 /* Wordmark lockups, cut from public/soltani_logo.png (see Logo.tsx). */
 export const LOGO_FULL = "/soltani-logo.png";
 export const LOGO_WORDMARK = "/soltani-wordmark.png";
@@ -28,9 +25,11 @@ export const LOGO_WORDMARK = "/soltani-wordmark.png";
    frame; the top 19.7% is empty, which the layouts below account for. */
 export const HERO_PHOTO = "/hero.png";
 
-export const PHOTOSHOP = "/adobe-photoshop-icon.png";
 export const PREMIERE = "/adobe-premiere-pro-icon.png";
 export const AFTER_EFFECTS = "/adobe-after-effects-icon.png";
+export const CAPCUT = "/capcut-icon.png";
+export const HIGGSFIELD = "/higgsfield-icon.png";
+export const META = "/meta-icon.png";
 
 /* ---------- Photography (MOCK) ---------- */
 export const STUDIO_PHOTO = MOCK_PHOTO("soltani-onset", 900, 1050);
@@ -43,23 +42,49 @@ export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
    lives here — same tuned position the remote asset used to sit at. */
 export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[20%]";
 
-/* Array order is the pop-in order — Hero.tsx staggers off the index, so moving
-   an entry retimes it without touching its position, which rides on `cls`.
-   Google Ads sits last on purpose: it lands the sequence on the marketing
-   side of the kit rather than another Adobe app. */
+/* Array order is the pop-in order and the order the stickers travel in. Meta
+   sits last on purpose: it lands the sequence on the marketing side of the kit
+   rather than another editing app. */
 export const HERO_STICKERS = [
-  { id: PHOTOSHOP, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
-  { id: AFTER_EFFECTS, cls: "w-14 lg:w-[96px] left-[6%] top-[15%]" },
-  { id: PREMIERE, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
-  {
-    id: A(
-      "feb195c82de9f8e8a5a03ccf6feefe3f9f33277c",
-      "1789909498674904",
-      "svg",
-    ),
-    cls: "w-12 lg:w-[80px] left-[-5%] top-[55%]",
-  },
+  PREMIERE,
+  AFTER_EFFECTS,
+  CAPCUT,
+  HIGGSFIELD,
+  META,
 ];
+
+/* How the stickers move: "orbit" circles the head on a tilted ring
+   (HERO_ORBIT), "stream" flows from behind the head to behind the laptop
+   (HERO_STREAM). */
+export const HERO_STICKER_MOTION: "orbit" | "stream" = "orbit";
+
+/* The tilted ring the stickers circle the head on (HeroOrbit.tsx). Centre as
+   fractions of the photo's width and height; both radii as fractions of its
+   width, so the ring keeps its shape at any photo size. `tilt` lifts the right
+   end, in degrees. The upper-left half is the far side, where the stickers
+   shrink and pass behind the subject; the lower-right half crosses in front
+   of the chest. `period` is seconds per lap. */
+export const HERO_ORBIT = {
+  cx: 0.36,
+  cy: 0.37,
+  rx: 0.4,
+  ry: 0.18,
+  tilt: -36,
+  period: 20,
+};
+
+/* The curve the stickers stream along (HeroStream.tsx): out from behind the
+   head, round its left side, and in behind the laptop. A cubic Bézier, every
+   point as [x, y] fractions of the photo's width and height so it stays on
+   the silhouette at any photo size. `lap` is the seconds one sticker takes
+   end to end. */
+export const HERO_STREAM = {
+  from: [0.48, 0.27],
+  c1: [0.22, 0.02],
+  c2: [-0.06, 0.42],
+  to: [0.29, 0.7],
+  lap: 10,
+};
 
 /* The four bubble colourways. The CMS stores the key; components get the
    resolved pair. */
@@ -285,11 +310,11 @@ export const PACKAGES = [
 ];
 
 /* ---------- Services page ----------
-   `icon` is a key into the icon map in ServiceGroups.tsx. */
+   Photos are MOCK placeholders until real ones are uploaded in the studio. */
 export const SERVICE_GROUPS = [
   {
     title: "Photography",
-    icon: "camera",
+    photo: MOCK_PHOTO("soltani-svc-photo", 800, 600),
     body: "Stills lit for where they are going — the grid, the menu, the website, the ad set.",
     items: [
       "Brand & campaign",
@@ -300,7 +325,7 @@ export const SERVICE_GROUPS = [
   },
   {
     title: "Video",
-    icon: "clapperboard",
+    photo: MOCK_PHOTO("soltani-svc-video", 800, 600),
     body: "Shot, directed and cut in-house, so the person framing the shot knows where it lands.",
     items: [
       "Brand films",
@@ -311,7 +336,7 @@ export const SERVICE_GROUPS = [
   },
   {
     title: "Social",
-    icon: "megaphone",
+    photo: MOCK_PHOTO("soltani-svc-social", 800, 600),
     body: "A plan for what goes out, when, and why — then the posting, so you don't have to.",
     items: [
       "Strategy & calendar",
@@ -322,7 +347,7 @@ export const SERVICE_GROUPS = [
   },
   {
     title: "Growth",
-    icon: "trending",
+    photo: MOCK_PHOTO("soltani-svc-growth", 800, 600),
     body: "Paid creative built from the same shoot, tested until something beats the control.",
     items: ["Paid ads", "Creative testing", "Email & automation", "Analytics"],
   },
@@ -392,14 +417,10 @@ export const VIDEO_STATS = [
   { figure: "72h", label: "Typical first cut" },
 ];
 
-/* ---------- Videography client sections (MOCK) ----------
-   One section per client on the Videography page, until the studio has its
-   own. VideoSections.tsx draws each photo style; "auto" style and side are
-   resolved in cms.ts from the section's position, so neighbours differ. */
-export const VIDEO_STYLES = ["edge", "framed", "print"] as const;
-export type VideoStyle = (typeof VIDEO_STYLES)[number];
-export type VideoSide = "left" | "right";
-
+/* ---------- Videography categories (MOCK) ----------
+   One section per category on the Videography page, until the studio has its
+   own: a big title, then the videos (VideoSections.tsx). The format strings
+   mix verticals (v) and landscapes (l) so every grid shape gets exercised. */
 const mockVideos = (seed: string, formats: string) =>
   [...formats].map((f, i) =>
     f === "v"
@@ -407,11 +428,14 @@ const mockVideos = (seed: string, formats: string) =>
       : { src: MOCK_PHOTO(`${seed}-${i}`, 1600, 900), tall: false },
   );
 
-export const VIDEO_SECTIONS: { client: string; photo: string; videos: { src: string; tall: boolean }[] }[] = [
-  { client: "Café Nomad", photo: MOCK_PHOTO("soltani-vc-1", 1000, 1250), videos: mockVideos("soltani-vc-1", "l") },
-  { client: "Harbour Fitness", photo: MOCK_PHOTO("soltani-vc-2", 1000, 1250), videos: mockVideos("soltani-vc-2", "vv") },
-  { client: "Maison Lune", photo: MOCK_PHOTO("soltani-vc-3", 1000, 1250), videos: mockVideos("soltani-vc-3", "vvv") },
-  { client: "Northside Dental", photo: MOCK_PHOTO("soltani-vc-4", 1000, 1250), videos: mockVideos("soltani-vc-4", "ll") },
+export const VIDEO_SECTIONS: {
+  title: string;
+  videos: { src: string; tall: boolean }[];
+}[] = [
+  { title: "Restaurants", videos: mockVideos("soltani-vc-1", "vvvv") },
+  { title: "Medical", videos: mockVideos("soltani-vc-2", "ll") },
+  { title: "Financial", videos: mockVideos("soltani-vc-3", "vvv") },
+  { title: "IT", videos: mockVideos("soltani-vc-4", "lvv") },
 ];
 
 /* ---------- Photography grid (MOCK) ----------

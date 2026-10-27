@@ -3,8 +3,8 @@ import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
 import VideoSections from "./VideoSections";
 
-/* The dark intro (heading, capabilities, stats), then the video sections the
-   studio lays out, each in its own style. */
+/* The dark intro (heading, capabilities, stats), then the videos grouped by
+   category, as set in the studio. */
 export default async function Videography() {
   const { videography } = await getContent();
   const h = videography.heading;

@@ -1,7 +1,9 @@
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
-import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKERS } from "@/lib/content";
+import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKER_MOTION } from "@/lib/content";
 import HeroBurst from "./HeroBurst";
+import HeroOrbit from "./HeroOrbit";
+import HeroStream from "./HeroStream";
 import InViewGate from "./InViewGate";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
@@ -12,9 +14,9 @@ const T_LOGOS = 1250;
 const T_LOGO_STEP = 110;
 
 /* The cut-out plus its burst and tool stickers, shared by the mobile card and
-   the desktop panel so both get the same entrance. The sticker and burst
-   positions are percentages of this wrapper, which shrink-wraps the photo —
-   so they stay tuned to the silhouette at any photo size. */
+   the desktop panel so both get the same entrance. The burst position and the
+   stickers' orbit are proportions of this wrapper, which shrink-wraps the
+   photo — so they stay tuned to the silhouette at any photo size. */
 function HeroFigure({
   src,
   stickers,
@@ -42,16 +44,12 @@ function HeroFigure({
         <HeroBurst className="w-full" />
       </div>
 
-      {/* The studio supplies the icons; each takes the tuned spot of its slot. */}
-      {stickers.slice(0, HERO_STICKERS.length).map((sticker, i) => (
-        <div
-          key={i}
-          className={`absolute ${HERO_STICKERS[i].cls} pop-in`}
-          style={{ animationDelay: `${T_LOGOS + i * T_LOGO_STEP}ms` }}
-        >
-          <img src={sticker} alt="" className="w-full" />
-        </div>
-      ))}
+      {/* The studio supplies the icons; HERO_STICKER_MOTION picks how they move. */}
+      {HERO_STICKER_MOTION === "stream" ? (
+        <HeroStream stickers={stickers} delay={T_LOGOS} step={T_LOGO_STEP} />
+      ) : (
+        <HeroOrbit stickers={stickers} delay={T_LOGOS} step={T_LOGO_STEP} />
+      )}
     </div>
   );
 }

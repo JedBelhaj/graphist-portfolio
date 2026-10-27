@@ -14,8 +14,8 @@ const BUBBLE_POSITIONS = [
   "right-[78%] bottom-[83%] w-[140px]",
   "right-[64%] bottom-[60%] w-[120px]",
   "right-[87%] bottom-[53%] w-[200px]",
-  "right-[90%] bottom-[5%] w-[200px]",
-  "right-[67%] bottom-[9%] w-[200px]",
+  "right-[92%] bottom-[5%] w-[200px]",
+  "right-[70%] bottom-[9%] w-[200px]",
   "right-[-3%] bottom-[89%] w-[120px]",
 ];
 
@@ -25,6 +25,14 @@ const POP_STEP = 70;
 /* Lead-in before the first bubble, so the group reads as a reaction to the
    scroll instead of something already in flight when it comes into view. */
 const POP_DELAY = 180;
+
+/* Idle float timing per bubble: durations of 5-8s and phases spread across
+   the cycle, so neighbours never rise and fall together. The negative delay
+   starts each one mid-cycle rather than all from rest. */
+const float = (i: number) => ({
+  ["--float-dur" as string]: `${5 + ((i * 1.3) % 3)}s`,
+  ["--float-delay" as string]: `${-((i * 1.7) % 6)}s`,
+});
 
 /* Client component (it watches its own scroll position), so the content comes
    in as props from the page rather than being fetched here. The desktop ring
@@ -111,22 +119,23 @@ export default function Services({
 
           {/* Desktop: photo with floating bubbles */}
           <div className="relative mx-auto hidden justify-center lg:flex">
-            {/* Fixed 460px box keeps the bubble ring's tuned positions intact, while
+            {/* Fixed 575px box keeps the bubble ring's tuned positions intact, while
                 object-bottom crops the cut-out's empty top so the subject fills it. */}
             <img
               src={photo}
               alt=""
-              className="h-[460px] w-[320px] object-cover object-bottom"
+              className="h-[575px] w-[400px] object-cover object-bottom"
             />
             {bubbles.slice(0, BUBBLE_POSITIONS.length).map((s, i) => {
               const { className, style } = pop(i);
               return (
-                <div
-                  key={s.label}
-                  className={`absolute flex items-center justify-center rounded-full px-2 py-6 text-center text-base font-bold ${BUBBLE_POSITIONS[i]} ${className}`}
-                  style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...style }}
-                >
-                  {s.label}
+                <div key={s.label} className={`absolute ${BUBBLE_POSITIONS[i]} ${className}`} style={style}>
+                  <div
+                    className="bubble-float flex items-center justify-center rounded-full px-2 py-6 text-center text-base font-bold"
+                    style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...float(i) }}
+                  >
+                    {s.label}
+                  </div>
                 </div>
               );
             })}
