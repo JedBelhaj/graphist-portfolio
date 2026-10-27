@@ -35,7 +35,6 @@ export default async function Page() {
         items={Array(4).fill(home.marqueeOne)}
         bg={ACCENT_TINT}
         textColor={INK}
-        mark="wordmark"
       />
 
       <Services
