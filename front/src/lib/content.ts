@@ -48,7 +48,13 @@ export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[20%]";
 /* Array order is the pop-in order and the order the stickers travel in. Meta
    sits last on purpose: it lands the sequence on the marketing side of the kit
    rather than another editing app. */
-export const HERO_STICKERS = [PREMIERE, AFTER_EFFECTS, CAPCUT, HIGGSFIELD, META];
+export const HERO_STICKERS = [
+  PREMIERE,
+  AFTER_EFFECTS,
+  CAPCUT,
+  HIGGSFIELD,
+  META,
+];
 
 /* How the stickers move: "orbit" circles the head on a tilted ring
    (HERO_ORBIT), "stream" flows from behind the head to behind the laptop
@@ -64,7 +70,7 @@ export const HERO_STICKER_MOTION: "orbit" | "stream" = "orbit";
 export const HERO_ORBIT = {
   cx: 0.36,
   cy: 0.37,
-  rx: 0.44,
+  rx: 0.4,
   ry: 0.18,
   tilt: -36,
   period: 20,
@@ -429,11 +435,31 @@ const mockVideos = (seed: string, formats: string) =>
       : { src: MOCK_PHOTO(`${seed}-${i}`, 1600, 900), tall: false },
   );
 
-export const VIDEO_SECTIONS: { client: string; photo: string; videos: { src: string; tall: boolean }[] }[] = [
-  { client: "Café Nomad", photo: MOCK_PHOTO("soltani-vc-1", 1000, 1250), videos: mockVideos("soltani-vc-1", "l") },
-  { client: "Harbour Fitness", photo: MOCK_PHOTO("soltani-vc-2", 1000, 1250), videos: mockVideos("soltani-vc-2", "vv") },
-  { client: "Maison Lune", photo: MOCK_PHOTO("soltani-vc-3", 1000, 1250), videos: mockVideos("soltani-vc-3", "vvv") },
-  { client: "Northside Dental", photo: MOCK_PHOTO("soltani-vc-4", 1000, 1250), videos: mockVideos("soltani-vc-4", "ll") },
+export const VIDEO_SECTIONS: {
+  client: string;
+  photo: string;
+  videos: { src: string; tall: boolean }[];
+}[] = [
+  {
+    client: "Café Nomad",
+    photo: MOCK_PHOTO("soltani-vc-1", 1000, 1250),
+    videos: mockVideos("soltani-vc-1", "l"),
+  },
+  {
+    client: "Harbour Fitness",
+    photo: MOCK_PHOTO("soltani-vc-2", 1000, 1250),
+    videos: mockVideos("soltani-vc-2", "vv"),
+  },
+  {
+    client: "Maison Lune",
+    photo: MOCK_PHOTO("soltani-vc-3", 1000, 1250),
+    videos: mockVideos("soltani-vc-3", "vvv"),
+  },
+  {
+    client: "Northside Dental",
+    photo: MOCK_PHOTO("soltani-vc-4", 1000, 1250),
+    videos: mockVideos("soltani-vc-4", "ll"),
+  },
 ];
 
 /* ---------- Photography grid (MOCK) ----------

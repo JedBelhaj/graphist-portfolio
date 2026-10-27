@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 import { HERO_ORBIT } from "@/lib/content";
 
 /* Sticker scale at the far and near points of the ring. */
-const SCALE_FAR = 0.7;
-const SCALE_NEAR = 1.15;
+const SCALE_FAR = 0.6;
+const SCALE_NEAR = 1.1;
 
 /* The hero photo sits at z-5: far-side stickers stay under it, near-side ones
    over it, each band ordered by depth so overlapping stickers stack right. */
