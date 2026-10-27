@@ -28,9 +28,11 @@ export const LOGO_WORDMARK = "/soltani-wordmark.png";
    frame; the top 19.7% is empty, which the layouts below account for. */
 export const HERO_PHOTO = "/hero.png";
 
-export const PHOTOSHOP = "/adobe-photoshop-icon.png";
 export const PREMIERE = "/adobe-premiere-pro-icon.png";
 export const AFTER_EFFECTS = "/adobe-after-effects-icon.png";
+export const CAPCUT = "/capcut-icon.png";
+export const HIGGSFIELD = "/higgsfield-icon.png";
+export const META = "/meta-icon.png";
 
 /* ---------- Photography (MOCK) ---------- */
 export const STUDIO_PHOTO = MOCK_PHOTO("soltani-onset", 900, 1050);
@@ -45,20 +47,14 @@ export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[20%]";
 
 /* Array order is the pop-in order — Hero.tsx staggers off the index, so moving
    an entry retimes it without touching its position, which rides on `cls`.
-   Google Ads sits last on purpose: it lands the sequence on the marketing
-   side of the kit rather than another Adobe app. */
+   Meta sits last on purpose: it lands the sequence on the marketing side of
+   the kit rather than another editing app. */
 export const HERO_STICKERS = [
-  { id: PHOTOSHOP, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
+  { id: PREMIERE, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
   { id: AFTER_EFFECTS, cls: "w-14 lg:w-[96px] left-[6%] top-[15%]" },
-  { id: PREMIERE, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
-  {
-    id: A(
-      "feb195c82de9f8e8a5a03ccf6feefe3f9f33277c",
-      "1789909498674904",
-      "svg",
-    ),
-    cls: "w-12 lg:w-[80px] left-[-5%] top-[55%]",
-  },
+  { id: CAPCUT, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
+  { id: HIGGSFIELD, cls: "w-12 lg:w-[80px] left-[-5%] top-[55%]" },
+  { id: META, cls: "w-12 lg:w-[80px] right-[4%] top-[32%]" },
 ];
 
 /* The four bubble colourways. The CMS stores the key; components get the
