@@ -420,7 +420,7 @@ function build(raw: Raw | null) {
       heroButton: text(home.heroButton, COPY.home.heroButton),
       heroStickers: list(
         (home.heroStickers ?? []).filter(hasImage).map((t) => imageUrl(t, 300)),
-        HERO_STICKERS.map((s) => s.id),
+        HERO_STICKERS,
       ),
       results: heading(home.results, COPY.home.results),
       projectsDelivered: text(home.projectsDelivered, COPY.home.projectsDelivered),

@@ -45,17 +45,25 @@ export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
    lives here — same tuned position the remote asset used to sit at. */
 export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[20%]";
 
-/* Array order is the pop-in order — Hero.tsx staggers off the index, so moving
-   an entry retimes it without touching its position, which rides on `cls`.
-   Meta sits last on purpose: it lands the sequence on the marketing side of
-   the kit rather than another editing app. */
-export const HERO_STICKERS = [
-  { id: PREMIERE, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
-  { id: AFTER_EFFECTS, cls: "w-14 lg:w-[96px] left-[6%] top-[15%]" },
-  { id: CAPCUT, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
-  { id: HIGGSFIELD, cls: "w-12 lg:w-[80px] left-[-5%] top-[55%]" },
-  { id: META, cls: "w-12 lg:w-[80px] right-[4%] top-[32%]" },
-];
+/* Array order is the pop-in order and the order round the orbit. Meta sits
+   last on purpose: it lands the sequence on the marketing side of the kit
+   rather than another editing app. */
+export const HERO_STICKERS = [PREMIERE, AFTER_EFFECTS, CAPCUT, HIGGSFIELD, META];
+
+/* The tilted ring the stickers circle the head on (HeroOrbit.tsx). Centre as
+   fractions of the photo's width and height; both radii as fractions of its
+   width, so the ring keeps its shape at any photo size. `tilt` lifts the right
+   end, in degrees. The upper-left half is the far side, where the stickers
+   shrink and pass behind the subject; the lower-right half crosses in front
+   of the chest. `period` is seconds per lap. */
+export const HERO_ORBIT = {
+  cx: 0.36,
+  cy: 0.37,
+  rx: 0.44,
+  ry: 0.18,
+  tilt: -36,
+  period: 20,
+};
 
 /* The four bubble colourways. The CMS stores the key; components get the
    resolved pair. */
