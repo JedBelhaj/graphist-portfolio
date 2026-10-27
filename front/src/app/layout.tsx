@@ -3,6 +3,7 @@ import { preload } from "react-dom";
 import { BRAND, FONT_BODY } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import Header from "@/components/Header";
+import PageLoader from "@/components/PageLoader";
 import SiteFooter from "@/components/SiteFooter";
 import "./globals.css";
 
@@ -66,6 +67,7 @@ export default async function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
+        <PageLoader />
         <div className="min-h-full bg-white font-light text-[rgb(51,51,51)]" style={{ fontFamily: FONT_BODY }}>
           <Header brandName={brand.name} instagram={brand.instagram} facebook={brand.facebook} />
           <main id="top">{children}</main>

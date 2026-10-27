@@ -7,6 +7,11 @@ import { HERO_ORBIT } from "@/lib/content";
 const SCALE_FAR = 0.6;
 const SCALE_NEAR = 1.1;
 
+/* On arrival the ring spins SPIN_BOOST times its normal speed, then eases
+   down to normal over SPIN_SETTLE ms. */
+const SPIN_BOOST = 8;
+const SPIN_SETTLE = 2600;
+
 /* The hero photo sits at z-5: far-side stickers stay under it, near-side ones
    over it, each band ordered by depth so overlapping stickers stack right. */
 function depthZ(depth: number) {
@@ -18,7 +23,11 @@ function depthZ(depth: number) {
    to each sticker's transform every frame, outside React. The loop only runs
    while the ring is on screen, and reduced motion holds them still on the
    ring. The container sets no z-index, so the stickers' z-indexes interleave
-   with the photo's instead of stacking as one layer. */
+   with the photo's instead of stacking as one layer.
+
+   The ring holds still until the first sticker's pop-in actually starts, then
+   whips round and settles. Keying it off the pop-in keeps the two in step
+   however long the page loader or the mobile in-view gate holds them. */
 export default function HeroOrbit({
   stickers,
   delay,
@@ -41,9 +50,23 @@ export default function HeroOrbit({
 
     let w = 0;
     let h = 0;
+    // Distance travelled round the ring, in ms at normal speed.
     let elapsed = 0;
     let last = 0;
     let frame = 0;
+    let spinFrom = -1;
+
+    const speed = (now: number) => {
+      if (spinFrom < 0) return 0;
+      const p = Math.min(1, (now - spinFrom) / SPIN_SETTLE);
+      const ease = 1 - (1 - p) ** 3;
+      return SPIN_BOOST + (1 - SPIN_BOOST) * ease;
+    };
+
+    const onPop = (e: AnimationEvent) => {
+      if (spinFrom < 0 && e.animationName === "pop-in") spinFrom = performance.now();
+    };
+    box.addEventListener("animationstart", onPop);
 
     const place = () => {
       const lap = (elapsed / 1000 / period) * 2 * Math.PI;
@@ -60,7 +83,7 @@ export default function HeroOrbit({
     };
 
     const tick = (now: number) => {
-      elapsed += now - last;
+      elapsed += (now - last) * speed(now);
       last = now;
       place();
       frame = requestAnimationFrame(tick);
@@ -82,6 +105,7 @@ export default function HeroOrbit({
 
     return () => {
       cancelAnimationFrame(frame);
+      box.removeEventListener("animationstart", onPop);
       ro.disconnect();
       io.disconnect();
     };

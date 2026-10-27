@@ -101,6 +101,18 @@ footer[id] {
   opacity: 0;
 }
 
+/* Same hold while the page loader (PageLoader.tsx) is up, so the hero's
+   entrance plays once it lifts rather than behind it. The page also stays
+   put underneath it. */
+body:has(.page-loader:not(.is-done)) :is(.hero-rise, .hero-in-right, .pop-in) {
+  animation: none;
+  opacity: 0;
+}
+
+html:has(.page-loader:not(.is-done)) {
+  overflow: hidden;
+}
+
 /* Testimonial wall: drifts on its own, holds still while hovered. */
 .testimonial-track {
   animation: marquee var(--loop, 45s) linear infinite;
