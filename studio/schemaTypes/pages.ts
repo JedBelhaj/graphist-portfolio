@@ -92,8 +92,9 @@ export const siteSettings = defineType({
       title: "Founder cut-out",
       type: "image",
       group: "images",
+      options: { hotspot: true },
       description:
-        "The transparent cut-out used in the home hero, the Services bubbles and the About page. The tool stickers are positioned around the current photo's silhouette, so a replacement needs the same framing (PNG, transparent, subject in the bottom 80%).",
+        "The transparent cut-out used in the home hero, the Services bubbles and the About page. The tool stickers are positioned around the current photo's silhouette, so a replacement or a crop needs the same framing (PNG, transparent, subject in the bottom 80%).",
     }),
     defineField({
       name: "studioPhoto",
@@ -138,6 +139,17 @@ export const homePage = defineType({
     defineField({ name: "heroTagline", title: "Purple tagline", type: "string", group: "hero" }),
     defineField({ name: "heroIntro", title: "Intro paragraph", type: "text", rows: 3, group: "hero" }),
     defineField({ name: "heroButton", title: "Button", type: "string", group: "hero" }),
+    defineField({
+      name: "heroStickers",
+      title: "Tool stickers",
+      type: "array",
+      group: "hero",
+      description:
+        "The app icons that move around the founder photo, in this order. Square icons with a transparent background work best. Leave empty to keep the default Premiere, After Effects, CapCut, Higgsfield and Meta icons.",
+      of: [defineArrayMember({ type: "image" })],
+      options: { layout: "grid" },
+      validation: (r) => r.max(5),
+    }),
 
     defineField({ name: "results", title: "Results", type: "heading", group: "sections" }),
     defineField({
@@ -239,9 +251,18 @@ export const servicesPage = defineType({
           fields: [
             defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
             defineField({
+              name: "photo",
+              title: "Photo",
+              type: "image",
+              description: "Shown across the top of the card, cropped to 4:3. Leave empty for a placeholder.",
+              options: { hotspot: true },
+            }),
+            // Replaced by the photo; kept hidden so existing groups don't flag it as an unknown field.
+            defineField({
               name: "icon",
               title: "Icon",
               type: "string",
+              hidden: true,
               options: {
                 list: [
                   { title: "Camera", value: "camera" },
@@ -292,13 +313,14 @@ export const servicesPage = defineType({
               name: "price",
               title: "Price",
               type: "string",
-              description: "As it should read, e.g. $750. Write “Custom” to turn the button into “Let's talk”.",
+              description: "Not shown on the site at the moment (the section shows name and pitch only).",
             }),
-            defineField({ name: "cadence", title: "Cadence", type: "string", description: "e.g. / month" }),
+            defineField({ name: "cadence", title: "Cadence", type: "string", description: "Not shown on the site at the moment." }),
             defineField({ name: "pitch", title: "Pitch", type: "string" }),
             defineField({
               name: "features",
               title: "Features",
+              description: "Not shown on the site at the moment.",
               type: "array",
               of: [defineArrayMember({ type: "string" })],
             }),
@@ -306,7 +328,7 @@ export const servicesPage = defineType({
               name: "featured",
               title: "Highlight this one",
               type: "boolean",
-              description: "Dark card with a “Most popular” badge. Keep it to one.",
+              description: "Shows as the purple tile. Keep it to one.",
               initialValue: false,
             }),
           ],
@@ -364,7 +386,8 @@ export const videographyPage = defineType({
   icon: Film,
   groups: [
     { name: "hero", title: "Hero", default: true },
-    { name: "content", title: "Content" },
+    { name: "content", title: "Intro" },
+    { name: "sections", title: "Categories" },
   ],
   fields: [
     hero,
@@ -377,6 +400,53 @@ export const videographyPage = defineType({
       group: "content",
       of: [defineArrayMember({ type: "stat" })],
       validation: (r) => r.max(3),
+    }),
+    defineField({
+      name: "sections",
+      title: "Categories",
+      type: "array",
+      group: "sections",
+      description:
+        "One section per category (Restaurants, Medical…): a big title, then its videos. Shown in this order below the intro; drag to reorder. Only videos added to a category appear on this page. Leave empty to keep the sample categories.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "categorySection",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Title",
+              type: "string",
+              description: "The category, shown big above its videos. Keep it short: one or two words.",
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "videos",
+              title: "Videos",
+              type: "array",
+              description:
+                "Pick from the Videos list, or use “Create new” to add one here. Videos switched to “Hide from website” are skipped.",
+              of: [defineArrayMember({ type: "reference", to: [{ type: "video" }], weak: true })],
+              validation: (r) => r.min(1).warning("A category with no videos is not shown."),
+            }),
+            defineField({
+              name: "hidden",
+              title: "Hide from website",
+              type: "boolean",
+              description: "Keeps this category in the studio but off the site.",
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: { title: "title", videos: "videos", hidden: "hidden" },
+            prepare: ({ title, videos, hidden }) => {
+              const count = Array.isArray(videos) ? videos.length : 0;
+              const subtitle = [hidden ? "Hidden" : null, `${count} video${count === 1 ? "" : "s"}`];
+              return { title, subtitle: subtitle.filter(Boolean).join(" · ") };
+            },
+          },
+        }),
+      ],
     }),
   ],
   preview: { prepare: () => ({ title: "Videography" }) },

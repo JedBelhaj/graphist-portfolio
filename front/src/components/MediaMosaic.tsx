@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { Play } from "lucide-react";
 import type { MediaTile } from "@/lib/cms";
+import Lightbox from "./Lightbox";
 import ParallaxImage from "./ParallaxImage";
 import Reveal from "./Reveal";
 
@@ -13,9 +17,12 @@ import Reveal from "./Reveal";
    comes up short and the flush bottom edge breaks. Keep the item count a
    multiple of the pattern length (cms.ts trims CMS lists to whole blocks).
 
-   A tile with `href` links out to the full piece — on the video page, the
-   film on YouTube/Vimeo — and shows a play badge so it reads as clickable. */
+   Every tile opens the Lightbox, which steps through the whole set. Video
+   tiles (a clip or a film link) show a play badge on hover, and always on
+   touch screens, which have no hover. */
 export default function MediaMosaic({ items, spans }: { items: MediaTile[]; spans: string[] }) {
+  const [open, setOpen] = useState<number | null>(null);
+
   return (
     /* One Reveal around the whole grid, not one per tile: the mosaic is a
        single picture built out of nine pieces, and staggering them made it
@@ -26,32 +33,39 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
     <Reveal>
       <div className="grid w-full auto-rows-[42vw] grid-cols-2 lg:auto-rows-[15vw] lg:grid-cols-4">
         {items.map((m, i) => {
-          const media = <ParallaxImage src={m.src} video={m.video} alt={m.alt} />;
+          const isVideo = Boolean(m.video || m.href);
           /* Plain grid item carrying the span classes. Stretched by default,
              so it takes the row height, which is what lets the frame inside
              resolve its h-full. */
           return (
             <div key={`${m.src}-${i}`} className={spans[i % spans.length]}>
-              {m.href ? (
-                <a
-                  href={m.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={m.alt ? `Watch: ${m.alt}` : "Watch the video"}
-                  className="group relative block h-full w-full"
-                >
-                  {media}
-                  <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md transition-transform duration-500 group-hover:scale-110">
+              <button
+                type="button"
+                onClick={() => setOpen(i)}
+                aria-label={
+                  isVideo
+                    ? m.alt ? `Play: ${m.alt}` : "Play the video"
+                    : m.alt ? `View: ${m.alt}` : "View the photo"
+                }
+                className="group relative block h-full w-full cursor-pointer"
+              >
+                <ParallaxImage
+                  src={m.src}
+                  video={m.video}
+                  alt={m.alt}
+                  className="transition-opacity duration-300 group-hover:opacity-50"
+                />
+                {isVideo && (
+                  <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md opacity-0 transition-[opacity,transform] duration-500 group-hover:scale-110 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
                     <Play size={22} fill="currentColor" className="ml-1" />
                   </span>
-                </a>
-              ) : (
-                media
-              )}
+                )}
+              </button>
             </div>
           );
         })}
       </div>
+      <Lightbox items={items} index={open} onIndex={setOpen} />
     </Reveal>
   );
 }

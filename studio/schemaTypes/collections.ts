@@ -85,12 +85,28 @@ export const video = defineType({
   title: "Video",
   type: "document",
   icon: Film,
-  description: MOSAIC_NOTE,
+  description:
+    "A video shows on the Videography page once it is added to one of that page's sections. The first one in this list also fronts the Videography card on the Work page.",
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "video" }),
     hidden,
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({
+      name: "format",
+      title: "Format",
+      type: "string",
+      description: "Vertical for Reels, TikToks and Shorts, so they are not cropped to a wide frame.",
+      options: {
+        list: [
+          { title: "Landscape (16:9)", value: "landscape" },
+          { title: "Vertical (9:16)", value: "vertical" },
+        ],
+        layout: "radio",
+        direction: "horizontal",
+      },
+      initialValue: "landscape",
+    }),
     defineField({
       name: "poster",
       title: "Poster frame",
@@ -111,7 +127,7 @@ export const video = defineType({
       name: "link",
       title: "Full video link",
       type: "url",
-      description: "Optional. YouTube, Vimeo or any page with the full film — the tile links to it.",
+      description: "Optional. The full film. YouTube and Vimeo links play inside the site's viewer; any other page gets a 'Watch the full film' link.",
       validation: (r) => r.uri({ scheme: ["http", "https"] }),
     }),
     showInRecent,
@@ -180,12 +196,20 @@ export const result = defineType({
   title: "Client message",
   type: "document",
   icon: Sparkles,
-  description: "Screenshots of real client messages for the Results section. Confirm consent, or blur names and avatars, before publishing.",
+  description: "Screenshots of real client messages for the Results section. To leave out a name or face, crop the screenshot (the crop icon on the image) or switch on \"Hide from website\".",
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "result" }),
     hidden,
-    defineField({ name: "image", title: "Screenshot", type: "image", validation: (r) => r.required() }),
+    defineField({
+      name: "image",
+      title: "Screenshot",
+      type: "image",
+      description: "Use the crop icon to trim it, e.g. to cut a name or profile picture out.",
+      /* hotspot turns on the crop tool; the site applies the crop through the image URL. */
+      options: { hotspot: true },
+      validation: (r) => r.required(),
+    }),
     defineField({ name: "label", title: "Caption", type: "string", validation: (r) => r.required() }),
     defineField({
       name: "alt",

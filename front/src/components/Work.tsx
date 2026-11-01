@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Play } from "lucide-react";
 import { FONT_DISPLAY } from "@/lib/brand";
+import type { MediaTile } from "@/lib/cms";
+import Lightbox from "./Lightbox";
 import Reveal from "./Reveal";
 
 const SPANS = [
@@ -15,8 +18,9 @@ const SPANS = [
 ];
 
 /* Client component (the tabs hold state), so the page passes the content in. */
-export default function Work({ title, tabs, images }: { title: string; tabs: string[]; images: string[] }) {
+export default function Work({ title, tabs, images }: { title: string; tabs: string[]; images: MediaTile[] }) {
   const [activeTab, setActiveTab] = useState(1);
+  const [open, setOpen] = useState<number | null>(null);
 
   return (
     <section id="work" className="px-5 py-20 sm:px-8 lg:py-24">
@@ -54,18 +58,29 @@ export default function Work({ title, tabs, images }: { title: string; tabs: str
         {/* Masonry-ish responsive grid. The span classes ride on the Reveal
             wrapper, since that is what the grid now lays out. */}
         <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-6">
-          {images.map((src, i) => (
+          {images.map((m, i) => (
             <Reveal key={i} delay={i * 70} className={SPANS[i]}>
-              <div className="group h-full overflow-hidden rounded-lg">
+              <button
+                type="button"
+                onClick={() => setOpen(i)}
+                aria-label={m.alt ? `Open: ${m.alt}` : "Open in viewer"}
+                className="group relative block h-full w-full cursor-pointer overflow-hidden rounded-lg"
+              >
                 <img
-                  src={src}
-                  alt=""
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  src={m.src}
+                  alt={m.alt}
+                  className="h-full w-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-[1.04] group-hover:opacity-90"
                 />
-              </div>
+                {(m.video || m.href) && (
+                  <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md opacity-0 transition-[opacity,transform] duration-500 group-hover:scale-110 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
+                    <Play size={20} fill="currentColor" className="ml-0.5" />
+                  </span>
+                )}
+              </button>
             </Reveal>
           ))}
         </div>
+        <Lightbox items={images} index={open} onIndex={setOpen} />
       </div>
     </section>
   );

@@ -1,7 +1,9 @@
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
-import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKERS } from "@/lib/content";
+import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKER_MOTION } from "@/lib/content";
 import HeroBurst from "./HeroBurst";
+import HeroOrbit from "./HeroOrbit";
+import HeroStream from "./HeroStream";
 import InViewGate from "./InViewGate";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
@@ -12,10 +14,20 @@ const T_LOGOS = 1250;
 const T_LOGO_STEP = 110;
 
 /* The cut-out plus its burst and tool stickers, shared by the mobile card and
-   the desktop panel so both get the same entrance. The sticker and burst
-   positions are percentages of this wrapper, which shrink-wraps the photo —
-   so they stay tuned to the silhouette at any photo size. */
-function HeroFigure({ src, imgCls, enter }: { src: string; imgCls: string; enter: string }) {
+   the desktop panel so both get the same entrance. The burst position and the
+   stickers' orbit are proportions of this wrapper, which shrink-wraps the
+   photo — so they stay tuned to the silhouette at any photo size. */
+function HeroFigure({
+  src,
+  stickers,
+  imgCls,
+  enter,
+}: {
+  src: string;
+  stickers: string[];
+  imgCls: string;
+  enter: string;
+}) {
   return (
     <div className="relative flex items-end justify-center">
       <img
@@ -32,15 +44,12 @@ function HeroFigure({ src, imgCls, enter }: { src: string; imgCls: string; enter
         <HeroBurst className="w-full" />
       </div>
 
-      {HERO_STICKERS.map((s, i) => (
-        <div
-          key={i}
-          className={`absolute ${s.cls} pop-in`}
-          style={{ animationDelay: `${T_LOGOS + i * T_LOGO_STEP}ms` }}
-        >
-          <img src={s.id} alt="" className="w-full" />
-        </div>
-      ))}
+      {/* The studio supplies the icons; HERO_STICKER_MOTION picks how they move. */}
+      {HERO_STICKER_MOTION === "stream" ? (
+        <HeroStream stickers={stickers} delay={T_LOGOS} step={T_LOGO_STEP} />
+      ) : (
+        <HeroOrbit stickers={stickers} delay={T_LOGOS} step={T_LOGO_STEP} />
+      )}
     </div>
   );
 }
@@ -107,15 +116,15 @@ export default async function Hero() {
           {/* Gated: with the copy first, this card often starts below the fold,
               and the sticker sequence would finish before anyone saw it. */}
           <InViewGate className="mx-auto flex max-w-md items-end justify-center overflow-hidden rounded-3xl bg-[rgb(238,234,255)] px-10 pt-8">
-            <HeroFigure src={images.hero} imgCls="max-h-[420px] sm:max-h-[480px]" enter="hero-rise" />
+            <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[420px] sm:max-h-[480px]" enter="hero-rise" />
           </InViewGate>
         </div>
       </div>
 
       {/* Desktop full-height photo panel */}
       <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-[rgb(238,234,255)] lg:flex">
-        <div className="relative left-[-8%] xl:left-[-18%]">
-          <HeroFigure src={images.hero} imgCls="max-h-[640px] xl:max-h-[760px]" enter="hero-in-right" />
+        <div className="relative left-[2%] xl:left-[-8%]">
+          <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[640px] xl:max-h-[760px]" enter="hero-in-right" />
         </div>
       </div>
     </section>

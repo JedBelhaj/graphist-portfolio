@@ -26,3 +26,19 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Raw shoot files (originals, ~260 MB). Only resized copies used by the site
+# get committed, elsewhere in public/.
+/public/content/shooting/
+/public/content/images/
+
+# Unused media, kept on disk but out of the repo (nothing on the site points at
+# these any more).
+/public/hero.png
+/public/logo.png
+/public/adobe-photoshop-icon.png
+/public/results/
+/public/logos/*
+!/public/logos/real/
+/public/content/logos/
+/public/content/jed.png

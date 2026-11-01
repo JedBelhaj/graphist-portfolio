@@ -13,6 +13,7 @@ import {
   FAQS,
   FOUNDER_PORTRAIT,
   HERO_PHOTO,
+  HERO_STICKERS,
   LOGO_CAPS,
   PACKAGES,
   PHOTO_DISCIPLINES,
@@ -21,11 +22,15 @@ import {
   SERVICE_COLORS,
   SERVICE_GROUPS,
   SERVICES,
+  SERVICES_PHOTO,
   STUDIO_PHOTO,
+  ABOUT_CUTOUT,
+  ABOUT_STUDIO_PHOTO,
   TEAM,
   TESTIMONIALS,
   TOOLBOX,
   VIDEO_CAPABILITIES,
+  VIDEO_SECTIONS,
   VIDEO_STATS,
   VIDEO_TILES,
   WEB_CAPABILITIES,
@@ -55,15 +60,19 @@ import {
 /* ---------- Output types ---------- */
 
 /* A tile in the photo/video mosaics. `video` is a loop clip that replaces the
-   still; `href` makes the tile a link (the full film). */
+   still; `href` is the full film, played in the
+   Lightbox when it is a YouTube/Vimeo link. */
 export type MediaTile = { src: string; alt: string; video?: string; href?: string };
+/* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
+export type VideoTile = MediaTile & { tall: boolean };
+export type VideoSection = { key: string; title: string; videos: VideoTile[] };
 export type WebShot = { src: string; address: string; real: boolean };
 export type Lane = { title: string; blurb: string; tags: string[] };
 export type Country = { code: string; name: string; note: string | null };
 export type ResultShot = { src: string; alt: string; label: string };
 export type TeamMember = { name: string; role: string; focus: string; photo: string };
 export type ServiceBubble = { label: string; bg: string; fg: string };
-export type ServiceGroup = { title: string; icon: string; body: string; items: string[] };
+export type ServiceGroup = { title: string; photo: string; body: string; items: string[] };
 export type Package = (typeof PACKAGES)[number];
 export type Faq = { q: string; a: string };
 
@@ -87,7 +96,13 @@ const CONTENT_QUERY = defineQuery(`{
   "services": *[_type == "servicesPage" && _id == "servicesPage"][0],
   "work": *[_type == "workPage" && _id == "workPage"][0],
   "photography": *[_type == "photographyPage" && _id == "photographyPage"][0],
-  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0],
+  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{
+    ...,
+    "sections": sections[_type == "categorySection" && hidden != true]{
+      _key, title,
+      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }
+    }
+  },
   "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],
   "faq": *[_type == "faqPage" && _id == "faqPage"][0],
   "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)
@@ -214,7 +229,7 @@ function build(raw: Raw | null) {
   }));
 
   const photoTiles = list(fullBlocks(photos.map((p) => p.tile)), asTiles(PHOTO_TILES));
-  const videoTiles = list(fullBlocks(videos.map((v) => v.tile)), asTiles(VIDEO_TILES));
+  const videoTiles = list(videos.map((v) => v.tile), asTiles(VIDEO_TILES));
 
   /* Newest first across both lanes, so a fresh upload leads the grid. */
   const recent = list(
@@ -222,8 +237,8 @@ function build(raw: Raw | null) {
       .filter((m) => m.recent)
       .sort((a, b) => b.at.localeCompare(a.at))
       .slice(0, 7)
-      .map((m) => m.tile.src),
-    WORK_IMAGES,
+      .map((m) => m.tile),
+    asTiles(WORK_IMAGES),
   );
 
   /* Real screenshots switch the wireframe overlay off (see BrowserFrame). */
@@ -289,8 +304,18 @@ function build(raw: Raw | null) {
   ).map((b) => ({ label: b.label, ...SERVICE_COLORS[b.color] }));
 
   const groups: ServiceGroup[] = list(
-    (services.groups ?? []).flatMap((g) =>
-      g.title ? [{ title: g.title, icon: g.icon ?? "camera", body: g.body ?? "", items: strings(g.items, []) }] : [],
+    (services.groups ?? []).flatMap((g, i) =>
+      g.title
+        ? [
+            {
+              title: g.title,
+              // A group without a photo borrows the placeholder from the default in its slot.
+              photo: img(g.photo, SERVICE_GROUPS[i % SERVICE_GROUPS.length].photo, 1000),
+              body: g.body ?? "",
+              items: strings(g.items, []),
+            },
+          ]
+        : [],
     ),
     SERVICE_GROUPS,
   );
@@ -323,6 +348,27 @@ function build(raw: Raw | null) {
     FAQS,
   );
 
+  /* A category needs a title and at least one visible video. */
+  const videoSections: VideoSection[] = list(
+    (videography.sections ?? []).flatMap((s) => {
+      const clips: VideoTile[] = (s.videos ?? []).flatMap((v) =>
+        v && hasImage(v.poster) && !v.hidden
+          ? [
+              {
+                src: imageUrl(v.poster, 1600),
+                alt: v.title ?? "",
+                video: v.clip ?? undefined,
+                href: v.link ?? undefined,
+                tall: v.format === "vertical",
+              },
+            ]
+          : [],
+      );
+      return s.title && clips.length > 0 ? [{ key: s._key, title: s.title, videos: clips }] : [];
+    }),
+    VIDEO_SECTIONS.map((s) => ({ ...s, key: s.title, videos: s.videos.map((v) => ({ ...v, alt: "" })) })),
+  );
+
   const stats = list(
     (videography.stats ?? []).flatMap((x) => (x.figure && x.label ? [{ figure: x.figure, label: x.label }] : [])),
     VIDEO_STATS,
@@ -338,6 +384,9 @@ function build(raw: Raw | null) {
       hero: img(s.heroPhoto, HERO_PHOTO, 1400),
       studio: img(s.studioPhoto, STUDIO_PHOTO, 1200),
       founder: img(s.founderPortrait, FOUNDER_PORTRAIT, 700),
+      services: SERVICES_PHOTO,
+      aboutCutout: ABOUT_CUTOUT,
+      aboutStudio: ABOUT_STUDIO_PHOTO,
     },
     footer: {
       cta: text(s.footerCta, COPY.site.footerCta),
@@ -357,6 +406,10 @@ function build(raw: Raw | null) {
       heroTagline: text(home.heroTagline, COPY.home.heroTagline),
       heroIntro: text(home.heroIntro, COPY.home.heroIntro),
       heroButton: text(home.heroButton, COPY.home.heroButton),
+      heroStickers: list(
+        (home.heroStickers ?? []).filter(hasImage).map((t) => imageUrl(t, 300)),
+        HERO_STICKERS,
+      ),
       results: heading(home.results, COPY.home.results),
       projectsDelivered: text(home.projectsDelivered, COPY.home.projectsDelivered),
       testimonials: heading(home.testimonials, COPY.home.testimonials),
@@ -414,7 +467,7 @@ function build(raw: Raw | null) {
       heading: heading(videography.heading, COPY.videography.heading),
       capabilities: blurbs(videography.capabilities, VIDEO_CAPABILITIES),
       stats,
-      tiles: videoTiles,
+      sections: videoSections,
     },
 
     webDesign: {

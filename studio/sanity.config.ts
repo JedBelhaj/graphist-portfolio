@@ -6,9 +6,12 @@
    sanity.io/manage → the project → Members. */
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
+import { media } from "sanity-plugin-media";
 import { structureTool } from "sanity/structure";
+import { googleDriveSource } from "./assetSources/googleDrive";
 import { SINGLETONS, schemaTypes } from "./schemaTypes";
 import { structure } from "./structure";
+import { bulkAddTool } from "./tools/bulkAdd";
 
 /* SANITY_STUDIO_* variables come from .env (see .env.example) and are
    baked in at build time, so set them before `npm run deploy`. */
@@ -25,14 +28,28 @@ export default defineConfig({
 
   plugins: [
     structureTool({ structure }),
+    /* "Media" tab: a library of every uploaded photo and video. Drag a whole
+       folder in at once, tag it, then pick from it in any image or file field
+       (it also adds itself to each field's Select menu). */
+    media(),
     /* GROQ playground, for debugging queries. */
     visionTool({ defaultApiVersion: "2026-10-13" }),
   ],
+
+  /* "Bulk add" tab: a folder of photos or videos in, one gallery item each. */
+  tools: (prev) => [...prev, bulkAddTool],
 
   schema: {
     types: schemaTypes,
     /* Singletons can't be created from the global "+" menu. */
     templates: (templates) => templates.filter(({ schemaType }) => !SINGLETONS.includes(schemaType)),
+  },
+
+  /* Adds "Google Drive link" next to the built-in sources in every image and
+     file field's Select menu. */
+  form: {
+    image: { assetSources: (prev) => [...prev, googleDriveSource] },
+    file: { assetSources: (prev) => [...prev, googleDriveSource] },
   },
 
   document: {
