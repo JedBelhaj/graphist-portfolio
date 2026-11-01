@@ -20,9 +20,10 @@ export const HERO_ARROW = A(
 export const LOGO_FULL = "/soltani-logo.png";
 export const LOGO_WORDMARK = "/soltani-wordmark.png";
 
-/* Transparent cut-out, 1152x2048. The subject sits in the bottom ~80% of the
-   frame; the top 19.7% is empty, which the layouts below account for. */
-export const HERO_PHOTO = "/hero.png";
+/* Transparent cut-out, 1152x2048 (shoot frame A7403822, background removed).
+   The subject sits in the bottom 80% of the frame; the top 20% is empty,
+   which the layouts below account for. */
+export const HERO_PHOTO = "/photos/hero-oussama.webp";
 
 export const PREMIERE = "/adobe-premiere-pro-icon.png";
 export const AFTER_EFFECTS = "/adobe-after-effects-icon.png";
@@ -30,16 +31,18 @@ export const CAPCUT = "/capcut-icon.png";
 export const HIGGSFIELD = "/higgsfield-icon.png";
 export const META = "/meta-icon.png";
 
-/* ---------- Photography (MOCK) ---------- */
-export const STUDIO_PHOTO = MOCK_PHOTO("soltani-onset", 900, 1050);
-export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
+/* ---------- Portraits ----------
+   From the studio shoot (originals in public/content/shooting, not committed),
+   cropped and resized into public/photos. */
+export const STUDIO_PHOTO = "/photos/oussama-on-set.webp";
+export const FOUNDER_PORTRAIT = "/photos/oussama-founder.webp";
 
-/* Positions are tuned to the cut-out's silhouette: the head occupies x 45-75%
-   from y 20-35%, the body x 10-85% below that. Anything that clips the subject
+/* Positions are tuned to the cut-out's silhouette: the head occupies x 43-67%
+   from y 20-39%, the body and laptop x 5-95% below that. Anything that clips the subject
    tucks behind it, since the photo carries a higher z-index. */
 /* The burst is drawn by HeroBurst.tsx rather than loaded, so only its placement
    lives here — same tuned position the remote asset used to sit at. */
-export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[20%]";
+export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[13%] right-[15%]";
 
 /* Array order is the pop-in order and the order the stickers travel in. Meta
    sits last on purpose: it lands the sequence on the marketing side of the kit
@@ -64,8 +67,8 @@ export const HERO_STICKER_MOTION: "orbit" | "stream" = "orbit";
    shrink and pass behind the subject; the lower-right half crosses in front
    of the chest. `period` is seconds per lap. */
 export const HERO_ORBIT = {
-  cx: 0.36,
-  cy: 0.37,
+  cx: 0.33,
+  cy: 0.47,
   rx: 0.4,
   ry: 0.18,
   tilt: -36,
@@ -78,7 +81,7 @@ export const HERO_ORBIT = {
    the silhouette at any photo size. `lap` is the seconds one sticker takes
    end to end. */
 export const HERO_STREAM = {
-  from: [0.48, 0.27],
+  from: [0.43, 0.29],
   c1: [0.22, 0.02],
   c2: [-0.06, 0.42],
   to: [0.29, 0.7],
@@ -560,7 +563,7 @@ export const TEAM = [
     name: "Soltani",
     role: "Founder & Director of Photography",
     focus: "Stills, lighting, and the final say on the grade.",
-    photo: MOCK_PHOTO("soltani-team-lead", 640, 800),
+    photo: "/photos/oussama-team.webp",
   },
   {
     name: "Nadia",
