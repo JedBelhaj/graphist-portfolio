@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Check } from "lucide-react";
 import { FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
@@ -74,10 +75,9 @@ export default async function SiteFooter() {
           <p className="text-[rgb(254,254,254)]">
             &copy; {brand.year} {brand.name}
           </p>
-          <div className="flex gap-6">
-            <a href="#" className="text-[rgb(254,254,254)] underline">Terms</a>
-            <a href="#" className="text-[rgb(254,254,254)] underline">Privacy Policy</a>
-          </div>
+          <Link href="/privacy" className="text-[rgb(254,254,254)] underline">
+            Privacy Policy
+          </Link>
         </div>
       </div>
     </footer>
