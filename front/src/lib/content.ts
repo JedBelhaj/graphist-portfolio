@@ -562,7 +562,7 @@ export const WEB_PROCESS = [
    Roles are real; the three stock photos are placeholders until real ones. */
 export const TEAM = [
   {
-    name: "Soltani",
+    name: "Oussama Soltani",
     role: "Founder · Editor & Marketing",
     focus: "Runs the studio, cuts the edit, and makes sure the work gets seen.",
     photo: "/photos/oussama-team.webp",
