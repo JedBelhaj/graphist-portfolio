@@ -5,7 +5,9 @@ export const BRAND = {
   name: "Soltani Media & Marketing",
   short: "Soltani Media",
   founder: "Soltani",
-  domain: "soltanimedia.co", // MOCK
+  /* The Vercel address until a custom domain is bought: swap it here and add
+     the domain in Vercel → Project → Settings → Domains. */
+  domain: "soltani-eight.vercel.app",
   email: "hello@soltanimedia.co", // MOCK
   linkedin: "https://www.linkedin.com/company/soltani-media", // MOCK
   instagram: "https://www.instagram.com/soltanimedia", // MOCK
