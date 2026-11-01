@@ -196,12 +196,20 @@ export const result = defineType({
   title: "Client message",
   type: "document",
   icon: Sparkles,
-  description: "Screenshots of real client messages for the Results section. Confirm consent, or blur names and avatars, before publishing.",
+  description: "Screenshots of real client messages for the Results section. To leave out a name or face, crop the screenshot (the crop icon on the image) or switch on \"Hide from website\".",
   orderings: [orderRankOrdering],
   fields: [
     orderRankField({ type: "result" }),
     hidden,
-    defineField({ name: "image", title: "Screenshot", type: "image", validation: (r) => r.required() }),
+    defineField({
+      name: "image",
+      title: "Screenshot",
+      type: "image",
+      description: "Use the crop icon to trim it, e.g. to cut a name or profile picture out.",
+      /* hotspot turns on the crop tool; the site applies the crop through the image URL. */
+      options: { hotspot: true },
+      validation: (r) => r.required(),
+    }),
     defineField({ name: "label", title: "Caption", type: "string", validation: (r) => r.required() }),
     defineField({
       name: "alt",
