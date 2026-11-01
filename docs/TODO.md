@@ -2,18 +2,40 @@
 
 Plan and context: [Plan_and_notes.md](Plan_and_notes.md)
 
+## Launch checklist (decided 2026-11-01)
+
+Oussama, in the Studio (no code):
+- [ ] Real contact email, Instagram, Facebook and LinkedIn: Site settings → Brand & contact. Email is the only contact route (no form or booking link).
+- [ ] Write the 6 FAQ answers, and change question 4 to "Can we book a one-off project?": FAQ page.
+- [ ] Read the privacy page (`/privacy`) and confirm it matches how he handles email.
+- [ ] Hide or crop any results screenshot a client wouldn't want shown (crop tool and "Hide from website" on each Client message).
+
+Jed / Claude:
+- [ ] Bulk upload in the Studio: Drive folder browser, "Bulk add" on the Photos and Videos lists, sanity-plugin-media, and a local-folder upload script.
+- [ ] Studio deploy (crop tool on results, updated field descriptions, the bulk tools).
+- [ ] Sync to Sanity after merging `feature/launch-prep`: team roles, "Oussama Soltani".
+- [ ] Real team photos for Jed, Oubaid and Houssemeddine (stock until then).
+
+Real work, once the bulk tools exist:
+- [ ] Photography gallery, work cards, the three Services cards (placeholder photos now).
+- [ ] Web design: real site screenshots for `WEB_SHOTS`, then pass `wireframe={false}` to `BrowserFrame`.
+
+Later, by choice:
+- [ ] Custom domain: buy it, add it in Vercel → Domains, change `domain` in `brand.ts` (now soltani-eight.vercel.app).
+- [ ] Let Google index the site: remove `robots: { index: false }` in `front/src/app/layout.tsx`, add sitemap.xml and robots.txt.
+- [ ] Visitor stats (Vercel Analytics is cookie-free; add a line to the privacy page if added).
+
 ## A. Content and assets
 - [ ] Review the Drive folder and list usable photos, videos and logos
 - [x] Get the client logos into `front/public/logos/real/`
-- [ ] Confirm the "What makes us different" claims (e.g. 72-hour first edits) with Oussama (`PACKAGES` in `content.ts`, "Packages" list in the studio)
-- [ ] Replace placeholder FAQ answers (`FAQS` in `content.ts`)
-- [ ] Real Instagram / Facebook / email links (`BRAND` in `brand.ts`)
-- [ ] Replace mock photos (picsum) with real shoots: work cards, galleries, team, about
-- [ ] Web design: real site screenshots for `WEB_SHOTS`, then pass `wireframe={false}` to `BrowserFrame`
-- [ ] Add web design to the Services page groups and the Services bubble cluster
+- [x] Confirm the "What makes us different" claims with Oussama: 72-hour first edits, 120+ projects, 5 countries all accurate
+- [ ] Replace placeholder FAQ answers: Oussama, in the Studio (see the launch checklist)
+- [ ] Real Instagram / Facebook / email links: Oussama, in the Studio (see the launch checklist)
+- [ ] Replace mock photos (picsum) with real shoots: work cards, galleries, team (portraits and About are done)
+- [x] Services are photography, video and web design (social and growth groups removed; marketing copy kept on purpose)
 - [ ] Write original copy for each page (nothing taken from Marissa's site)
-- [ ] Before launch: confirm consent for the Wall of Love screenshots, or crop/blur names and avatars
-- [ ] Decide whether to delete the old `public/logos/*` copies (the site now uses `logos/real/`)
+- [x] Consent: show the screenshots as they are; the studio can hide or crop any of them
+- [x] Old `public/logos/*` copies, the old hero and duplicate screenshots are git-ignored (kept on disk)
 
 ## B. Routing and layout
 - [x] Add routes: `/services`, `/work`, `/work/photography`, `/work/videography`, `/about`, `/faq`
@@ -42,7 +64,9 @@ Plan and context: [Plan_and_notes.md](Plan_and_notes.md)
 - [ ] Refine each page section by section
 
 ## F. Polish and QA
-- [ ] Responsive check on mobile, tablet and desktop for every page
-- [ ] Image and video optimisation (next/image, lazy loading)
+- [x] Responsive check on mobile, tablet and desktop for every page (no overflow; results wall shortened on phones)
+- [x] Image weight: live images come resized and compressed from Sanity's CDN
+- [x] Tab icons and link-preview image
+- [x] Privacy page; dead "Terms" link removed
 - [ ] Confirm no copied text or images from Marissa's site
 - [x] Lint and build pass
