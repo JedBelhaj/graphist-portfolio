@@ -11,6 +11,7 @@ import { structureTool } from "sanity/structure";
 import { googleDriveSource } from "./assetSources/googleDrive";
 import { SINGLETONS, schemaTypes } from "./schemaTypes";
 import { structure } from "./structure";
+import { bulkAddTool } from "./tools/bulkAdd";
 
 /* SANITY_STUDIO_* variables come from .env (see .env.example) and are
    baked in at build time, so set them before `npm run deploy`. */
@@ -34,6 +35,9 @@ export default defineConfig({
     /* GROQ playground, for debugging queries. */
     visionTool({ defaultApiVersion: "2026-10-13" }),
   ],
+
+  /* "Bulk add" tab: a folder of photos or videos in, one gallery item each. */
+  tools: (prev) => [...prev, bulkAddTool],
 
   schema: {
     types: schemaTypes,
