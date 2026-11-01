@@ -36,6 +36,10 @@ export const META = "/meta-icon.png";
    cropped and resized into public/photos. */
 export const STUDIO_PHOTO = "/photos/oussama-on-set.webp";
 export const FOUNDER_PORTRAIT = "/photos/oussama-founder.webp";
+/* Cut-out for the home "what we do" section, where the service bubbles float
+   around it. Sized to that section's 400x575 box (at 2x). Not in the studio
+   yet, so it isn't editable there. */
+export const SERVICES_PHOTO = "/photos/oussama-stool.webp";
 
 /* Positions are tuned to the cut-out's silhouette: the head occupies x 43-67%
    from y 20-39%, the body and laptop x 5-95% below that. Anything that clips the subject
