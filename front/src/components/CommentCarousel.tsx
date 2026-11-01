@@ -4,7 +4,7 @@ import type { Testimonial } from "@/lib/content";
 
 /* Seconds each card takes to drift past, so the speed stays the same however
    many testimonials there are. Higher = slower. */
-const SECONDS_PER_CARD = 10;
+const SECONDS_PER_CARD = 18;
 
 /* A Row needs at least this many cards to stay wider than a wide monitor
    (~3,000px); below that the right edge runs out of cards once the track has
