@@ -573,7 +573,7 @@ export const TEAM = [
     name: "Jed Belhaj",
     role: "Head of Strategy",
     focus: "Turns one shoot day into a quarter of posts that perform.",
-    photo: "/photos/jed-team.webp",
+    photo: MOCK_PHOTO("soltani-team-strategy", 640, 800),
   },
   {
     name: "Oubaid Beldi",
