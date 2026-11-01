@@ -90,7 +90,7 @@ Site images: hero, on-set and founder photos uploaded from front/public/photos`)
   const [heroPhoto, studioPhoto, founderPortrait, leadPhoto] = await Promise.all(
     [HERO_PHOTO, STUDIO_PHOTO, FOUNDER_PORTRAIT, TEAM[0].photo].map(upload),
   );
-  const resultImages = [];
+  const resultImages: unknown[] = [];
   for (const r of results) resultImages.push(reused.get(r.file) ?? (await upload(r.src)));
 
   const tx = client.transaction();
