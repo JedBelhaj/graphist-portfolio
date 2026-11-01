@@ -73,9 +73,9 @@ export const HERO_STICKER_MOTION: "orbit" | "stream" = "orbit";
 export const HERO_ORBIT = {
   cx: 0.52,
   cy: 0.4,
-  rx: 0.4,
+  rx: 0.5,
   ry: 0.18,
-  tilt: -36,
+  tilt: 30,
   period: 20,
 };
 
