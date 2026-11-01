@@ -28,7 +28,7 @@ export default function ResultsWall({ results }: { results: ResultShot[] }) {
               type="button"
               onClick={() => setOpen(i)}
               aria-label={`View: ${r.alt || r.label}`}
-              className={`group relative block w-full cursor-zoom-in rounded-2xl bg-white p-2 text-left shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition-transform duration-500 ease-out hover:rotate-0 hover:scale-[1.03] focus-visible:rotate-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white ${
+              className={`group relative block w-full cursor-pointer rounded-2xl bg-white p-2 text-left shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition-transform duration-500 ease-out hover:rotate-0 hover:scale-[1.03] focus-visible:rotate-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white ${
                 TILTS[i % TILTS.length]
               }`}
             >
