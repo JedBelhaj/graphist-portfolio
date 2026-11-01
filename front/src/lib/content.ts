@@ -417,8 +417,8 @@ export const FAQS = [
     a: "Placeholder — first edits usually land within 72 hours of the shoot, with reels on a rolling schedule after that.",
   },
   {
-    q: "Can we book a one-off shoot instead of a package?",
-    a: "Placeholder — absolutely. Packages are for ongoing work; one-off shoots are quoted per project.",
+    q: "Can we book a one-off project?",
+    a: "Placeholder — absolutely. Every shoot, edit or website is quoted on its own.",
   },
   {
     q: "Who owns the photos and videos?",
