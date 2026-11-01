@@ -41,7 +41,7 @@ export default async function Page() {
         bubbles={services.bubbles}
         title={home.services.title}
         accent={home.services.accent}
-        photo={images.hero}
+        photo={images.services}
       />
 
       <Packages />

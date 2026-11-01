@@ -113,15 +113,6 @@ html:has(.page-loader:not(.is-done)) {
   overflow: hidden;
 }
 
-/* Testimonial wall: drifts on its own, holds still while hovered. */
-.testimonial-track {
-  animation: marquee var(--loop, 45s) linear infinite;
-}
-
-.testimonial-track:hover {
-  animation-play-state: paused;
-}
-
 /* Client logo band: same drift, but it keeps moving under the cursor, and
    the ends fade into the page so marks don't get sliced off at a hard edge. */
 .logo-track {
@@ -167,12 +158,13 @@ html:has(.page-loader:not(.is-done)) {
   .pop-in,
   .bubble-float,
   .reveal-in,
-  .testimonial-track,
   .logo-track {
     animation: none;
   }
 
-  /* Nothing drifts into view on its own now, so let the rail be scrolled. */
+  /* Nothing drifts into view on its own now, so let the rail be scrolled.
+     (The testimonial rail is driven from CommentCarousel, which checks this
+     same media query and stops drifting.) */
   .testimonial-viewport,
   .logo-viewport {
     overflow-x: auto;
