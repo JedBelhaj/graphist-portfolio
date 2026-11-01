@@ -15,7 +15,7 @@ export default async function Packages() {
 
   return (
     <section id="packages" className="px-5 py-20 sm:px-8 lg:py-24" style={{ backgroundColor: SECTION_BG }}>
-      <div className="mx-auto max-w-[1400px]">
+      <div className="mx-auto max-w-[1120px]">
         <div className="mb-12 text-center lg:mb-20">
           <Reveal>
             <h2
@@ -36,20 +36,20 @@ export default async function Packages() {
             packages, the brand purple for the featured one. Content sits
             centred vertically, so tiles with shorter copy start lower, and
             items-stretch + h-full keeps the three the same height. */}
-        <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-3 md:gap-8 lg:gap-20 xl:gap-36">
+        <div className="mx-auto grid max-w-md grid-cols-1 items-stretch gap-6 md:max-w-none md:grid-cols-3 md:gap-8 lg:gap-14">
           {services.packages.map((p, i) => (
             <Reveal key={p.name} delay={i * 110}>
               <div
-                className="flex h-full min-h-[300px] flex-col justify-center rounded-xl px-8 py-12 text-white shadow-[0_14px_30px_-18px_rgba(10,11,16,0.4)] lg:min-h-[380px] lg:px-10"
+                className="flex h-full min-h-[260px] flex-col justify-center rounded-xl px-7 py-10 text-white shadow-[0_14px_30px_-18px_rgba(10,11,16,0.4)] lg:min-h-[300px] lg:px-8"
                 style={{ backgroundColor: p.featured ? ACCENT : INK }}
               >
                 <h3
-                  className="text-2xl font-bold leading-[1.3] lg:text-[28px]"
+                  className="text-xl font-bold leading-[1.3] lg:text-2xl"
                   style={{ fontFamily: FONT_DISPLAY }}
                 >
                   {p.name}
                 </h3>
-                <p className="mt-5 max-w-[290px] text-base leading-[1.75] text-white/90 lg:text-[17px]">{p.pitch}</p>
+                <p className="mt-4 text-[15px] leading-[1.7] text-white/90">{p.pitch}</p>
               </div>
             </Reveal>
           ))}

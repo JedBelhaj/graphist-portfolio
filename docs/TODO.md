@@ -5,7 +5,7 @@ Plan and context: [Plan_and_notes.md](Plan_and_notes.md)
 ## A. Content and assets
 - [ ] Review the Drive folder and list usable photos, videos and logos
 - [x] Get the client logos into `front/public/logos/real/`
-- [ ] Replace the mock package tiers and prices (`PACKAGES` in `content.ts`)
+- [ ] Confirm the "What makes us different" claims (e.g. 72-hour first edits) with Oussama (`PACKAGES` in `content.ts`, "Packages" list in the studio)
 - [ ] Replace placeholder FAQ answers (`FAQS` in `content.ts`)
 - [ ] Real Instagram / Facebook / email links (`BRAND` in `brand.ts`)
 - [ ] Replace mock photos (picsum) with real shoots: work cards, galleries, team, about

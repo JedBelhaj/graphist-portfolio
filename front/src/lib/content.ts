@@ -261,50 +261,33 @@ export const RESULTS = [
   },
 ];
 
-/* ---------- Packages (MOCK) ----------
-   Placeholder tiers and prices — swap in the real offer before launch.
-   `featured` gets the highlighted card; keep it to one. */
+/* ---------- What makes us different ----------
+   Stored in the studio's "Packages" list, which the section now uses for
+   these tiles: only name and pitch are shown, price/cadence/features are not.
+   `featured` gets the purple tile; keep it to one. */
 export const PACKAGES = [
   {
-    name: "Starter",
-    price: "$750",
-    cadence: "/ month",
-    pitch: "A steady, good-looking feed without thinking about it.",
-    features: [
-      "Half-day shoot every month",
-      "20 edited photos",
-      "4 short-form reels",
-      "Monthly content calendar",
-    ],
+    name: "One team, shoot to post",
+    price: "",
+    cadence: "",
+    pitch: "The people who film your content also edit it, post it and run the ads behind it. Nothing gets lost between the studio, the editor and the media buyer.",
+    features: [] as string[],
     featured: false,
   },
   {
-    name: "Growth",
-    price: "$1,800",
-    cadence: "/ month",
-    pitch: "Content plus the strategy that makes it perform.",
-    features: [
-      "Full-day shoot every month",
-      "40 edited photos",
-      "10 short-form reels",
-      "Social management on 2 platforms",
-      "Paid ad creative & testing",
-      "Monthly results report",
-    ],
+    name: "First edits in 72 hours",
+    price: "",
+    cadence: "",
+    pitch: "Your first edits land within three days of the shoot, so fresh content is out working for you while the moment still matters.",
+    features: [] as string[],
     featured: true,
   },
   {
-    name: "Signature",
-    price: "Custom",
+    name: "No account managers",
+    price: "",
     cadence: "",
-    pitch: "A full production and marketing team, without the hiring.",
-    features: [
-      "Multi-day productions",
-      "Brand film + campaign assets",
-      "Every platform, fully managed",
-      "Dedicated producer",
-      "Quarterly strategy workshop",
-    ],
+    pitch: "You talk directly to whoever is doing the work. Feedback goes straight to the person holding the camera or the timeline, and changes happen fast.",
+    features: [] as string[],
     featured: false,
   },
 ];
@@ -711,9 +694,8 @@ export const COPY = {
     }),
     toolboxTitle: "What's in our kit",
     packagesHeading: heading({
-      eyebrow: "Packages",
-      title: "Pick your pace",
-      accent: "[or we'll build one]",
+      title: "What makes us different",
+      body: "Beyond great photos and video, every project comes with a team that knows what the content is for.",
     }),
     packagesFootnote:
       "Need a one-off shoot instead? Every project can be quoted on its own.",
