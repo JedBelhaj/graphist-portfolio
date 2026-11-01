@@ -6,6 +6,7 @@
    sanity.io/manage → the project → Members. */
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
+import { media } from "sanity-plugin-media";
 import { structureTool } from "sanity/structure";
 import { googleDriveSource } from "./assetSources/googleDrive";
 import { SINGLETONS, schemaTypes } from "./schemaTypes";
@@ -26,6 +27,10 @@ export default defineConfig({
 
   plugins: [
     structureTool({ structure }),
+    /* "Media" tab: a library of every uploaded photo and video. Drag a whole
+       folder in at once, tag it, then pick from it in any image or file field
+       (it also adds itself to each field's Select menu). */
+    media(),
     /* GROQ playground, for debugging queries. */
     visionTool({ defaultApiVersion: "2026-10-13" }),
   ],
