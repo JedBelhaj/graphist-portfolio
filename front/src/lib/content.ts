@@ -46,7 +46,7 @@ export const SERVICES_PHOTO = "/photos/oussama-stool.webp";
    tucks behind it, since the photo carries a higher z-index. */
 /* The burst is drawn by HeroBurst.tsx rather than loaded, so only its placement
    lives here — same tuned position the remote asset used to sit at. */
-export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[13%] right-[15%]";
+export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[9%]";
 
 /* Array order is the pop-in order and the order the stickers travel in. Meta
    sits last on purpose: it lands the sequence on the marketing side of the kit
@@ -71,8 +71,8 @@ export const HERO_STICKER_MOTION: "orbit" | "stream" = "orbit";
    shrink and pass behind the subject; the lower-right half crosses in front
    of the chest. `period` is seconds per lap. */
 export const HERO_ORBIT = {
-  cx: 0.33,
-  cy: 0.47,
+  cx: 0.52,
+  cy: 0.4,
   rx: 0.4,
   ry: 0.18,
   tilt: -36,
