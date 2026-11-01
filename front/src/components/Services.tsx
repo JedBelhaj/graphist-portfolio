@@ -120,11 +120,17 @@ export default function Services({
           {/* Desktop: photo with floating bubbles */}
           <div className="relative mx-auto hidden justify-center lg:flex">
             {/* Fixed 575px box keeps the bubble ring's tuned positions intact, while
-                object-bottom crops the cut-out's empty top so the subject fills it. */}
+                object-bottom crops the cut-out's empty top so the subject fills it.
+                The drop shadows follow the cut-out's outline: a tight one softens
+                the masking edge, a wide one seats the figure on the page. */}
             <img
               src={photo}
               alt=""
               className="h-[575px] w-[400px] object-cover object-bottom"
+              style={{
+                filter:
+                  "drop-shadow(0 0 2px rgba(10,11,16,0.35)) drop-shadow(0 18px 28px rgba(10,11,16,0.28))",
+              }}
             />
             {bubbles.slice(0, BUBBLE_POSITIONS.length).map((s, i) => {
               const { className, style } = pop(i);
