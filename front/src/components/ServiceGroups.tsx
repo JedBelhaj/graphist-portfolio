@@ -10,7 +10,7 @@ export default async function ServiceGroups() {
 
   return (
     <section className="px-5 py-14 sm:px-8 lg:py-20" style={{ backgroundColor: INK }}>
-      <div className="mx-auto grid max-w-[1300px] grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mx-auto grid max-w-[1300px] grid-cols-1 gap-3 lg:grid-cols-3">
         {services.groups.map((g, i) => (
           <Reveal key={g.title} delay={i * 90}>
             <article className="group flex h-full flex-col overflow-hidden rounded-lg" style={{ backgroundColor: ACCENT_TINT }}>

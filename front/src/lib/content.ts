@@ -101,18 +101,21 @@ export const SERVICE_COLORS = {
 export type ServiceColor = keyof typeof SERVICE_COLORS;
 
 /* Colour order is deliberate — it sets the rhythm of the bubble cluster. */
+/* The three things we sell, photo, video and web design, broken into the
+   bubbles round the photo. Order matters: each sits in the matching slot of
+   BUBBLE_POSITIONS (Services.tsx), whose width is sized to the label. */
 export const SERVICES: { label: string; color: ServiceColor }[] = [
   { label: "Brand Photography", color: "accent" },
   { label: "Video Production", color: "tint" },
   { label: "Reels & Short-Form Editing", color: "ink" },
-  { label: "Social Media Strategy", color: "teal" },
-  { label: "Paid Ads & Creative Testing", color: "ink" },
+  { label: "Website Design", color: "teal" },
+  { label: "Brand Films", color: "ink" },
   { label: "Brand Storytelling", color: "teal" },
   { label: "Product & Menu Photography", color: "tint" },
-  { label: "Social Media Content", color: "tint" },
+  { label: "Landing Pages", color: "tint" },
   { label: "Event & Venue Coverage", color: "accent" },
-  { label: "Email Marketing & Automation", color: "ink" },
-  { label: "Reporting & Analytics", color: "tint" },
+  { label: "Website Redesigns", color: "ink" },
+  { label: "Testimonial Videos", color: "tint" },
 ];
 
 export const TOOLBOX = [
@@ -387,21 +390,15 @@ export const SERVICE_GROUPS = [
     ],
   },
   {
-    title: "Social",
-    photo: MOCK_PHOTO("soltani-svc-social", 800, 600),
-    body: "A plan for what goes out, when, and why — then the posting, so you don't have to.",
+    title: "Web Design",
+    photo: MOCK_PHOTO("soltani-svc-web", 800, 600),
+    body: "Sites built around your photos and video, fast on a phone and easy to keep up to date.",
     items: [
-      "Strategy & calendar",
-      "Content creation",
-      "Community management",
-      "Reporting",
+      "Business websites",
+      "Landing pages",
+      "Redesigns",
+      "Hosting & upkeep",
     ],
-  },
-  {
-    title: "Growth",
-    photo: MOCK_PHOTO("soltani-svc-growth", 800, 600),
-    body: "Paid creative built from the same shoot, tested until something beats the control.",
-    items: ["Paid ads", "Creative testing", "Email & automation", "Analytics"],
   },
 ];
 
@@ -783,7 +780,7 @@ export const COPY = {
       eyebrow: "Services",
       title: "Everything it takes",
       accent: "to get seen.",
-      body: "Four disciplines, one team. Pick the pieces you need, or hand over the whole content side and we'll run it end to end.",
+      body: "Three disciplines, one team. Pick the pieces you need, or hand over the whole content side and we'll run it end to end.",
     }),
     toolboxTitle: "What's in our kit",
     packagesHeading: heading({
