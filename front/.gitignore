@@ -26,3 +26,8 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Raw shoot files (originals, ~260 MB). Only resized copies used by the site
+# get committed, elsewhere in public/.
+/public/content/shooting/
+/public/content/images/
