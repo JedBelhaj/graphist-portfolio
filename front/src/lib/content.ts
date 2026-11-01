@@ -417,8 +417,8 @@ export const FAQS = [
     a: "Placeholder — first edits usually land within 72 hours of the shoot, with reels on a rolling schedule after that.",
   },
   {
-    q: "Can we book a one-off shoot instead of a package?",
-    a: "Placeholder — absolutely. Packages are for ongoing work; one-off shoots are quoted per project.",
+    q: "Can we book a one-off project?",
+    a: "Placeholder — absolutely. Every shoot, edit or website is quoted on its own.",
   },
   {
     q: "Who owns the photos and videos?",
@@ -558,30 +558,31 @@ export const WEB_PROCESS = [
   },
 ];
 
-/* ---------- Team (MOCK) ---------- */
+/* ---------- Team ----------
+   Roles are real; the three stock photos are placeholders until real ones. */
 export const TEAM = [
   {
-    name: "Soltani",
-    role: "Founder & Director of Photography",
-    focus: "Stills, lighting, and the final say on the grade.",
+    name: "Oussama Soltani",
+    role: "Founder · Editor & Marketing",
+    focus: "Runs the studio, cuts the edit, and makes sure the work gets seen.",
     photo: "/photos/oussama-team.webp",
   },
   {
     name: "Jed Belhaj",
-    role: "Head of Strategy",
-    focus: "Turns one shoot day into a quarter of posts that perform.",
+    role: "Web Designer & Editor",
+    focus: "Builds the sites the work lives on, and cuts video in between.",
     photo: MOCK_PHOTO("soltani-team-strategy", 640, 800),
   },
   {
     name: "Oubaid Beldi",
-    role: "Editor & Motion",
-    focus: "Cuts the long form, then the forty verticals hiding inside it.",
+    role: "Video Editor",
+    focus: "Turns hours of raw footage into reels that hold attention.",
     photo: MOCK_PHOTO("soltani-team-editor", 640, 800),
   },
   {
     name: "Houssemeddine Farah",
-    role: "Producer",
-    focus: "Locations, permits, call sheets — the reason days run on time.",
+    role: "Video Editor",
+    focus: "Cuts the long form, then the short-form pieces hiding inside it.",
     photo: MOCK_PHOTO("soltani-team-producer", 640, 800),
   },
 ];
