@@ -76,7 +76,7 @@ export default async function Results() {
             heights, and columns let them pack without row gaps. */}
         <div className="columns-1 gap-8 sm:columns-2 lg:columns-3">
           {results.map((r, i) => (
-            <Reveal key={r.src} delay={i * 120} className="mb-8 break-inside-avoid">
+            <Reveal key={r.src} delay={(i % 3) * 120} className="mb-8 break-inside-avoid">
               <figure
                 className={`group rounded-2xl bg-white p-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition-transform duration-500 ease-out hover:rotate-0 hover:scale-[1.03] ${
                   TILTS[i % TILTS.length]

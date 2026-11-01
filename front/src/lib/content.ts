@@ -240,24 +240,87 @@ export const COUNTRIES = [
 ];
 
 /* ---------- Results (Wall of Love) ----------
-   Real client messages from public/results. Filenames are as delivered, so
-   encodeURI handles the spaces and the accented é.
+   Real client messages and ad screenshots from public/content/results.
+   Filenames are as delivered, so encodeURI handles the spaces and the
+   accented é. Ordered so tall posts and short quotes alternate in the columns.
    TODO before launch: confirm consent, or crop/blur names and avatars. */
+const shot = (file: string) => encodeURI(`/content/results/${file}`);
+
 export const RESULTS = [
   {
-    src: encodeURI("/results/WhatsApp Image 2026-06-21 at 4.53.50 PM.jpeg"),
+    src: shot("Capture d_écran 2026-10-23 202852.png"),
+    alt: "CaniMoov Facebook ad for a rigid dog seat cover, with 3.9K likes, 317 comments and 315 shares",
+    label: "CaniMoov ad · 3.9K likes",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 203319.png"),
+    alt: "Client message in French recommending Oussama's video editing: he understands the vision, takes feedback well and delivers fast",
+    label: "Video editing client",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 202903.png"),
+    alt: "CaniMoov winter Facebook ad warning about copycat seat covers, with 1.4K likes, 230 comments and 109 shares",
+    label: "CaniMoov ad · 1.4K likes",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 203110.png"),
+    alt: "LinkedIn recommendation from client Nourddine Taieb praising Oussama's engaging content and dedication to quality",
+    label: "LinkedIn recommendation",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 202952.png"),
+    alt: "HVH Marketing Instagram post introducing Oussama as their video editing specialist",
+    label: "Featured by HVH Marketing",
+  },
+  {
+    src: shot("WhatsApp Image 2026-06-21 at 4.53.50 PM.jpeg"),
     alt: "Client message thanking Lauren and the team for a surprise birthday video that made her cry",
     label: "Surprise birthday film",
   },
   {
-    src: encodeURI("/results/Capture d_écran 2026-09-29 200451.png"),
+    src: shot("Capture d_écran 2026-10-23 202703.png"),
+    alt: "CaniMoov Facebook ad with a German shepherd sitting on the seat cover: 40% more space for your dog",
+    label: "CaniMoov product ad",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-27 193111.png"),
+    alt: "Message from Pascal Cadorette asking when the current 8 videos will be done, with 8 more lined up after",
+    label: "Repeat client",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 202717.png"),
+    alt: "CaniMoov Facebook ad showing the seat cover unpacked, installed in 2 minutes, with 338 likes",
+    label: "CaniMoov launch ad",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 203103.png"),
+    alt: "LinkedIn recommendation from Ahmed Aziz Elj calling Oussama an exceptional content creator",
+    label: "LinkedIn recommendation",
+  },
+  {
+    src: shot("Capture d_écran 2026-09-29 200451.png"),
     alt: "Message shouting out Oussama Soltani Photography: Dr. Sydney loved the reel",
     label: "Clinic reel",
   },
   {
-    src: encodeURI("/results/WhatsApp Image 2026-09-29 at 12.33.24 AM.jpeg"),
+    src: shot("Capture d_écran 2026-10-23 202654.png"),
+    alt: "CaniMoov Facebook post showing the seat cover fitted across a car's back seat",
+    label: "CaniMoov ad creative",
+  },
+  {
+    src: shot("WhatsApp Image 2026-09-29 at 12.33.24 AM.jpeg"),
     alt: "Dr. Alex Martin saying the editing on the reel from today is fabulous",
     label: "Same-day reel edit",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 202628.png"),
+    alt: "CaniMoov reel of the seat cover being unpacked: installation in 2 minutes",
+    label: "CaniMoov reel",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 203006.png"),
+    alt: "Instagram comment from dl_mayssa saying Oussama makes the things he's part of better",
+    label: "Instagram shout-out",
   },
 ];
 
