@@ -1,12 +1,4 @@
-import {
-  A,
-  ACCENT,
-  BRAND,
-  ACCENT_TINT,
-  INK,
-  MOCK_PHOTO,
-  TEAL,
-} from "./brand";
+import { A, ACCENT, BRAND, ACCENT_TINT, INK, MOCK_PHOTO, TEAL } from "./brand";
 
 /* Decorative mark kept from the original design system. */
 export const HERO_ARROW = A(
@@ -40,6 +32,11 @@ export const FOUNDER_PORTRAIT = "/photos/oussama-founder.webp";
    around it. Sized to that section's 400x575 box (at 2x). Not in the studio
    yet, so it isn't editable there. */
 export const SERVICES_PHOTO = "/photos/oussama-stool.webp";
+/* The About page's own pair, so it doesn't repeat the home page: a cut-out
+   for the arch in its intro (same 1152x2048 canvas as the hero) and an on-set
+   shot for the About section. Not in the studio yet either. */
+export const ABOUT_CUTOUT = "/photos/oussama-phone-cutout.webp";
+export const ABOUT_STUDIO_PHOTO = "/photos/oussama-desk.webp";
 
 /* Positions are tuned to the cut-out's silhouette: the head occupies x 43-67%
    from y 20-39%, the body and laptop x 5-95% below that. Anything that clips the subject
@@ -72,10 +69,10 @@ export const HERO_STICKER_MOTION: "orbit" | "stream" = "orbit";
    of the chest. `period` is seconds per lap. */
 export const HERO_ORBIT = {
   cx: 0.56,
-  cy: 0.3,
-  rx: 0.5,
+  cy: 0.4,
+  rx: 0.55,
   ry: 0.18,
-  tilt: 36,
+  tilt: -24,
   period: 20,
 };
 
@@ -339,7 +336,8 @@ export const PACKAGES = [
     name: "One team, shoot to post",
     price: "",
     cadence: "",
-    pitch: "The people who film your content also edit it, post it and run the ads behind it. Nothing gets lost between the studio, the editor and the media buyer.",
+    pitch:
+      "The people who film your content also edit it, post it and run the ads behind it. Nothing gets lost between the studio, the editor and the media buyer.",
     features: [] as string[],
     featured: false,
   },
@@ -347,7 +345,8 @@ export const PACKAGES = [
     name: "First edits in 72 hours",
     price: "",
     cadence: "",
-    pitch: "Your first edits land within three days of the shoot, so fresh content is out working for you while the moment still matters.",
+    pitch:
+      "Your first edits land within three days of the shoot, so fresh content is out working for you while the moment still matters.",
     features: [] as string[],
     featured: true,
   },
@@ -355,7 +354,8 @@ export const PACKAGES = [
     name: "No account managers",
     price: "",
     cadence: "",
-    pitch: "You talk directly to whoever is doing the work. Feedback goes straight to the person holding the camera or the timeline, and changes happen fast.",
+    pitch:
+      "You talk directly to whoever is doing the work. Feedback goes straight to the person holding the camera or the timeline, and changes happen fast.",
     features: [] as string[],
     featured: false,
   },
@@ -613,7 +613,9 @@ export const TESTIMONIALS: Testimonial[] = [
   upwork(
     "I hired Oussama to edit a short Facebook ad for our product. He understood the brief immediately, delivered a polished 20–30s video optimized for mobile, and responded quickly to revision requests. Professional, talented, and great value, I’ll hire him again.",
   ),
-  upwork("Oussama is one of the most talented editors i worked with, very creative and a great problem solver"),
+  upwork(
+    "Oussama is one of the most talented editors i worked with, very creative and a great problem solver",
+  ),
   upwork(
     "Oussama was professional, responsive, and easy to work with. He delivered the work on time, communicated well throughout the project, and was open to feedback and revisions. Overall, a good experience.",
     "Creative Strategist & Video Editor For E-commerce Ads",
@@ -621,7 +623,9 @@ export const TESTIMONIALS: Testimonial[] = [
   upwork(
     "Oussama creating a reel for a client of mine that turned out better than I ever imagined. I gave him a rundown of what I was looking for and he exceeded my expectations by a long shot. Would recommend using Ousamma and will be using him again in the future.",
   ),
-  upwork("Oussama always creates exactly what I am looking for! He does it In a timely manner and exceeds my expectations every time."),
+  upwork(
+    "Oussama always creates exactly what I am looking for! He does it In a timely manner and exceeds my expectations every time.",
+  ),
   upwork(
     "Oussama a été très réactif et efficace. Les ads qu'il m'a crée mon permit de générer des prospects supplémentaires. Merci à lui.",
   ),
@@ -636,7 +640,9 @@ export const TESTIMONIALS: Testimonial[] = [
   upwork(
     "Oussama did a great job on my short reel! He was super easy to work with, understood exactly what I wanted, and delivered a really polished result. I’m really happy with how it turned out and would definitely work with him again. Highly recommend!",
   ),
-  upwork("Great work as always. Appreciate all your help and hope to work with you again!"),
+  upwork(
+    "Great work as always. Appreciate all your help and hope to work with you again!",
+  ),
   upwork(
     "You were very committed and very professional thank you Oussama for this magnificent work you have done i will definitely work again",
   ),

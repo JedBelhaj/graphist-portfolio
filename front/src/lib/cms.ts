@@ -24,6 +24,8 @@ import {
   SERVICES,
   SERVICES_PHOTO,
   STUDIO_PHOTO,
+  ABOUT_CUTOUT,
+  ABOUT_STUDIO_PHOTO,
   TEAM,
   TESTIMONIALS,
   TOOLBOX,
@@ -383,6 +385,8 @@ function build(raw: Raw | null) {
       studio: img(s.studioPhoto, STUDIO_PHOTO, 1200),
       founder: img(s.founderPortrait, FOUNDER_PORTRAIT, 700),
       services: SERVICES_PHOTO,
+      aboutCutout: ABOUT_CUTOUT,
+      aboutStudio: ABOUT_STUDIO_PHOTO,
     },
     footer: {
       cta: text(s.footerCta, COPY.site.footerCta),
