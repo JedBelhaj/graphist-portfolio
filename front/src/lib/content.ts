@@ -4,7 +4,6 @@ import {
   BRAND,
   ACCENT_TINT,
   INK,
-  MOCK_AVATAR,
   MOCK_PHOTO,
   TEAL,
 } from "./brand";
@@ -591,32 +590,50 @@ export type Testimonial = {
   tag: string | null;
 };
 
-/* MOCK testimonials — replace once consent is collected (see docs/problems.md). */
+/* ---------- Testimonials (Wall of Love) ----------
+   Upwork reviews, quoted as the clients wrote them. Upwork doesn't show
+   client names publicly, so each card reads "Upwork client" with the rating
+   and, where the profile lists it, the job title. */
+const upwork = (quote: string, job?: string): Testimonial => ({
+  quote,
+  name: "Upwork client",
+  handle: null,
+  avatar: null,
+  tag: job ? `★ 5.0 on Upwork · ${job}` : "★ 5.0 on Upwork",
+});
+
 export const TESTIMONIALS: Testimonial[] = [
-  {
-    quote:
-      "Soltani Media is the rare shop that can shoot the thing and then tell you what to do with it. We came in expecting a photographer and left with a quarter's worth of content, a posting calendar, and an ad set that finally beat our old control. Two people delivered what our last agency needed six to half-do.",
-    name: null,
-    handle: null,
-    avatar: null,
-    tag: null,
-  },
-  {
-    quote:
-      "We booked one menu shoot and ended up handing over the whole content side. The photos were the easy part — what actually moved the needle was Soltani rebuilding how we post and turning the shoot into eight weeks of reels. Delivery day for delivery day, our online orders are up and I stopped dreading the content calendar. He's organised, fast, and he shows up with a plan instead of a mood board.",
-    name: "Yasmine",
-    handle: "@cafenomad",
-    avatar: MOCK_AVATAR("yasmine"),
-    tag: "Owner | Cafe Nomad",
-  },
-  {
-    quote:
-      "We've worked with Soltani across two product launches now. He handles the shoot, the edit, and the paid creative, which means nothing gets lost in translation between three different vendors. He'll also tell you straight when an idea won't perform — that honesty saved us a whole campaign budget last spring. Can't recommend the studio enough.",
-    name: "Karim",
-    handle: "@atlasoutfitters",
-    avatar: MOCK_AVATAR("karim"),
-    tag: "Founder | Atlas Outfitters",
-  },
+  upwork(
+    "I hired Oussama to edit a short Facebook ad for our product. He understood the brief immediately, delivered a polished 20–30s video optimized for mobile, and responded quickly to revision requests. Professional, talented, and great value, I’ll hire him again.",
+  ),
+  upwork("Oussama is one of the most talented editors i worked with, very creative and a great problem solver"),
+  upwork(
+    "Oussama was professional, responsive, and easy to work with. He delivered the work on time, communicated well throughout the project, and was open to feedback and revisions. Overall, a good experience.",
+    "Creative Strategist & Video Editor For E-commerce Ads",
+  ),
+  upwork(
+    "Oussama creating a reel for a client of mine that turned out better than I ever imagined. I gave him a rundown of what I was looking for and he exceeded my expectations by a long shot. Would recommend using Ousamma and will be using him again in the future.",
+  ),
+  upwork("Oussama always creates exactly what I am looking for! He does it In a timely manner and exceeds my expectations every time."),
+  upwork(
+    "Oussama a été très réactif et efficace. Les ads qu'il m'a crée mon permit de générer des prospects supplémentaires. Merci à lui.",
+  ),
+  upwork(
+    "Oussama is a top-notch freelancer , fast, reliable, and delivers excellent quality every time. Great communication and attention to detail. Highly recommended!",
+  ),
+  upwork(
+    "Oussama was easy to work with, responsive and professional throughout the project. He delivered quality work, communicated clearly and was receptive to feedback and revisions. Looking forward to working together again on future projects.",
+    "Video ads editor",
+  ),
+  upwork("Great execution, on time, very good video editing quality"),
+  upwork(
+    "Oussama did a great job on my short reel! He was super easy to work with, understood exactly what I wanted, and delivered a really polished result. I’m really happy with how it turned out and would definitely work with him again. Highly recommend!",
+  ),
+  upwork("Great work as always. Appreciate all your help and hope to work with you again!"),
+  upwork(
+    "You were very committed and very professional thank you Oussama for this magnificent work you have done i will definitely work again",
+  ),
+  upwork("SUPER JOB LOT OF SKILLS THANKS A LOT"),
 ];
 
 export type NavItem = {

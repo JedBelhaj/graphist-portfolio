@@ -2,14 +2,14 @@ import { Quote, User } from "lucide-react";
 import { ACCENT, ACCENT_WASH } from "@/lib/brand";
 import type { Testimonial } from "@/lib/content";
 
-/* Seconds for one full pass of the card set. Higher = slower. */
-const LOOP_SECONDS = 60;
+/* Seconds each card takes to drift past, so the speed stays the same however
+   many testimonials there are. Higher = slower. */
+const SECONDS_PER_CARD = 10;
 
-/* How many times the testimonials repeat inside one Row. With only three
-   cards, a single pass is ~1,700px — narrower than a wide monitor, so once
-   the track slid halfway the right edge ran out of cards. Two passes per
-   Row keeps it full past 3,000px. */
-const PASSES = 2;
+/* A Row needs at least this many cards to stay wider than a wide monitor
+   (~3,000px); below that the right edge runs out of cards once the track has
+   slid halfway. Short lists repeat inside the Row until they reach it. */
+const MIN_CARDS = 6;
 
 function Card({ t, hidden }: { t: Testimonial; hidden: boolean }) {
   return (
@@ -54,8 +54,10 @@ function Card({ t, hidden }: { t: Testimonial; hidden: boolean }) {
 /* One set of cards. Rendered twice so the -50% translate wraps seamlessly;
    spacing lives on the cards (mr-5) rather than a container gap, or the
    halfway point would land mid-gap and the loop would visibly jump. */
+const passes = (count: number) => Math.max(1, Math.ceil(MIN_CARDS / count));
+
 function Row({ items, duplicate = false }: { items: Testimonial[]; duplicate?: boolean }) {
-  const cards = Array.from({ length: PASSES }, () => items).flat();
+  const cards = Array.from({ length: passes(items.length) }, () => items).flat();
   return (
     /* Only the first pass of the first Row is announced; every repeat is
        decoration for the loop. */
@@ -69,9 +71,10 @@ function Row({ items, duplicate = false }: { items: Testimonial[]; duplicate?: b
 
 /* The drifting testimonial rail. Light cards, made for a pale ground. */
 export default function CommentCarousel({ items }: { items: Testimonial[] }) {
+  const loop = items.length * passes(items.length) * SECONDS_PER_CARD;
   return (
     <div className="testimonial-viewport overflow-hidden py-4">
-      <div className="testimonial-track flex w-max" style={{ ["--loop" as string]: `${LOOP_SECONDS}s` }}>
+      <div className="testimonial-track flex w-max" style={{ ["--loop" as string]: `${loop}s` }}>
         <Row items={items} />
         <Row items={items} duplicate />
       </div>
