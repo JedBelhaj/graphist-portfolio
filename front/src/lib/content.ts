@@ -71,11 +71,11 @@ export const HERO_STICKER_MOTION: "orbit" | "stream" = "orbit";
    shrink and pass behind the subject; the lower-right half crosses in front
    of the chest. `period` is seconds per lap. */
 export const HERO_ORBIT = {
-  cx: 0.52,
-  cy: 0.4,
+  cx: 0.56,
+  cy: 0.3,
   rx: 0.5,
   ry: 0.18,
-  tilt: 30,
+  tilt: 36,
   period: 20,
 };
 
