@@ -570,19 +570,19 @@ export const TEAM = [
     photo: "/photos/oussama-team.webp",
   },
   {
-    name: "Nadia",
+    name: "Jed Belhaj",
     role: "Head of Strategy",
     focus: "Turns one shoot day into a quarter of posts that perform.",
     photo: MOCK_PHOTO("soltani-team-strategy", 640, 800),
   },
   {
-    name: "Omar",
+    name: "Oubaid Beldi",
     role: "Editor & Motion",
     focus: "Cuts the long form, then the forty verticals hiding inside it.",
     photo: MOCK_PHOTO("soltani-team-editor", 640, 800),
   },
   {
-    name: "Lina",
+    name: "Houssemeddine Farah",
     role: "Producer",
     focus: "Locations, permits, call sheets — the reason days run on time.",
     photo: MOCK_PHOTO("soltani-team-producer", 640, 800),
