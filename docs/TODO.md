@@ -11,7 +11,7 @@ Oussama, in the Studio (no code):
 - [ ] Hide or crop any results screenshot a client wouldn't want shown (crop tool and "Hide from website" on each Client message).
 
 Jed / Claude:
-- [ ] Bulk upload in the Studio: Drive folder browser, "Bulk add" on the Photos and Videos lists, sanity-plugin-media, and a local-folder upload script.
+- [x] Bulk upload in the Studio: Drive folder browser, "Bulk add" tab, sanity-plugin-media, and a local-folder upload script (tested in the local Studio 2026-11-01).
 - [ ] Studio deploy (crop tool on results, updated field descriptions, the bulk tools).
 - [ ] Sync to Sanity after merging `feature/launch-prep`: team roles, "Oussama Soltani".
 - [ ] Real team photos for Jed, Oubaid and Houssemeddine (stock until then).
