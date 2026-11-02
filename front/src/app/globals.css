@@ -148,9 +148,25 @@ html:has(.page-loader:not(.is-done)) {
   animation: bubble-float var(--float-dur, 6s) ease-in-out var(--float-delay, 0s) infinite;
 }
 
+/* Hero slogan stickers tip over from their base on hover, with a little
+   overshoot. The hover sits on the outer layer, which stays still, so the lean
+   can't move the sticker out from under the cursor and make it flicker. */
+.slogan-sticker-art {
+  transform-origin: 50% 90%;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slogan-sticker:hover .slogan-sticker-art {
+  transform: perspective(500px) rotate(var(--lean, 12deg)) rotateX(14deg) scale(1.08);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .slogan-sticker-art {
+    transition: none;
   }
 
   .hero-rise,

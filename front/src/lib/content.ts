@@ -89,6 +89,18 @@ export const HERO_STREAM = {
   lap: 10,
 };
 
+/* The die-cut stickers round the hero slogan (HeroStickers.tsx), in pop-in
+   order. Placed against the slogan block, in the open space above and to its
+   right. `tilt` is how each one rests, `lean` which way it tips on hover. The
+   slogan wraps tighter below xl, so only three fit there. */
+export const HERO_SLOGAN_STICKERS = [
+  { src: "/stickers/camera.svg", cls: "w-24 -top-[122px] left-[2%]", tilt: -10, lean: -14 },
+  { src: "/stickers/clapperboard.svg", cls: "w-24 -top-[122px] left-[46%]", tilt: 8, lean: 14 },
+  { src: "/stickers/play.svg", cls: "hidden xl:block w-20 -top-[34px] left-[66%]", tilt: 12, lean: 16 },
+  { src: "/stickers/like.svg", cls: "w-[76px] top-[22px] left-[82%] xl:left-[85%]", tilt: -8, lean: -14 },
+  { src: "/stickers/megaphone.svg", cls: "hidden xl:block w-24 top-[98px] left-[80%]", tilt: 6, lean: 14 },
+];
+
 /* The four bubble colourways. The CMS stores the key; components get the
    resolved pair. */
 export const SERVICE_COLORS = {

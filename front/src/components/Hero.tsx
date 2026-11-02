@@ -3,6 +3,7 @@ import { getContent } from "@/lib/cms";
 import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKER_MOTION } from "@/lib/content";
 import HeroBurst from "./HeroBurst";
 import HeroOrbit from "./HeroOrbit";
+import HeroStickers from "./HeroStickers";
 import HeroStream from "./HeroStream";
 import InViewGate from "./InViewGate";
 
@@ -12,6 +13,8 @@ const T_PHOTO = 100;
 const T_BURST = 800;
 const T_LOGOS = 1250;
 const T_LOGO_STEP = 110;
+const T_STICKERS = 500;
+const T_STICKER_STEP = 130;
 
 /* The cut-out plus its burst and tool stickers, shared by the mobile card and
    the desktop panel so both get the same entrance. The burst position and the
@@ -61,28 +64,31 @@ export default async function Hero() {
     <section className="relative overflow-hidden bg-[rgb(254,254,254)] pt-28 lg:pt-15">
       <div className="mx-auto grid max-w-[1300px] grid-cols-1 items-center gap-10 px-5 sm:px-8 lg:min-h-screen lg:grid-cols-2 lg:gap-6 lg:px-[43px]">
         <div className="py-6 lg:py-40">
-          <div className="hero-rise mb-8 flex flex-wrap gap-x-3">
-            <h1
-              className="text-[40px] font-semibold leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
-              style={{ fontFamily: FONT_DISPLAY }}
-            >
-              {home.heroLine1}
-            </h1>
-            <h1
-              className="text-[40px] font-black leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
-              style={{ fontFamily: FONT_DISPLAY }}
-            >
-              {home.heroLine2}
-            </h1>
-            <div className="flex items-center gap-3">
+          <div className="relative mb-8">
+            <div className="hero-rise flex flex-wrap gap-x-3">
               <h1
-                className="text-[40px] leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
-                style={{ fontFamily: FONT_SCRIPT }}
+                className="text-[40px] font-semibold leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
+                style={{ fontFamily: FONT_DISPLAY }}
               >
-                {home.heroLine3}
+                {home.heroLine1}
               </h1>
-              <img src={HERO_ARROW} alt="" className="hidden h-10 sm:block lg:h-12" />
+              <h1
+                className="text-[40px] font-black leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
+                style={{ fontFamily: FONT_DISPLAY }}
+              >
+                {home.heroLine2}
+              </h1>
+              <div className="flex items-center gap-3">
+                <h1
+                  className="text-[40px] leading-[1.1] tracking-[-0.03em] text-[rgb(22,28,39)] sm:text-5xl lg:text-[53px]"
+                  style={{ fontFamily: FONT_SCRIPT }}
+                >
+                  {home.heroLine3}
+                </h1>
+                <img src={HERO_ARROW} alt="" className="hidden h-10 sm:block lg:h-12" />
+              </div>
             </div>
+            <HeroStickers delay={T_STICKERS} step={T_STICKER_STEP} />
           </div>
 
           <p
