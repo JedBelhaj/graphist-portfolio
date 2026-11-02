@@ -57,6 +57,81 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
+export type PortfolioItem = {
+  _id: string;
+  _type: "portfolioItem";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  orderRank?: string;
+  hidden?: boolean;
+  featured?: boolean;
+  title?: string;
+  slug?: Slug;
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+  role?: string;
+  skills?: Array<string>;
+  coverImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  gallery?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
+  videoUrl?: string;
+  projectUrl?: string;
+  source?: string;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
+};
+
 export type ClientLogo = {
   _id: string;
   _type: "clientLogo";
@@ -75,22 +150,6 @@ export type ClientLogo = {
   };
   size?: "24" | "32" | "36" | "40" | "44" | "48" | "56" | "64";
   tone?: "silhouette" | "grayscale";
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
 };
 
 export type TeamMember = {
@@ -151,6 +210,13 @@ export type Testimonial = {
     crop?: SanityImageCrop;
     _type: "image";
   };
+  featured?: boolean;
+  source?: string;
+  rating?: number;
+  projectTitle?: string;
+  date?: string;
+  dateRange?: string;
+  earnings?: string;
 };
 
 export type WebProject = {
@@ -473,6 +539,32 @@ export type SiteSettings = {
   seoDescription?: string;
 };
 
+export type MediaFolderReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "media.folder";
+};
+
+export type MediaFolder = {
+  _id: string;
+  _type: "media.folder";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  parent?: MediaFolderReference;
+};
+
+export type MediaTag = {
+  _id: string;
+  _type: "media.tag";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: Slug;
+};
+
 export type SanityImagePaletteSwatch = {
   _type: "sanity.imagePaletteSwatch";
   background?: string;
@@ -570,12 +662,6 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
-};
-
 export type AllSanitySchemaTypes =
   | Lane
   | Stat
@@ -583,9 +669,11 @@ export type AllSanitySchemaTypes =
   | PageHero
   | Heading
   | SanityImageAssetReference
-  | ClientLogo
+  | PortfolioItem
   | SanityImageCrop
   | SanityImageHotspot
+  | Slug
+  | ClientLogo
   | TeamMember
   | Result
   | Testimonial
@@ -603,6 +691,9 @@ export type AllSanitySchemaTypes =
   | AboutPage
   | HomePage
   | SiteSettings
+  | MediaFolderReference
+  | MediaFolder
+  | MediaTag
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -610,12 +701,11 @@ export type AllSanitySchemaTypes =
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset
-  | Geopoint
-  | Slug;
+  | Geopoint;
 
 // Source: ../front/src/lib/cms.ts
 // Variable: CONTENT_QUERY
-// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0],  "about": *[_type == "aboutPage" && _id == "aboutPage"][0],  "services": *[_type == "servicesPage" && _id == "servicesPage"][0],  "work": *[_type == "workPage" && _id == "workPage"][0],  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0],  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{    ...,    "sections": sections[_type == "categorySection" && hidden != true]{      _key, title,      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }    }  },  "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],  "faq": *[_type == "faqPage" && _id == "faqPage"][0],  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)    { image, alt, showInRecent, _createdAt },  "videos": *[_type == "video" && defined(poster.asset) && hidden != true] | order(orderRank)    { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)    { title, screenshot, address },  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true] | order(orderRank)    { quote, name, tag, handle, avatar },  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)    { image, label, alt },  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)    { name, role, focus, photo },  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)    { name, logo, size, tone }}
+// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0],  "about": *[_type == "aboutPage" && _id == "aboutPage"][0],  "services": *[_type == "servicesPage" && _id == "servicesPage"][0],  "work": *[_type == "workPage" && _id == "workPage"][0],  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0],  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{    ...,    "sections": sections[_type == "categorySection" && hidden != true]{      _key, title,      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }    }  },  "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],  "faq": *[_type == "faqPage" && _id == "faqPage"][0],  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)    { image, alt, showInRecent, _createdAt },  "videos": *[_type == "video" && defined(poster.asset) && hidden != true] | order(orderRank)    { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)    { title, screenshot, address },  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]    | order(coalesce(featured, false) desc, orderRank)    { quote, name, tag, handle, avatar, source, rating, projectTitle },  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)    { image, label, alt },  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)    { name, role, focus, photo },  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)    { name, logo, size, tone }}
 export type CONTENT_QUERY_RESULT = {
   settings: {
     _id: "siteSettings";
@@ -905,6 +995,9 @@ export type CONTENT_QUERY_RESULT = {
       crop?: SanityImageCrop;
       _type: "image";
     } | null;
+    source: string | null;
+    rating: number | null;
+    projectTitle: string | null;
   }>;
   results: Array<{
     image: {
@@ -946,7 +1039,7 @@ export type CONTENT_QUERY_RESULT = {
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0],\n  "about": *[_type == "aboutPage" && _id == "aboutPage"][0],\n  "services": *[_type == "servicesPage" && _id == "servicesPage"][0],\n  "work": *[_type == "workPage" && _id == "workPage"][0],\n  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0],\n  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{\n    ...,\n    "sections": sections[_type == "categorySection" && hidden != true]{\n      _key, title,\n      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }\n    }\n  },\n  "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],\n  "faq": *[_type == "faqPage" && _id == "faqPage"][0],\n  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)\n    { image, alt, showInRecent, _createdAt },\n  "videos": *[_type == "video" && defined(poster.asset) && hidden != true] | order(orderRank)\n    { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },\n  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)\n    { title, screenshot, address },\n  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true] | order(orderRank)\n    { quote, name, tag, handle, avatar },\n  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)\n    { image, label, alt },\n  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)\n    { name, role, focus, photo },\n  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)\n    { name, logo, size, tone }\n}': CONTENT_QUERY_RESULT;
+    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0],\n  "about": *[_type == "aboutPage" && _id == "aboutPage"][0],\n  "services": *[_type == "servicesPage" && _id == "servicesPage"][0],\n  "work": *[_type == "workPage" && _id == "workPage"][0],\n  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0],\n  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{\n    ...,\n    "sections": sections[_type == "categorySection" && hidden != true]{\n      _key, title,\n      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }\n    }\n  },\n  "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],\n  "faq": *[_type == "faqPage" && _id == "faqPage"][0],\n  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)\n    { image, alt, showInRecent, _createdAt },\n  "videos": *[_type == "video" && defined(poster.asset) && hidden != true] | order(orderRank)\n    { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },\n  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)\n    { title, screenshot, address },\n  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]\n    | order(coalesce(featured, false) desc, orderRank)\n    { quote, name, tag, handle, avatar, source, rating, projectTitle },\n  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)\n    { image, label, alt },\n  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)\n    { name, role, focus, photo },\n  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)\n    { name, logo, size, tone }\n}': CONTENT_QUERY_RESULT;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

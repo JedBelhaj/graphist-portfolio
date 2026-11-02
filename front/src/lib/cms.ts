@@ -29,6 +29,8 @@ import {
   TEAM,
   TESTIMONIALS,
   TOOLBOX,
+  UPWORK_CLIENT,
+  upworkTag,
   VIDEO_CAPABILITIES,
   VIDEO_SECTIONS,
   VIDEO_STATS,
@@ -111,8 +113,9 @@ const CONTENT_QUERY = defineQuery(`{
     { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },
   "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)
     { title, screenshot, address },
-  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true] | order(orderRank)
-    { quote, name, tag, handle, avatar },
+  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]
+    | order(coalesce(featured, false) desc, orderRank)
+    { quote, name, tag, handle, avatar, source, rating, projectTitle },
   "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)
     { image, label, alt },
   "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)
@@ -264,8 +267,9 @@ function build(raw: Raw | null) {
   const testimonials: Testimonial[] = list(
     r.testimonials.map((t) => ({
       quote: t.quote!,
-      name: t.name || null,
-      tag: t.tag || null,
+      /* Imported Upwork reviews leave these blank; they read like the defaults. */
+      name: t.name || (t.source === "Upwork" ? UPWORK_CLIENT : null),
+      tag: t.tag || (t.source === "Upwork" ? upworkTag(t.rating, t.projectTitle) : null),
       handle: t.handle || null,
       /* No photo yet: keep the original placeholder for that person, if any. */
       avatar: hasImage(t.avatar)
