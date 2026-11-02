@@ -89,7 +89,15 @@ export const HERO_STREAM = {
   lap: 10,
 };
 
-/* The die-cut stickers round the hero slogan (HeroStickers.tsx), in pop-in
+/* The stickers either side of the Wall of Love heading, placed against its
+   full-width block. Same fields as the hero's below. */
+export const LOVE_STICKERS = [
+  { src: "/stickers/love-cards.webp", cls: "w-24 -top-[44px] left-[8%]", tilt: -8, lean: -14 },
+  { src: "/stickers/love-banknote.webp", cls: "w-40 top-[112px] left-[2%]", tilt: 5, lean: 12 },
+  { src: "/stickers/love-pack.webp", cls: "w-20 -top-[14px] right-[8%]", tilt: 8, lean: 14 },
+];
+
+/* The die-cut stickers round the hero slogan (Stickers.tsx), in pop-in
    order. Placed against the slogan block, in the open space above and to its
    right. `tilt` is how each one rests, `lean` which way it tips on hover. */
 export const HERO_SLOGAN_STICKERS = [

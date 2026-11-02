@@ -1,11 +1,11 @@
 import { ACCENT, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
-import { HERO_ARROW, HERO_BURST_CLS, HERO_STICKER_MOTION } from "@/lib/content";
+import { HERO_ARROW, HERO_BURST_CLS, HERO_SLOGAN_STICKERS, HERO_STICKER_MOTION } from "@/lib/content";
 import HeroBurst from "./HeroBurst";
 import HeroOrbit from "./HeroOrbit";
-import HeroStickers from "./HeroStickers";
 import HeroStream from "./HeroStream";
 import InViewGate from "./InViewGate";
+import Stickers from "./Stickers";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
    in from the right, then the burst behind it, then the logos pop one by one. */
@@ -88,7 +88,7 @@ export default async function Hero() {
                 <img src={HERO_ARROW} alt="" className="hidden h-10 sm:block lg:h-12" />
               </div>
             </div>
-            <HeroStickers delay={T_STICKERS} step={T_STICKER_STEP} />
+            <Stickers stickers={HERO_SLOGAN_STICKERS} delay={T_STICKERS} step={T_STICKER_STEP} />
           </div>
 
           <p
