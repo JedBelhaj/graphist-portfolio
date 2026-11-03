@@ -28,12 +28,10 @@ export default async function Page() {
           costs follow once the case is made. */}
       <TrustedBy />
 
-      <StickerSeam stickers={seams.results} />
       <Results />
 
       <Testimonials />
 
-      <StickerSeam stickers={seams.work} />
       <WorkTeaser />
 
       <Marquee

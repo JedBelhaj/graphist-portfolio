@@ -110,17 +110,11 @@ const seam = (name: string, cls: string, tilt: number, lean: number) => ({
 
 export const SEAM_STICKERS = {
   home: {
-    results: [seam("harissa", "w-14 -top-[48px] right-[5%] lg:w-24 lg:-top-[72px]", 8, 14)],
-    work: [seam("moped", "w-24 -top-[36px] left-[4%] lg:w-48 lg:-top-[70px]", -5, -10)],
     services: [seam("jasmine", "w-24 -top-[30px] right-[4%] lg:w-44 lg:-top-[54px] lg:right-[7%]", 8, 12)],
     packages: [seam("poster-zidane", "w-16 -top-[44px] left-[4%] lg:w-28 lg:-top-[80px]", -6, -12)],
   },
   about: {
-    team: [
-      seam("emblem", "w-14 -top-[44px] left-[4%] lg:w-24 lg:-top-[70px]", -8, -12),
-      seam("clock-tower", "w-8 -top-[66px] right-[7%] lg:w-14 lg:-top-[110px]", 5, 10),
-    ],
-    countries: [seam("two-men", "w-28 -top-[36px] right-[4%] lg:w-48 lg:-top-[56px]", 4, 10)],
+    team: [seam("clock-tower", "w-8 -top-[66px] right-[7%] lg:w-14 lg:-top-[110px]", 5, 10)],
   },
   services: {
     groups: [
@@ -154,10 +148,7 @@ export const SEAM_STICKERS = {
     ],
   },
   faq: {
-    list: [
-      seam("olive-oil", "w-20 -top-[60px] right-[4%] lg:w-36 lg:-top-[60px]", 5, 12),
-      seam("stamp", "w-12 -top-[44px] right-[28%] lg:w-20 lg:-top-[110px] lg:right-[18%]", -7, -12),
-    ],
+    list: [seam("stamp", "w-12 -top-[44px] right-[6%] lg:w-20 lg:-top-[110px] lg:right-[10%]", -7, -12)],
   },
 };
 

@@ -21,7 +21,6 @@ export default function AboutPage() {
       <StickerSeam stickers={SEAM_STICKERS.about.team} />
       <Team />
 
-      <StickerSeam stickers={SEAM_STICKERS.about.countries} />
       <Countries />
     </>
   );
