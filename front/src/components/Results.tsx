@@ -19,8 +19,8 @@ export default async function Results() {
   ];
 
   return (
-    <section id="results" className="bg-[rgb(10,11,16)] px-5 py-20 sm:px-8 lg:py-28">
-      <div className="mx-auto max-w-[1180px]">
+    <section id="results" className="bg-[rgb(10,11,16)] py-20 lg:py-28">
+      <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
         <div className="mb-14 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <Reveal>
@@ -51,7 +51,7 @@ export default async function Results() {
           </Reveal>
         </div>
 
-        <div className="mb-16 grid grid-cols-3 gap-4 border-y border-white/10 py-10 lg:mb-20">
+        <div className="mb-10 grid grid-cols-3 gap-4 border-y border-white/10 py-10 lg:mb-14">
           {stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 90}>
               <div className="text-center">
@@ -69,8 +69,12 @@ export default async function Results() {
           ))}
         </div>
 
-        <ResultsWall results={results} />
       </div>
+
+      {/* Outside the width cap, so the banner runs edge to edge. */}
+      <Reveal delay={100}>
+        <ResultsWall results={results} />
+      </Reveal>
     </section>
   );
 }
