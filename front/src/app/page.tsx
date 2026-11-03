@@ -31,7 +31,6 @@ export default async function Page() {
       <StickerSeam stickers={seams.results} />
       <Results />
 
-      <StickerSeam stickers={seams.testimonials} />
       <Testimonials />
 
       <StickerSeam stickers={seams.work} />
@@ -61,10 +60,8 @@ export default async function Page() {
         duration={40}
       />
 
-      <StickerSeam stickers={seams.about} />
       <AboutIntro />
 
-      <StickerSeam stickers={seams.countries} />
       <Countries />
     </>
   );

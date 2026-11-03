@@ -1,7 +1,7 @@
 /* Die-cut stickers scattered round a heading. Three layers, so nothing fights:
    the outer one pops in and is the steady hover target, the middle one bobs
-   (bubble-float), and the art itself leans on hover (globals.css). Desktop only:
-   a phone has no room round a heading and no hover to lean on. */
+   (bubble-float), and the art itself leans on hover (globals.css). Each `cls`
+   carries its phone size and place, with lg: overrides for desktop. */
 export type Sticker = { src: string; cls: string; tilt: number; lean: number };
 
 export default function Stickers({
@@ -14,7 +14,7 @@ export default function Stickers({
   step: number;
 }) {
   return (
-    <div aria-hidden="true" className="hidden lg:block">
+    <div aria-hidden="true">
       {stickers.map((s, i) => (
         <div
           key={s.src}

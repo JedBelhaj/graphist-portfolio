@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { getContent } from "@/lib/cms";
+import { SEAM_STICKERS } from "@/lib/content";
 import PageHero from "@/components/PageHero";
 import Photography from "@/components/Photography";
+import StickerSeam from "@/components/StickerSeam";
 
 export const metadata: Metadata = {
   title: "Photography",
@@ -17,6 +19,7 @@ export default async function PhotographyPage() {
         {hero.body || undefined}
       </PageHero>
 
+      <StickerSeam stickers={SEAM_STICKERS.photography.gallery} />
       <Photography />
     </>
   );
