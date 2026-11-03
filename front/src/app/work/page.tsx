@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getContent } from "@/lib/cms";
+import { SEAM_STICKERS } from "@/lib/content";
 import PageHero from "@/components/PageHero";
+import StickerSeam from "@/components/StickerSeam";
 import WorkTeaser from "@/components/WorkTeaser";
 import Work from "@/components/Work";
 
@@ -21,6 +23,7 @@ export default async function WorkPage() {
 
       <WorkTeaser heading={false} />
 
+      <StickerSeam stickers={SEAM_STICKERS.work.recent} />
       <Work title={work.recentTitle} tabs={work.tabs} images={work.recent} />
     </>
   );

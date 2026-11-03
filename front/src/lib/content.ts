@@ -97,6 +97,67 @@ export const LOVE_STICKERS = [
   { src: "/stickers/love-pack.webp", cls: "w-20 -top-[14px] right-[8%]", tilt: 8, lean: 14 },
 ];
 
+/* The stickers scattered across the joins between sections (StickerSeam.tsx).
+   Each `top` is measured from the join, so a negative one reaches up into the
+   section above. Keyed by page, then by the section the join comes before. */
+const seam = (name: string, cls: string, tilt: number, lean: number) => ({
+  src: `/stickers/scatter/${name}.webp`,
+  cls,
+  tilt,
+  lean,
+});
+
+export const SEAM_STICKERS = {
+  home: {
+    results: [
+      seam("coin-100", "w-24 -top-[44px] left-[5%]", -10, -14),
+      seam("espresso", "w-32 -top-[60px] right-[5%]", 6, 12),
+    ],
+    testimonials: [seam("olive-oil", "w-36 -top-[64px] right-[24%]", -5, 12)],
+    work: [
+      seam("two-men", "w-48 -top-[56px] left-[4%]", -4, -10),
+      seam("harissa", "w-24 -top-[72px] right-[6%]", 8, 14),
+    ],
+    services: [seam("boga", "w-14 -top-[110px] right-[9%]", 12, 14)],
+    packages: [
+      seam("stamp", "w-24 -top-[70px] left-[4%]", -7, -12),
+      seam("coin-1", "w-20 -top-[34px] right-[5%]", 12, 14),
+    ],
+    about: [seam("cologne", "w-20 -top-[96px] left-[6%]", -8, -14)],
+    countries: [
+      seam("emblem", "w-24 -top-[70px] left-[5%]", -6, -12),
+      seam("clock-tower", "w-14 -top-[110px] right-[8%]", 5, 10),
+      seam("federation", "w-24 -top-[60px] right-[16%]", 9, 14),
+    ],
+  },
+  about: {
+    team: [
+      seam("federation", "w-24 -top-[60px] left-[4%]", -8, -12),
+      seam("clock-tower", "w-14 -top-[110px] right-[6%]", 5, 10),
+    ],
+    countries: [seam("two-men", "w-48 -top-[56px] right-[4%]", 4, 10)],
+  },
+  services: {
+    groups: [
+      seam("espresso", "w-32 -top-[150px] right-[8%]", 6, 12),
+      seam("coin-100", "w-24 -top-[52px] right-[22%]", -10, -14),
+    ],
+    packages: [seam("harissa", "w-24 top-[10px] left-[5%]", -8, -14)],
+  },
+  work: {
+    recent: [
+      seam("stamp", "w-24 -top-[70px] left-[4%]", -7, -12),
+      seam("boga", "w-14 -top-[90px] right-[6%]", 10, 14),
+    ],
+  },
+  faq: {
+    list: [
+      seam("olive-oil", "w-36 -top-[60px] right-[4%]", 5, 12),
+      seam("coin-1", "w-20 -top-[84px] left-[3%]", -12, -14),
+    ],
+  },
+};
+
 /* The die-cut stickers round the hero slogan (Stickers.tsx), in pop-in
    order. Placed against the slogan block, in the open space above and to its
    right. `tilt` is how each one rests, `lean` which way it tips on hover. */

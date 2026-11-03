@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { SEAM_STICKERS } from "@/lib/content";
 import AboutIntro from "@/components/AboutIntro";
 import About from "@/components/About";
+import StickerSeam from "@/components/StickerSeam";
 import Team from "@/components/Team";
 import Countries from "@/components/Countries";
 
@@ -16,8 +18,10 @@ export default function AboutPage() {
 
       <About />
 
+      <StickerSeam stickers={SEAM_STICKERS.about.team} />
       <Team />
 
+      <StickerSeam stickers={SEAM_STICKERS.about.countries} />
       <Countries />
     </>
   );

@@ -1,8 +1,10 @@
 import { ACCENT_TINT, ACCENT_WASH, INK } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
+import { SEAM_STICKERS } from "@/lib/content";
 import Hero from "@/components/Hero";
 import TrustedBy from "@/components/TrustedBy";
 import Results from "@/components/Results";
+import StickerSeam from "@/components/StickerSeam";
 import Testimonials from "@/components/Testimonials";
 import WorkTeaser from "@/components/WorkTeaser";
 import Marquee from "@/components/Marquee";
@@ -15,6 +17,7 @@ import Countries from "@/components/Countries";
    hands off to its own page. Header and footer come from the layout. */
 export default async function Page() {
   const { home, services, images } = await getContent();
+  const seams = SEAM_STICKERS.home;
 
   return (
     <>
@@ -25,10 +28,13 @@ export default async function Page() {
           costs follow once the case is made. */}
       <TrustedBy />
 
+      <StickerSeam stickers={seams.results} />
       <Results />
 
+      <StickerSeam stickers={seams.testimonials} />
       <Testimonials />
 
+      <StickerSeam stickers={seams.work} />
       <WorkTeaser />
 
       <Marquee
@@ -37,6 +43,7 @@ export default async function Page() {
         textColor={INK}
       />
 
+      <StickerSeam stickers={seams.services} />
       <Services
         bubbles={services.bubbles}
         title={home.services.title}
@@ -44,6 +51,7 @@ export default async function Page() {
         photo={images.services}
       />
 
+      <StickerSeam stickers={seams.packages} />
       <Packages />
 
       <Marquee
@@ -53,8 +61,10 @@ export default async function Page() {
         duration={40}
       />
 
+      <StickerSeam stickers={seams.about} />
       <AboutIntro />
 
+      <StickerSeam stickers={seams.countries} />
       <Countries />
     </>
   );
