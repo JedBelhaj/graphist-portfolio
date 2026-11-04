@@ -161,16 +161,165 @@ html:has(.page-loader:not(.is-done)) {
   animation: bubble-float var(--float-dur, 6s) ease-in-out var(--float-delay, 0s) infinite;
 }
 
-/* Stickers tip over from their base on hover, with a little overshoot. The
-   hover sits on the outer layer, which stays still, so the lean can't move the
-   sticker out from under the cursor and make it flicker. */
-.floating-sticker-art {
-  transform-origin: 50% 90%;
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* ---------- Peeling stickers (Stickers.tsx) ----------
+   Everything runs off one number, --peel: 0 is fresh and stuck flat, 1 is old
+   and lifting. It is a registered property, so hovering eases it up and
+   leaving eases it back down, and every layer below follows. --flutter
+   swings the loose corners while the cursor stays. */
+@property --peel {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
 }
 
-.floating-sticker:hover .floating-sticker-art {
-  transform: perspective(500px) rotate(var(--lean, 12deg)) rotateX(14deg) scale(1.08);
+@property --flutter {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@keyframes sticker-flutter {
+  0%,
+  100% {
+    --flutter: -1;
+  }
+  50% {
+    --flutter: 1;
+  }
+}
+
+/* Corner sizes are a share of the sticker's width, so both stay 45° folds
+   on any shape. */
+.floating-sticker {
+  container-type: inline-size;
+}
+
+.sticker-peel {
+  --a: calc(var(--peel) * 36cqi);
+  --b: calc(var(--peel) * 20cqi);
+  --age: sepia(calc(var(--peel) * 0.45)) saturate(calc(1 - var(--peel) * 0.35))
+    contrast(calc(1 - var(--peel) * 0.08)) brightness(calc(1 + var(--peel) * 0.04));
+  position: relative;
+  display: block;
+  perspective: 700px;
+  rotate: calc(var(--tilt, 0deg) + var(--lean, 0deg) * 0.15 * var(--peel));
+  transition: --peel 0.9s cubic-bezier(0.25, 0.8, 0.25, 1);
+  animation: sticker-flutter 1.5s ease-in-out var(--flutter-delay, 0s) infinite paused;
+}
+
+.floating-sticker:hover .sticker-peel {
+  --peel: 1;
+  animation-play-state: running;
+}
+
+/* The part still stuck down. Its shadow is tight while it's flat, and widens
+   as the paper loosens. */
+.peel-surface {
+  position: relative;
+  display: block;
+  filter: drop-shadow(
+    0 calc(1px + var(--peel) * 4px) calc(2px + var(--peel) * 7px) rgba(22, 28, 39, calc(0.16 + var(--peel) * 0.1))
+  );
+}
+
+.peel-art {
+  display: block;
+  width: 100%;
+  filter: var(--age);
+  clip-path: polygon(
+    var(--b) 0,
+    100% 0,
+    100% calc(100% - var(--a)),
+    calc(100% - var(--a)) 100%,
+    0 100%,
+    0 var(--b)
+  );
+}
+
+/* Creases and yellowing, cut to the sticker's own outline. */
+.peel-age {
+  position: absolute;
+  inset: 0;
+  clip-path: inherit;
+  mask: var(--src) center / 100% 100% no-repeat;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.03' numOctaves='4' seed='9'/%3E%3CfeDiffuseLighting lighting-color='%23fff' surfaceScale='3.2'%3E%3CfeDistantLight azimuth='225' elevation='58'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E")
+      center / 260px,
+    linear-gradient(160deg, rgba(150, 110, 50, 0.18), rgba(110, 80, 40, 0.3));
+  mix-blend-mode: multiply;
+  opacity: calc(var(--peel) * 0.8);
+}
+
+.peel-surface .peel-age {
+  clip-path: polygon(
+    var(--b) 0,
+    100% 0,
+    100% calc(100% - var(--a)),
+    calc(100% - var(--a)) 100%,
+    0 100%,
+    0 var(--b)
+  );
+}
+
+/* The two corner triangles, beyond each fold line. */
+.peel-br {
+  clip-path: polygon(calc(100% - var(--a)) 100%, 100% calc(100% - var(--a)), 100% 100%);
+}
+
+.peel-tl {
+  clip-path: polygon(0 0, var(--b) 0, 0 var(--b));
+}
+
+/* Where a corner has lifted, the wall shows through, shaded by the flap. */
+.peel-shadow {
+  position: absolute;
+  inset: 0;
+  mask: var(--src) center / 100% 100% no-repeat;
+  background: rgba(30, 22, 12, 0.32);
+  opacity: var(--peel);
+}
+
+/* Each flap turns about its fold line (a 45° axis), most of the way over,
+   so it stands off the sticker in perspective instead of lying flat. */
+.peel-flap {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.peel-flap-br {
+  transform-origin: calc(100% - var(--a)) 100%;
+  transform: rotate3d(1, -1, 0, calc(var(--peel) * -158deg + var(--flutter) * var(--peel) * 9deg));
+}
+
+.peel-flap-tl {
+  transform-origin: var(--b) 0;
+  transform: rotate3d(1, -1, 0, calc(var(--peel) * 150deg + var(--flutter) * var(--peel) * -7deg));
+}
+
+.peel-front {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: var(--age);
+  backface-visibility: hidden;
+}
+
+/* The paper backing, seen once a flap passes edge-on. It casts a soft
+   shadow on the sticker beneath it. */
+.peel-back-wrap {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(-0.5px);
+  filter: drop-shadow(2px 3px 4px rgba(22, 18, 10, 0.35));
+}
+
+.peel-back {
+  position: absolute;
+  inset: 0;
+  mask: var(--src) center / 100% 100% no-repeat;
+  background: linear-gradient(135deg, #cfc7b6 0%, #ebe5d8 45%, #fbf8f1 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -178,8 +327,10 @@ html:has(.page-loader:not(.is-done)) {
     scroll-behavior: auto;
   }
 
-  .floating-sticker-art {
+  /* Stickers still peel on hover, just without the ease or the flutter. */
+  .sticker-peel {
     transition: none;
+    animation: none;
   }
 
   .hero-rise,

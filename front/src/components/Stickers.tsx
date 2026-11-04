@@ -1,8 +1,25 @@
-/* Die-cut stickers scattered round a heading. Three layers, so nothing fights:
-   the outer one pops in and is the steady hover target, the middle one bobs
-   (bubble-float), and the art itself leans on hover (globals.css). Each `cls`
+/* Die-cut stickers scattered round a heading. They sit flat and fresh; on
+   hover they age and two corners peel back off the page (globals.css,
+   .sticker-peel). The outer layer pops in and is the steady hover target, so
+   the peel can't move the sticker out from under the cursor. Each `cls`
    carries its phone size and place, with lg: overrides for desktop. */
 export type Sticker = { src: string; cls: string; tilt: number; lean: number };
+
+/* One peeling corner: its shadow on the wall, then the flap itself, which
+   folds over to show the paper backing. */
+function Corner({ src, at }: { src: string; at: "br" | "tl" }) {
+  return (
+    <>
+      <span className={`peel-shadow peel-${at}`} />
+      <span className={`peel-flap peel-flap-${at}`}>
+        <img src={src} alt="" draggable={false} className={`peel-front peel-${at}`} />
+        <span className="peel-back-wrap">
+          <span className={`peel-back peel-${at}`} />
+        </span>
+      </span>
+    </>
+  );
+}
 
 export default function Stickers({
   stickers,
@@ -19,21 +36,25 @@ export default function Stickers({
         <div
           key={s.src}
           className={`pop-in floating-sticker pointer-events-auto absolute z-10 ${s.cls}`}
-          style={{ animationDelay: `${delay + i * step}ms`, "--lean": `${s.lean}deg` } as React.CSSProperties}
+          style={{ animationDelay: `${delay + i * step}ms` }}
         >
           <div
-            className="bubble-float"
+            className="sticker-peel select-none"
             style={
-              { "--float-dur": `${6 + i * 0.8}s`, "--float-delay": `${-i * 1.3}s` } as React.CSSProperties
+              {
+                "--src": `url(${s.src})`,
+                "--tilt": `${s.tilt}deg`,
+                "--lean": `${s.lean}deg`,
+                "--flutter-delay": `${-i * 0.37}s`,
+              } as React.CSSProperties
             }
           >
-            <img
-              src={s.src}
-              alt=""
-              draggable={false}
-              className="floating-sticker-art w-full select-none drop-shadow-[0_8px_14px_rgba(22,28,39,0.2)]"
-              style={{ rotate: `${s.tilt}deg` }}
-            />
+            <span className="peel-surface">
+              <img src={s.src} alt="" draggable={false} className="peel-art" />
+              <span className="peel-age" />
+            </span>
+            <Corner src={s.src} at="br" />
+            <Corner src={s.src} at="tl" />
           </div>
         </div>
       ))}
