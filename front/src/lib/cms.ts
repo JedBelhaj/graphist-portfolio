@@ -276,7 +276,7 @@ function build(raw: Raw | null) {
   );
 
   const results: ResultShot[] = list(
-    r.results.map((x) => ({ src: imageUrl(x.image!, 900), alt: x.alt || x.label || "", label: x.label ?? "" })),
+    r.results.map((x) => ({ src: imageUrl(x.image!, 900), alt: x.alt || x.label || "Client message", label: x.label ?? "" })),
     RESULTS,
   );
 

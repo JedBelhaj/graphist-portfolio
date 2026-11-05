@@ -221,7 +221,6 @@ export type Photo = {
     _type: "image";
   };
   alt?: string;
-  category?: "brand" | "product" | "portrait" | "event";
   showInRecent?: boolean;
 };
 
