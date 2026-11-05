@@ -1,0 +1,42 @@
+/* Die-cut stickers scattered round a heading. Three layers, so nothing fights:
+   the outer one pops in and is the steady hover target, the middle one bobs
+   (bubble-float), and the art itself leans on hover (globals.css). Each `cls`
+   carries its phone size and place, with lg: overrides for desktop. */
+export type Sticker = { src: string; cls: string; tilt: number; lean: number };
+
+export default function Stickers({
+  stickers,
+  delay,
+  step,
+}: {
+  stickers: Sticker[];
+  delay: number;
+  step: number;
+}) {
+  return (
+    <div aria-hidden="true">
+      {stickers.map((s, i) => (
+        <div
+          key={s.src}
+          className={`pop-in floating-sticker pointer-events-auto absolute z-10 ${s.cls}`}
+          style={{ animationDelay: `${delay + i * step}ms`, "--lean": `${s.lean}deg` } as React.CSSProperties}
+        >
+          <div
+            className="bubble-float"
+            style={
+              { "--float-dur": `${6 + i * 0.8}s`, "--float-delay": `${-i * 1.3}s` } as React.CSSProperties
+            }
+          >
+            <img
+              src={s.src}
+              alt=""
+              draggable={false}
+              className="floating-sticker-art w-full select-none drop-shadow-[0_8px_14px_rgba(22,28,39,0.2)]"
+              style={{ rotate: `${s.tilt}deg` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

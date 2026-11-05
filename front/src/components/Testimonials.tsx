@@ -1,7 +1,10 @@
 import { ACCENT, ACCENT_WASH, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
+import { LOVE_STICKERS } from "@/lib/content";
 import CommentCarousel from "./CommentCarousel";
+import InViewGate from "./InViewGate";
 import Reveal from "./Reveal";
+import Stickers from "./Stickers";
 
 /* Written testimonials, after the Results screenshots. A pale ground so the
    dark Results block above it gets a clean break rather than running on. */
@@ -11,7 +14,12 @@ export default async function Testimonials() {
 
   return (
     <section id="testimonials" className="py-20 lg:py-28" style={{ backgroundColor: ACCENT_WASH }}>
-      <div className="mx-auto mb-10 max-w-[1180px] px-5 text-center sm:px-8 lg:mb-14">
+      <div className="relative mx-auto mb-10 max-w-[1180px] px-5 text-center sm:px-8 lg:mb-14">
+        {/* Gated: this section starts well below the fold, and the pop-in would
+            finish before anyone scrolled down to it. */}
+        <InViewGate className="pointer-events-none absolute inset-0">
+          <Stickers stickers={LOVE_STICKERS} delay={150} step={130} />
+        </InViewGate>
         <Reveal>
           <p
             className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"

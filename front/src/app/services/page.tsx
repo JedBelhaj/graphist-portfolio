@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { getContent } from "@/lib/cms";
+import { SEAM_STICKERS } from "@/lib/content";
 import PageHero from "@/components/PageHero";
 import ServiceGroups from "@/components/ServiceGroups";
+import StickerSeam from "@/components/StickerSeam";
 import Packages from "@/components/Packages";
 import Toolbox from "@/components/Toolbox";
 
@@ -20,10 +22,12 @@ export default async function ServicesPage() {
         {hero.body || undefined}
       </PageHero>
 
+      <StickerSeam stickers={SEAM_STICKERS.services.groups} />
       <ServiceGroups />
 
       <Toolbox />
 
+      <StickerSeam stickers={SEAM_STICKERS.services.packages} />
       <Packages />
     </>
   );

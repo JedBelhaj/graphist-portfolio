@@ -15,11 +15,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@mediabunny/aac-encoder": "^1.65.2",
+    "@mediabunny/prores": "^1.65.2",
     "@sanity/orderable-document-list": "^2.0.27",
     "@sanity/ui": "^4.4.5",
     "@sanity/vision": "^6.21.0",
     "lexorank": "^1.0.5",
     "lucide-react": "^1.56.0",
+    "mediabunny": "^1.65.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "sanity": "^6.21.0",

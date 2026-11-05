@@ -123,6 +123,19 @@ html:has(.page-loader:not(.is-done)) {
   mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
 
+/* The results banner stops for the cursor or the keyboard, since its cards are
+   buttons. Hover only where it's real: on a touch screen it would stick after
+   a tap and leave the banner frozen. */
+.results-track:has(:focus-visible) {
+  animation-play-state: paused;
+}
+
+@media (hover: hover) {
+  .results-track:hover {
+    animation-play-state: paused;
+  }
+}
+
 /* overshoots slightly at the top of the curve so elements pop */
 .pop-in {
   animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
@@ -148,9 +161,25 @@ html:has(.page-loader:not(.is-done)) {
   animation: bubble-float var(--float-dur, 6s) ease-in-out var(--float-delay, 0s) infinite;
 }
 
+/* Stickers tip over from their base on hover, with a little overshoot. The
+   hover sits on the outer layer, which stays still, so the lean can't move the
+   sticker out from under the cursor and make it flicker. */
+.floating-sticker-art {
+  transform-origin: 50% 90%;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.floating-sticker:hover .floating-sticker-art {
+  transform: perspective(500px) rotate(var(--lean, 12deg)) rotateX(14deg) scale(1.08);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .floating-sticker-art {
+    transition: none;
   }
 
   .hero-rise,
