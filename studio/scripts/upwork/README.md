@@ -29,6 +29,7 @@ npm run upwork:parse                  # saved pages → data/upwork/upwork.json
 npm run upwork:import:dry             # what it would write, no token needed
 npm run upwork:import:dry -- --verbose   # …with every document in full
 npm run upwork:import                 # writes to Sanity
+npm run upwork:import -- --hide-new   # …with new reviews hidden from the website
 ```
 
 The parser prints a list of things it couldn't read. Typical ones are a rating with no written feedback, or an image that isn't in the `_files` folder. Check that list and `upwork.json` before importing. If it found nothing on a page, run `npm run upwork:parse -- --debug`. That writes the data the page embeds to `data/upwork/debug/`, so the field names can be checked.

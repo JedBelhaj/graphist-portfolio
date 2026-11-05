@@ -30,6 +30,8 @@ if (existsSync(".env")) process.loadEnvFile(".env");
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
+/* New reviews start hidden from the website, to switch on in the studio. */
+const hideNew = args.includes("--hide-new");
 const DATA_DIR = resolve(args.find((a) => !a.startsWith("--")) ?? resolve(process.cwd(), "../data/upwork"));
 const JSON_FILE = join(DATA_DIR, "upwork.json");
 
@@ -123,6 +125,7 @@ async function main() {
       _id,
       _type: "testimonial",
       ...keep("testimonial", match),
+      ...(!match && hideNew ? { hidden: true } : {}),
       ...compact({
         quote: shown && match ? (match.quote as string) : r.text,
         source: "Upwork",
