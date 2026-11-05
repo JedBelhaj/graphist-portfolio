@@ -43,7 +43,7 @@ export const ABOUT_STUDIO_PHOTO = "/photos/oussama-desk.webp";
    tucks behind it, since the photo carries a higher z-index. */
 /* The burst is drawn by HeroBurst.tsx rather than loaded, so only its placement
    lives here — same tuned position the remote asset used to sit at. */
-export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[9%]";
+export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[0%] right-[0%]";
 
 /* Array order is the pop-in order and the order the stickers travel in. Meta
    sits last on purpose: it lands the sequence on the marketing side of the kit
@@ -92,9 +92,24 @@ export const HERO_STREAM = {
 /* The stickers either side of the Wall of Love heading, placed against its
    full-width block. Same fields as the hero's below. */
 export const LOVE_STICKERS = [
-  { src: "/stickers/love-cards.webp", cls: "w-12 -top-[66px] left-[8%] lg:w-24 lg:-top-[44px]", tilt: -8, lean: -14 },
-  { src: "/stickers/love-banknote.webp", cls: "w-20 -top-[56px] left-[34%] lg:w-40 lg:top-[112px] lg:left-[2%]", tilt: 5, lean: 12 },
-  { src: "/stickers/love-pack.webp", cls: "w-10 -top-[66px] right-[8%] lg:w-20 lg:-top-[14px]", tilt: 8, lean: 14 },
+  {
+    src: "/stickers/love-cards.webp",
+    cls: "w-12 -top-[66px] left-[8%] lg:w-24 lg:-top-[44px]",
+    tilt: -8,
+    lean: -14,
+  },
+  {
+    src: "/stickers/love-banknote.webp",
+    cls: "w-20 -top-[56px] left-[34%] lg:w-40 lg:top-[112px] lg:left-[2%]",
+    tilt: 5,
+    lean: 12,
+  },
+  {
+    src: "/stickers/love-pack.webp",
+    cls: "w-10 -top-[66px] right-[8%] lg:w-20 lg:-top-[14px]",
+    tilt: 8,
+    lean: 14,
+  },
 ];
 
 /* The stickers scattered across the joins between sections (StickerSeam.tsx).
@@ -110,45 +125,125 @@ const seam = (name: string, cls: string, tilt: number, lean: number) => ({
 
 export const SEAM_STICKERS = {
   home: {
-    services: [seam("jasmine", "w-24 -top-[30px] right-[4%] lg:w-44 lg:-top-[54px] lg:right-[7%]", 8, 12)],
-    packages: [seam("poster-zidane", "w-16 -top-[44px] left-[4%] lg:w-28 lg:-top-[80px]", -6, -12)],
+    services: [
+      seam(
+        "jasmine",
+        "w-24 -top-[30px] right-[4%] lg:w-44 lg:-top-[54px] lg:right-[7%]",
+        8,
+        12,
+      ),
+    ],
+    packages: [
+      seam(
+        "poster-zidane",
+        "w-16 -top-[44px] left-[4%] lg:w-28 lg:-top-[80px]",
+        -6,
+        -12,
+      ),
+    ],
   },
   about: {
-    team: [seam("clock-tower", "w-8 -top-[66px] right-[7%] lg:w-14 lg:-top-[110px]", 5, 10)],
+    team: [
+      seam(
+        "clock-tower",
+        "w-8 -top-[66px] right-[7%] lg:w-14 lg:-top-[110px]",
+        5,
+        10,
+      ),
+    ],
   },
   services: {
     groups: [
-      seam("espresso", "w-16 -top-[44px] right-[4%] lg:w-32 lg:-top-[150px] lg:right-[8%]", 6, 12),
-      seam("adobe-pack", "w-14 -top-[44px] right-[30%] lg:w-24 lg:-top-[80px] lg:right-[22%]", -8, -14),
+      seam(
+        "espresso",
+        "w-16 -top-[44px] right-[4%] lg:w-32 lg:-top-[150px] lg:right-[8%]",
+        6,
+        12,
+      ),
+      seam(
+        "adobe-pack",
+        "w-14 -top-[44px] right-[30%] lg:w-24 lg:-top-[80px] lg:right-[22%]",
+        -8,
+        -14,
+      ),
     ],
-    packages: [seam("coin-100", "w-14 top-[6px] left-[4%] lg:w-24 lg:top-[10px] lg:left-[5%]", -10, -14)],
+    packages: [
+      seam(
+        "coin-100",
+        "w-14 top-[6px] left-[4%] lg:w-24 lg:top-[10px] lg:left-[5%]",
+        -10,
+        -14,
+      ),
+    ],
   },
   work: {
     recent: [
-      seam("crocodile", "w-14 -top-[44px] left-[4%] lg:w-24 lg:-top-[76px]", -7, -12),
+      seam(
+        "crocodile",
+        "w-14 -top-[44px] left-[4%] lg:w-24 lg:-top-[76px]",
+        -7,
+        -12,
+      ),
       seam("boga", "w-8 -top-[56px] right-[6%] lg:w-14 lg:-top-[90px]", 10, 14),
     ],
   },
   photography: {
     gallery: [
-      seam("poster-dua", "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]", 6, 12),
-      seam("cologne", "w-10 -top-[50px] right-[28%] lg:w-16 lg:-top-[80px] lg:right-[22%]", -8, -14),
+      seam(
+        "poster-dua",
+        "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]",
+        6,
+        12,
+      ),
+      seam(
+        "cologne",
+        "w-10 -top-[50px] right-[28%] lg:w-16 lg:-top-[80px] lg:right-[22%]",
+        -8,
+        -14,
+      ),
     ],
   },
   videography: {
     gallery: [
-      seam("poster-mj", "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]", 6, 12),
-      seam("coin-1", "w-12 -top-[34px] right-[28%] lg:w-20 lg:-top-[50px] lg:right-[22%]", -12, -14),
+      seam(
+        "poster-mj",
+        "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]",
+        6,
+        12,
+      ),
+      seam(
+        "coin-1",
+        "w-12 -top-[34px] right-[28%] lg:w-20 lg:-top-[50px] lg:right-[22%]",
+        -12,
+        -14,
+      ),
     ],
   },
   webDesign: {
     gallery: [
-      seam("monkey", "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]", 6, 12),
-      seam("federation", "w-14 -top-[36px] right-[28%] lg:w-24 lg:-top-[56px] lg:right-[22%]", -9, -14),
+      seam(
+        "monkey",
+        "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]",
+        6,
+        12,
+      ),
+      seam(
+        "federation",
+        "w-14 -top-[36px] right-[28%] lg:w-24 lg:-top-[56px] lg:right-[22%]",
+        -9,
+        -14,
+      ),
     ],
   },
   faq: {
-    list: [seam("stamp", "w-12 -top-[44px] right-[6%] lg:w-20 lg:-top-[110px] lg:right-[10%]", -7, -12)],
+    list: [
+      seam(
+        "stamp",
+        "w-12 -top-[44px] right-[6%] lg:w-20 lg:-top-[110px] lg:right-[10%]",
+        -7,
+        -12,
+      ),
+    ],
   },
 };
 
@@ -156,9 +251,24 @@ export const SEAM_STICKERS = {
    order. Placed against the slogan block, in the open space above and to its
    right. `tilt` is how each one rests, `lean` which way it tips on hover. */
 export const HERO_SLOGAN_STICKERS = [
-  { src: "/stickers/sticker-1.webp", cls: "w-12 -top-[66px] left-[2%] lg:w-28 lg:-top-[130px]", tilt: -8, lean: -14 },
-  { src: "/stickers/sticker-2.webp", cls: "w-12 -top-[66px] left-[38%] lg:w-28 lg:-top-[130px] lg:left-[44%]", tilt: 7, lean: 14 },
-  { src: "/stickers/sticker-3.webp", cls: "w-12 -top-[52px] left-[80%] lg:w-28 lg:top-[10px] lg:left-[82%]", tilt: 6, lean: 14 },
+  {
+    src: "/stickers/sticker-1.webp",
+    cls: "w-12 -top-[66px] left-[2%] lg:w-28 lg:-top-[130px]",
+    tilt: -8,
+    lean: -14,
+  },
+  {
+    src: "/stickers/sticker-2.webp",
+    cls: "w-12 -top-[66px] left-[38%] lg:w-28 lg:-top-[130px] lg:left-[44%]",
+    tilt: 7,
+    lean: 14,
+  },
+  {
+    src: "/stickers/sticker-3.webp",
+    cls: "w-12 -top-[52px] left-[80%] lg:w-28 lg:top-[10px] lg:left-[82%]",
+    tilt: 6,
+    lean: 14,
+  },
 ];
 
 /* The four bubble colourways. The CMS stores the key; components get the
@@ -198,17 +308,6 @@ export const TOOLBOX = [
   A("85768e3a65404cb9c5abde92cd5d02c9a13e574d", "1789909498819935", "svg"),
   A("8af38476fe7dec33409f061d249565f929de1896", "1789909498819401", "svg"),
   A("d3e00aca30ddff4029550347b4446aa0a44d7870", "1789909498828438", "svg"),
-];
-
-/* MOCK gallery — seven slots matching the grid spans in Work.tsx. */
-export const WORK_IMAGES = [
-  MOCK_PHOTO("soltani-work-1", 900, 600),
-  MOCK_PHOTO("soltani-work-2", 900, 600),
-  MOCK_PHOTO("soltani-work-3", 700, 700),
-  MOCK_PHOTO("soltani-work-4", 700, 700),
-  MOCK_PHOTO("soltani-work-5", 700, 700),
-  MOCK_PHOTO("soltani-work-6", 900, 600),
-  MOCK_PHOTO("soltani-work-7", 900, 600),
 ];
 
 export const WORK_TABS = [
@@ -665,18 +764,34 @@ export type Testimonial = {
   handle: string | null;
   avatar: string | null;
   tag: string | null;
+  /* The job behind an Upwork review, as Upwork lists it. */
+  rating?: number | null;
+  jobTitle?: string | null;
+  earned?: string | null;
+  rate?: string | null;
+  dates?: string | null;
 };
 
 /* ---------- Testimonials (Wall of Love) ----------
    Upwork reviews, quoted as the clients wrote them. Upwork doesn't show
    client names publicly, so each card reads "Upwork client" with the rating
    and, where the profile lists it, the job title. */
+export const UPWORK_CLIENT = "Upwork client";
+export const upworkTag = (rating?: number | null, job?: string | null) =>
+  [typeof rating === "number" ? `★ ${rating.toFixed(1)} on Upwork` : "On Upwork", job].filter(Boolean).join(" · ");
+/* Reads a tag in upworkTag's wording back into its parts, for the reviews first
+   typed in by hand; null for a tag worded any other way. */
+export const parseUpworkTag = (tag?: string | null) => {
+  const m = tag?.match(/^★\s*(\d(?:\.\d+)?) on Upwork(?: · (.+))?$/);
+  return m ? { rating: Number(m[1]), jobTitle: m[2] ?? null } : null;
+};
+
 const upwork = (quote: string, job?: string): Testimonial => ({
   quote,
-  name: "Upwork client",
+  name: UPWORK_CLIENT,
   handle: null,
   avatar: null,
-  tag: job ? `★ 5.0 on Upwork · ${job}` : "★ 5.0 on Upwork",
+  tag: upworkTag(5, job),
 });
 
 export const TESTIMONIALS: Testimonial[] = [

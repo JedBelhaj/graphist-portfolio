@@ -10,6 +10,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { REVIEW_DETAILS } from "./collections";
 
 /* One document per page, each holding that page's copy. These are
    singletons: the studio structure opens them directly and hides create /
@@ -160,6 +161,16 @@ export const homePage = defineType({
       description: "The first figure in the Results stats, e.g. 120+. The brand and country counts are worked out automatically.",
     }),
     defineField({ name: "testimonials", title: "Testimonials", type: "heading", group: "sections" }),
+    defineField({
+      name: "hideReviewDetails",
+      title: "Hide on all review cards",
+      type: "array",
+      of: [{ type: "string" }],
+      options: { list: REVIEW_DETAILS },
+      group: "sections",
+      description:
+        "Nothing ticked means every card shows everything it has. To hide something on one card only, open that testimonial and use “Hide on this card”.",
+    }),
     defineField({ name: "work", title: "My work", type: "heading", group: "sections" }),
     defineField({ name: "marqueeOne", title: "Scrolling banner 1", type: "string", group: "sections" }),
     defineField({ name: "services", title: "Services bubbles", type: "heading", group: "sections" }),

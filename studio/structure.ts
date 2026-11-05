@@ -10,6 +10,7 @@ const ORDERABLE: { type: string; title: string }[] = [
   { type: "webProject", title: "Websites" },
   { type: "result", title: "Client messages" },
   { type: "testimonial", title: "Testimonials" },
+  { type: "portfolioItem", title: "Portfolio projects" },
   { type: "clientLogo", title: "Client logos" },
   { type: "teamMember", title: "Team" },
 ];

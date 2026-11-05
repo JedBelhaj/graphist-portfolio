@@ -29,6 +29,8 @@ import {
   TEAM,
   TESTIMONIALS,
   TOOLBOX,
+  UPWORK_CLIENT,
+  parseUpworkTag,
   VIDEO_CAPABILITIES,
   VIDEO_SECTIONS,
   VIDEO_STATS,
@@ -36,8 +38,6 @@ import {
   WEB_CAPABILITIES,
   WEB_PROCESS,
   WEB_SHOTS,
-  WORK_IMAGES,
-  WORK_TABS,
   type Blurb,
   type ClientLogo,
   type Heading,
@@ -63,6 +63,7 @@ import {
    still; `href` is the full film, played in the
    Lightbox when it is a YouTube/Vimeo link. */
 export type MediaTile = { src: string; alt: string; video?: string; href?: string };
+export type RecentTab = { label: string; tiles: MediaTile[] };
 /* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
 export type VideoTile = MediaTile & { tall: boolean };
 export type VideoSection = { key: string; title: string; videos: VideoTile[] };
@@ -111,8 +112,9 @@ const CONTENT_QUERY = defineQuery(`{
     { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },
   "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)
     { title, screenshot, address },
-  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true] | order(orderRank)
-    { quote, name, tag, handle, avatar },
+  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]
+    | order(coalesce(featured, false) desc, orderRank)
+    { quote, name, tag, handle, avatar, source, rating, projectTitle, earnings, hourlyRate, dateRange, hideDetails },
   "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)
     { image, label, alt },
   "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)
@@ -156,6 +158,12 @@ const fullBlocks = <T>(items: T[], size = 9) =>
   items.length <= size ? items : items.slice(0, items.length - (items.length % size));
 
 const asTiles = (srcs: string[]): MediaTile[] => srcs.map((src) => ({ src, alt: "" }));
+
+/* "Sep 2025 – Sep 2025" reads as just "Sep 2025". */
+const oneMonth = (range?: string | null) => {
+  const [from, to] = range?.split(" – ") ?? [];
+  return from && from === to ? from : (range ?? null);
+};
 
 const lane = (l: Partial<Lane> = {}, fallback: Lane): Lane => {
   return { title: text(l.title, fallback.title), blurb: text(l.blurb, fallback.blurb), tags: strings(l.tags, fallback.tags) };
@@ -235,16 +243,6 @@ function build(raw: Raw | null) {
   );
   const videoTiles = list(videos.map((v) => v.tile), asTiles(VIDEO_TILES));
 
-  /* Newest first across both lanes, so a fresh upload leads the grid. */
-  const recent = list(
-    [...photos, ...videos]
-      .filter((m) => m.recent)
-      .sort((a, b) => b.at.localeCompare(a.at))
-      .slice(0, 7)
-      .map((m) => m.tile),
-    asTiles(WORK_IMAGES),
-  );
-
   /* Real screenshots switch the wireframe overlay off (see BrowserFrame). */
   const webShots = list<WebShot>(
     r.webProjects.map((w) => ({
@@ -254,6 +252,31 @@ function build(raw: Raw | null) {
     })),
     WEB_SHOTS.map((src, i) => ({ src, address: ["yourbrand.com", "studio.example", "shop.example"][i], real: false })),
   );
+
+  const photoLane = lane(work.photoLane, COPY.work.photoLane);
+  const videoLane = lane(work.videoLane, COPY.work.videoLane);
+  const webLane = lane(work.webLane, COPY.work.webLane);
+
+  /* The items ticked for Recent projects, or the whole lane if none are;
+     newest first, so a fresh upload leads the grid. */
+  const recentIn = (items: { tile: MediaTile; recent?: boolean | null; at: string }[]) => {
+    const ticked = items.filter((m) => m.recent);
+    return (ticked.length > 0 ? ticked : items)
+      .toSorted((a, b) => b.at.localeCompare(a.at))
+      .slice(0, 7)
+      .map((m) => m.tile);
+  };
+
+  /* One tab per lane, and a lane with nothing to show gets no tab. Web only
+     counts real screenshots: its fallback stills are mockups of no project. */
+  const recentTabs: RecentTab[] = [
+    { label: photoLane.title, tiles: photos.length > 0 ? recentIn(photos) : photoTiles.slice(0, 7) },
+    { label: videoLane.title, tiles: videos.length > 0 ? recentIn(videos) : videoTiles.slice(0, 7) },
+    {
+      label: webLane.title,
+      tiles: webShots.filter((w) => w.real).slice(0, 7).map((w) => ({ src: w.src, alt: w.address })),
+    },
+  ].filter((t) => t.tiles.length > 0);
 
   const logos: ClientLogo[] = list(
     r.logos.map((l) => ({
@@ -266,17 +289,34 @@ function build(raw: Raw | null) {
   );
 
   const testimonials: Testimonial[] = list(
-    r.testimonials.map((t) => ({
-      quote: t.quote!,
-      name: t.name || null,
-      tag: t.tag || null,
-      handle: t.handle || null,
-      /* No photo yet: keep the original placeholder for that person, if any. */
-      avatar: hasImage(t.avatar)
-        ? imageUrl(t.avatar, 160)
-        : (TESTIMONIALS.find((d) => d.name && d.name === t.name)?.avatar ?? null),
-    })),
-    TESTIMONIALS,
+    r.testimonials.map((t) => {
+      /* Hidden for every card on the Home page, or for this card on its own. */
+      const off = new Set([...(home.hideReviewDetails ?? []), ...(t.hideDetails ?? [])]);
+      const show = <T>(detail: string, value: T) => (off.has(detail) ? null : value);
+      /* A ★ tag was typed in by hand from the Upwork data, so it is read back
+         into the same parts as an imported review. A tag worded by an editor stays. */
+      const typed = parseUpworkTag(t.tag);
+      const upwork = t.source === "Upwork" || !!typed;
+      return {
+        quote: t.quote!,
+        name: t.name || (upwork ? UPWORK_CLIENT : null),
+        tag: typed ? null : t.tag || null,
+        rating: show("rating", t.rating ?? typed?.rating ?? null),
+        jobTitle: show("jobTitle", t.projectTitle ?? typed?.jobTitle ?? null),
+        earned: show("earnings", t.earnings?.replace(/\.00$/, "") ?? null),
+        rate: show("hourlyRate", t.hourlyRate?.replace(".00", "") ?? null),
+        dates: show("dates", oneMonth(t.dateRange)),
+        handle: t.handle || null,
+        /* No photo yet: keep the original placeholder for that person, if any. */
+        avatar: hasImage(t.avatar)
+          ? imageUrl(t.avatar, 160)
+          : (TESTIMONIALS.find((d) => d.name && d.name === t.name)?.avatar ?? null),
+      };
+    }),
+    TESTIMONIALS.map((t) => {
+      const typed = parseUpworkTag(t.tag);
+      return typed ? { ...t, ...typed, tag: null } : t;
+    }),
   );
 
   const results: ResultShot[] = list(
@@ -450,13 +490,12 @@ function build(raw: Raw | null) {
     work: {
       hero: heading(work.hero, COPY.work.hero),
       lanes: {
-        photo: { ...lane(work.photoLane, COPY.work.photoLane), img: photoTiles[0].src },
-        video: { ...lane(work.videoLane, COPY.work.videoLane), img: videoTiles[0].src },
-        web: { ...lane(work.webLane, COPY.work.webLane), img: webShots[0].src, real: webShots[0].real },
+        photo: { ...photoLane, img: photoTiles[0].src },
+        video: { ...videoLane, img: videoTiles[0].src },
+        web: { ...webLane, img: webShots[0].src, real: webShots[0].real },
       },
       recentTitle: text(work.recentTitle, COPY.work.recentTitle),
-      tabs: strings(work.tabs, WORK_TABS),
-      recent,
+      recentTabs,
     },
 
     photography: {

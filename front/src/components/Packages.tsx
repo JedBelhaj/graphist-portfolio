@@ -2,8 +2,7 @@ import { ACCENT, FONT_DISPLAY, INK } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
 
-/* A lighter step than ACCENT_WASH, so the section stays distinct from the
-   marquee belt that follows it. */
+/* A lighter step than ACCENT_WASH. */
 const SECTION_BG = "rgb(248,246,255)";
 
 export default async function Packages() {

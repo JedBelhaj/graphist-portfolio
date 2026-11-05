@@ -1,5 +1,5 @@
 import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
-import { Camera, Film, Image as ImageIcon, MessageSquareQuote, Monitor, Sparkles, Users } from "lucide-react";
+import { Briefcase, Camera, Film, Image as ImageIcon, MessageSquareQuote, Monitor, Sparkles, Users } from "lucide-react";
 import { defineField, defineType, type PreviewValue } from "sanity";
 
 /* The repeatable content: one document per photo, video, person, logo.
@@ -32,6 +32,14 @@ const showInRecent = defineField({
   title: "Show in “Recent projects”",
   type: "boolean",
   description: "Adds this to the mixed grid on the Work page (the first seven are shown).",
+  initialValue: false,
+});
+
+const featured = defineField({
+  name: "featured",
+  title: "Featured",
+  type: "boolean",
+  description: "Featured items come first on the site, ahead of the list order.",
   initialValue: false,
 });
 
@@ -150,6 +158,17 @@ export const webProject = defineType({
   preview: preview({ title: "title", subtitle: "address", media: "screenshot" }),
 });
 
+/* The parts of an Upwork review card that can be switched off, for all cards on
+   the Home page and for one card here. A hide list rather than show switches:
+   a blank list means everything shows, without having to fill in every document. */
+export const REVIEW_DETAILS = [
+  { title: "Rating", value: "rating" },
+  { title: "Job title", value: "jobTitle" },
+  { title: "Earnings", value: "earnings" },
+  { title: "Hourly rate", value: "hourlyRate" },
+  { title: "Dates", value: "dates" },
+];
+
 export const testimonial = defineType({
   name: "testimonial",
   title: "Testimonial",
@@ -174,7 +193,52 @@ export const testimonial = defineType({
       description: "e.g. @cafenomad — shown only when Role | Company is blank.",
     }),
     defineField({ name: "avatar", title: "Photo", type: "image", options: { hotspot: true } }),
+    featured,
+    defineField({
+      name: "hideDetails",
+      title: "Hide on this card",
+      type: "array",
+      of: [{ type: "string" }],
+      options: { list: REVIEW_DETAILS },
+      description:
+        "Tick what to leave off this card. To hide something on every card, use “Hide on all review cards” on the Home page (Sections tab).",
+    }),
+    /* Filled by the Upwork import (scripts/upwork). With Role | Company blank,
+       the site builds the card's tag line from the rating and project title. */
+    defineField({ name: "source", title: "Source", type: "string", initialValue: "Upwork", fieldset: "review" }),
+    defineField({
+      name: "rating",
+      title: "Rating",
+      type: "number",
+      description: "Out of 5.",
+      validation: (r) => r.min(0).max(5),
+      fieldset: "review",
+    }),
+    defineField({ name: "projectTitle", title: "Project title", type: "string", fieldset: "review" }),
+    defineField({ name: "date", title: "Date", type: "date", description: "When the job ended.", fieldset: "review" }),
+    defineField({
+      name: "dateRange",
+      title: "Date range",
+      type: "string",
+      description: "As Upwork shows it, e.g. Mar 2025 – Apr 2025.",
+      fieldset: "review",
+    }),
+    defineField({
+      name: "earnings",
+      title: "Earnings or budget",
+      type: "string",
+      description: "As Upwork shows it, e.g. $450.",
+      fieldset: "review",
+    }),
+    defineField({
+      name: "hourlyRate",
+      title: "Hourly rate",
+      type: "string",
+      description: "As Upwork shows it, e.g. $25/hr. Blank for fixed-price jobs.",
+      fieldset: "review",
+    }),
   ],
+  fieldsets: [{ name: "review", title: "Review details", options: { collapsible: true, collapsed: true } }],
   preview: preview({ title: "name", subtitle: "quote", media: "avatar" }, "Name withheld"),
 });
 
@@ -236,6 +300,66 @@ export const teamMember = defineType({
   preview: preview({ title: "name", subtitle: "role", media: "photo" }),
 });
 
+/* Projects imported from the Upwork portfolio (scripts/upwork). Not shown on
+   the site yet: no section reads this list. */
+export const portfolioItem = defineType({
+  name: "portfolioItem",
+  title: "Portfolio project",
+  type: "document",
+  icon: Briefcase,
+  orderings: [orderRankOrdering],
+  fields: [
+    orderRankField({ type: "portfolioItem" }),
+    hidden,
+    featured,
+    defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: { source: "title", maxLength: 96 },
+      validation: (r) => r.required(),
+    }),
+    defineField({ name: "description", title: "Description", type: "array", of: [{ type: "block" }] }),
+    defineField({ name: "role", title: "My role", type: "string" }),
+    defineField({ name: "skills", title: "Skills", type: "array", of: [{ type: "string" }], options: { layout: "tags" } }),
+    defineField({
+      name: "coverImage",
+      title: "Cover image",
+      type: "image",
+      options: { hotspot: true },
+      fields: [defineField({ name: "alt", title: "Alt text", type: "string" })],
+    }),
+    defineField({
+      name: "gallery",
+      title: "Gallery",
+      type: "array",
+      of: [
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [defineField({ name: "alt", title: "Alt text", type: "string" })],
+        },
+      ],
+      options: { layout: "grid" },
+    }),
+    defineField({
+      name: "videoUrl",
+      title: "Video link",
+      type: "url",
+      validation: (r) => r.uri({ scheme: ["http", "https"] }),
+    }),
+    defineField({
+      name: "projectUrl",
+      title: "Project link",
+      type: "url",
+      validation: (r) => r.uri({ scheme: ["http", "https"] }),
+    }),
+    defineField({ name: "source", title: "Source", type: "string", initialValue: "Upwork" }),
+  ],
+  preview: preview({ title: "title", subtitle: "role", media: "coverImage" }),
+});
+
 /* Size keys map to Tailwind classes in content.ts (LOGO_CAPS). The classes
    can't come from the CMS as raw text — Tailwind only generates classes it
    finds in the source. */
@@ -289,4 +413,4 @@ export const clientLogo = defineType({
   preview: preview({ title: "name", media: "logo" }),
 });
 
-export const collectionTypes = [photo, video, webProject, testimonial, result, teamMember, clientLogo];
+export const collectionTypes = [photo, video, webProject, testimonial, result, teamMember, clientLogo, portfolioItem];
