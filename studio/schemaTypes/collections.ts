@@ -158,6 +158,17 @@ export const webProject = defineType({
   preview: preview({ title: "title", subtitle: "address", media: "screenshot" }),
 });
 
+/* The parts of an Upwork review card that can be switched off, for all cards on
+   the Home page and for one card here. A hide list rather than show switches:
+   a blank list means everything shows, without having to fill in every document. */
+export const REVIEW_DETAILS = [
+  { title: "Rating", value: "rating" },
+  { title: "Job title", value: "jobTitle" },
+  { title: "Earnings", value: "earnings" },
+  { title: "Hourly rate", value: "hourlyRate" },
+  { title: "Dates", value: "dates" },
+];
+
 export const testimonial = defineType({
   name: "testimonial",
   title: "Testimonial",
@@ -183,6 +194,15 @@ export const testimonial = defineType({
     }),
     defineField({ name: "avatar", title: "Photo", type: "image", options: { hotspot: true } }),
     featured,
+    defineField({
+      name: "hideDetails",
+      title: "Hide on this card",
+      type: "array",
+      of: [{ type: "string" }],
+      options: { list: REVIEW_DETAILS },
+      description:
+        "Tick what to leave off this card. To hide something on every card, use “Hide on all review cards” on the Home page (Sections tab).",
+    }),
     /* Filled by the Upwork import (scripts/upwork). With Role | Company blank,
        the site builds the card's tag line from the rating and project title. */
     defineField({ name: "source", title: "Source", type: "string", initialValue: "Upwork", fieldset: "review" }),

@@ -12,7 +12,8 @@
 
    The import owns the Upwork fields and the quote. What editors set in the
    studio is kept: list order, Hide from website, Featured, the name, Role |
-   Company, handle and photo. New documents go to the end of their list.
+   Company, handle, photo and Hide on this card. New documents go to the end of
+   their list.
 
    Reads SANITY_PROJECT_ID, SANITY_DATASET and SANITY_WRITE_TOKEN from
    studio/.env (falling back to the SANITY_STUDIO_* ones for project and
@@ -38,7 +39,7 @@ const token = process.env.SANITY_WRITE_TOKEN;
 
 /* Editor-owned fields, carried over from the existing document. */
 const KEEP = {
-  testimonial: ["orderRank", "hidden", "featured", "name", "tag", "handle", "avatar"],
+  testimonial: ["orderRank", "hidden", "featured", "name", "tag", "handle", "avatar", "hideDetails"],
   portfolioItem: ["orderRank", "hidden", "featured"],
 };
 

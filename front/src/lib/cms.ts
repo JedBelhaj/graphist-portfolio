@@ -115,7 +115,7 @@ const CONTENT_QUERY = defineQuery(`{
     { title, screenshot, address },
   "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]
     | order(coalesce(featured, false) desc, orderRank)
-    { quote, name, tag, handle, avatar, source, rating, projectTitle, earnings, hourlyRate, dateRange },
+    { quote, name, tag, handle, avatar, source, rating, projectTitle, earnings, hourlyRate, dateRange, hideDetails },
   "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)
     { image, label, alt },
   "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)
@@ -284,23 +284,31 @@ function build(raw: Raw | null) {
   );
 
   const testimonials: Testimonial[] = list(
-    r.testimonials.map((t) => ({
-      quote: t.quote!,
-      /* Imported Upwork reviews leave these blank; they read like the defaults.
-         A tag starting with ★ was typed in by hand from the same data, so the
-         imported rating and job title replace it. A tag worded by an editor stays. */
-      name: t.name || (t.source === "Upwork" ? UPWORK_CLIENT : null),
-      tag:
-        t.source === "Upwork" && (!t.tag || t.tag.startsWith("★"))
-          ? upworkTag(t.rating, t.projectTitle)
-          : t.tag || null,
-      details: t.source === "Upwork" ? upworkDetails(t.earnings, t.hourlyRate, t.dateRange) : null,
-      handle: t.handle || null,
-      /* No photo yet: keep the original placeholder for that person, if any. */
-      avatar: hasImage(t.avatar)
-        ? imageUrl(t.avatar, 160)
-        : (TESTIMONIALS.find((d) => d.name && d.name === t.name)?.avatar ?? null),
-    })),
+    r.testimonials.map((t) => {
+      /* Hidden for every card on the Home page, or for this card on its own. */
+      const off = new Set([...(home.hideReviewDetails ?? []), ...(t.hideDetails ?? [])]);
+      const show = <T>(detail: string, value: T) => (off.has(detail) ? null : value);
+      return {
+        quote: t.quote!,
+        /* Imported Upwork reviews leave these blank; they read like the defaults.
+           A tag starting with ★ was typed in by hand from the same data, so the
+           imported rating and job title replace it. A tag worded by an editor stays. */
+        name: t.name || (t.source === "Upwork" ? UPWORK_CLIENT : null),
+        tag:
+          t.source === "Upwork" && (!t.tag || t.tag.startsWith("★"))
+            ? upworkTag(show("rating", t.rating), show("jobTitle", t.projectTitle))
+            : t.tag || null,
+        details:
+          t.source === "Upwork"
+            ? upworkDetails(show("earnings", t.earnings), show("hourlyRate", t.hourlyRate), show("dates", t.dateRange))
+            : null,
+        handle: t.handle || null,
+        /* No photo yet: keep the original placeholder for that person, if any. */
+        avatar: hasImage(t.avatar)
+          ? imageUrl(t.avatar, 160)
+          : (TESTIMONIALS.find((d) => d.name && d.name === t.name)?.avatar ?? null),
+      };
+    }),
     TESTIMONIALS,
   );
 
