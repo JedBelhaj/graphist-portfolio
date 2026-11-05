@@ -310,17 +310,6 @@ export const TOOLBOX = [
   A("d3e00aca30ddff4029550347b4446aa0a44d7870", "1789909498828438", "svg"),
 ];
 
-/* MOCK gallery — seven slots matching the grid spans in Work.tsx. */
-export const WORK_IMAGES = [
-  MOCK_PHOTO("soltani-work-1", 900, 600),
-  MOCK_PHOTO("soltani-work-2", 900, 600),
-  MOCK_PHOTO("soltani-work-3", 700, 700),
-  MOCK_PHOTO("soltani-work-4", 700, 700),
-  MOCK_PHOTO("soltani-work-5", 700, 700),
-  MOCK_PHOTO("soltani-work-6", 900, 600),
-  MOCK_PHOTO("soltani-work-7", 900, 600),
-];
-
 export const WORK_TABS = [
   "Photography",
   "Video & Motion",

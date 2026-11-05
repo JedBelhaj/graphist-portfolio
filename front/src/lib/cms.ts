@@ -36,8 +36,6 @@ import {
   WEB_CAPABILITIES,
   WEB_PROCESS,
   WEB_SHOTS,
-  WORK_IMAGES,
-  WORK_TABS,
   type Blurb,
   type ClientLogo,
   type Heading,
@@ -63,6 +61,7 @@ import {
    still; `href` is the full film, played in the
    Lightbox when it is a YouTube/Vimeo link. */
 export type MediaTile = { src: string; alt: string; video?: string; href?: string };
+export type RecentTab = { label: string; tiles: MediaTile[] };
 /* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
 export type VideoTile = MediaTile & { tall: boolean };
 export type VideoSection = { key: string; title: string; videos: VideoTile[] };
@@ -235,16 +234,6 @@ function build(raw: Raw | null) {
   );
   const videoTiles = list(videos.map((v) => v.tile), asTiles(VIDEO_TILES));
 
-  /* Newest first across both lanes, so a fresh upload leads the grid. */
-  const recent = list(
-    [...photos, ...videos]
-      .filter((m) => m.recent)
-      .sort((a, b) => b.at.localeCompare(a.at))
-      .slice(0, 7)
-      .map((m) => m.tile),
-    asTiles(WORK_IMAGES),
-  );
-
   /* Real screenshots switch the wireframe overlay off (see BrowserFrame). */
   const webShots = list<WebShot>(
     r.webProjects.map((w) => ({
@@ -254,6 +243,31 @@ function build(raw: Raw | null) {
     })),
     WEB_SHOTS.map((src, i) => ({ src, address: ["yourbrand.com", "studio.example", "shop.example"][i], real: false })),
   );
+
+  const photoLane = lane(work.photoLane, COPY.work.photoLane);
+  const videoLane = lane(work.videoLane, COPY.work.videoLane);
+  const webLane = lane(work.webLane, COPY.work.webLane);
+
+  /* The items ticked for Recent projects, or the whole lane if none are;
+     newest first, so a fresh upload leads the grid. */
+  const recentIn = (items: { tile: MediaTile; recent?: boolean | null; at: string }[]) => {
+    const ticked = items.filter((m) => m.recent);
+    return (ticked.length > 0 ? ticked : items)
+      .toSorted((a, b) => b.at.localeCompare(a.at))
+      .slice(0, 7)
+      .map((m) => m.tile);
+  };
+
+  /* One tab per lane, and a lane with nothing to show gets no tab. Web only
+     counts real screenshots: its fallback stills are mockups of no project. */
+  const recentTabs: RecentTab[] = [
+    { label: photoLane.title, tiles: photos.length > 0 ? recentIn(photos) : photoTiles.slice(0, 7) },
+    { label: videoLane.title, tiles: videos.length > 0 ? recentIn(videos) : videoTiles.slice(0, 7) },
+    {
+      label: webLane.title,
+      tiles: webShots.filter((w) => w.real).slice(0, 7).map((w) => ({ src: w.src, alt: w.address })),
+    },
+  ].filter((t) => t.tiles.length > 0);
 
   const logos: ClientLogo[] = list(
     r.logos.map((l) => ({
@@ -450,13 +464,12 @@ function build(raw: Raw | null) {
     work: {
       hero: heading(work.hero, COPY.work.hero),
       lanes: {
-        photo: { ...lane(work.photoLane, COPY.work.photoLane), img: photoTiles[0].src },
-        video: { ...lane(work.videoLane, COPY.work.videoLane), img: videoTiles[0].src },
-        web: { ...lane(work.webLane, COPY.work.webLane), img: webShots[0].src, real: webShots[0].real },
+        photo: { ...photoLane, img: photoTiles[0].src },
+        video: { ...videoLane, img: videoTiles[0].src },
+        web: { ...webLane, img: webShots[0].src, real: webShots[0].real },
       },
       recentTitle: text(work.recentTitle, COPY.work.recentTitle),
-      tabs: strings(work.tabs, WORK_TABS),
-      recent,
+      recentTabs,
     },
 
     photography: {

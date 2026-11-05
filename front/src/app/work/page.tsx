@@ -24,7 +24,7 @@ export default async function WorkPage() {
       <WorkTeaser heading={false} />
 
       <StickerSeam stickers={SEAM_STICKERS.work.recent} />
-      <Work title={work.recentTitle} tabs={work.tabs} images={work.recent} />
+      <Work title={work.recentTitle} tabs={work.recentTabs} />
     </>
   );
 }
