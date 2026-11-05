@@ -30,6 +30,7 @@ import {
   TESTIMONIALS,
   TOOLBOX,
   UPWORK_CLIENT,
+  upworkDetails,
   upworkTag,
   VIDEO_CAPABILITIES,
   VIDEO_SECTIONS,
@@ -114,7 +115,7 @@ const CONTENT_QUERY = defineQuery(`{
     { title, screenshot, address },
   "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]
     | order(coalesce(featured, false) desc, orderRank)
-    { quote, name, tag, handle, avatar, source, rating, projectTitle },
+    { quote, name, tag, handle, avatar, source, rating, projectTitle, earnings, hourlyRate, dateRange },
   "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)
     { image, label, alt },
   "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)
@@ -285,9 +286,15 @@ function build(raw: Raw | null) {
   const testimonials: Testimonial[] = list(
     r.testimonials.map((t) => ({
       quote: t.quote!,
-      /* Imported Upwork reviews leave these blank; they read like the defaults. */
+      /* Imported Upwork reviews leave these blank; they read like the defaults.
+         A tag starting with ★ was typed in by hand from the same data, so the
+         imported rating and job title replace it. A tag worded by an editor stays. */
       name: t.name || (t.source === "Upwork" ? UPWORK_CLIENT : null),
-      tag: t.tag || (t.source === "Upwork" ? upworkTag(t.rating, t.projectTitle) : null),
+      tag:
+        t.source === "Upwork" && (!t.tag || t.tag.startsWith("★"))
+          ? upworkTag(t.rating, t.projectTitle)
+          : t.tag || null,
+      details: t.source === "Upwork" ? upworkDetails(t.earnings, t.hourlyRate, t.dateRange) : null,
       handle: t.handle || null,
       /* No photo yet: keep the original placeholder for that person, if any. */
       avatar: hasImage(t.avatar)

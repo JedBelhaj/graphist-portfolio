@@ -764,6 +764,8 @@ export type Testimonial = {
   handle: string | null;
   avatar: string | null;
   tag: string | null;
+  /* What the job was worth and when, as Upwork lists it. */
+  details?: string | null;
 };
 
 /* ---------- Testimonials (Wall of Love) ----------
@@ -773,6 +775,8 @@ export type Testimonial = {
 export const UPWORK_CLIENT = "Upwork client";
 export const upworkTag = (rating?: number | null, job?: string | null) =>
   [typeof rating === "number" ? `★ ${rating.toFixed(1)} on Upwork` : "On Upwork", job].filter(Boolean).join(" · ");
+export const upworkDetails = (earnings?: string | null, hourlyRate?: string | null, dateRange?: string | null) =>
+  [earnings && `${earnings.replace(/\.00$/, "")} earned`, hourlyRate?.replace(".00", ""), dateRange].filter(Boolean).join(" · ") || null;
 
 const upwork = (quote: string, job?: string): Testimonial => ({
   quote,

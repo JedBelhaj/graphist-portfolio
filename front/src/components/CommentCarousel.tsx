@@ -46,8 +46,9 @@ function Card({ t, hidden }: { t: Testimonial; hidden: boolean }) {
             {t.name ?? "Client, name withheld"}
           </div>
           {(t.tag || t.handle) && (
-            <div className="truncate text-sm text-[rgb(122,122,132)]">{t.tag ?? t.handle}</div>
+            <div className="text-sm text-[rgb(122,122,132)]">{t.tag ?? t.handle}</div>
           )}
+          {t.details && <div className="mt-0.5 text-xs text-[rgb(122,122,132)]">{t.details}</div>}
         </div>
       </figcaption>
     </figure>
