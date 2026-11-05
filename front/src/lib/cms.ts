@@ -150,8 +150,8 @@ const blurbs = (value: Partial<Blurb>[] | undefined, fallback: Blurb[]) =>
     fallback,
   );
 
-/* The mosaics tile in blocks of nine (see MediaMosaic). Past the first
-   block, a partial one is held back so the bottom row stays flush. */
+/* The mosaics tile in blocks of nine (see MediaMosaic). For the "only full
+   blocks" gallery layout: past the first block, a partial one is held back. */
 const fullBlocks = <T>(items: T[], size = 9) =>
   items.length <= size ? items : items.slice(0, items.length - (items.length % size));
 
@@ -228,7 +228,11 @@ function build(raw: Raw | null) {
     at: v._createdAt,
   }));
 
-  const photoTiles = list(fullBlocks(photos.map((p) => p.tile)), asTiles(PHOTO_TILES));
+  const allPhotoTiles = photos.map((p) => p.tile);
+  const photoTiles = list(
+    r.photography?.galleryLayout === "blocks" ? fullBlocks(allPhotoTiles) : allPhotoTiles,
+    asTiles(PHOTO_TILES),
+  );
   const videoTiles = list(videos.map((v) => v.tile), asTiles(VIDEO_TILES));
 
   /* Newest first across both lanes, so a fresh upload leads the grid. */

@@ -310,6 +310,7 @@ export type PhotographyPage = {
   hero?: PageHero;
   heading?: Heading;
   disciplines?: Array<string>;
+  galleryLayout?: "fit" | "blocks";
 };
 
 export type WorkPage = {
@@ -780,6 +781,7 @@ export type CONTENT_QUERY_RESULT = {
     hero?: PageHero;
     heading?: Heading;
     disciplines?: Array<string>;
+    galleryLayout?: "fit" | "blocks";
   } | null;
   videography: {
     _id: "videographyPage";

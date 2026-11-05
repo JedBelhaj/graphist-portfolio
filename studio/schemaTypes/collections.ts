@@ -36,7 +36,7 @@ const showInRecent = defineField({
 });
 
 const MOSAIC_NOTE =
-  "The gallery is laid out in blocks of nine. Keep the number shown (not hidden) a multiple of nine (9, 18, 27…) so the bottom row sits flush — extras past the last full block are held back.";
+  "The gallery is laid out in blocks of nine, and the last few photos are resized to fill the rows. To hold them back until a block is full instead, change Gallery layout on the Photography page.";
 
 export const photo = defineType({
   name: "photo",

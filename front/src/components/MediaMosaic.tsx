@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Play } from "lucide-react";
 import type { MediaTile } from "@/lib/cms";
+import { tileSpan } from "@/lib/mosaic";
 import Lightbox from "./Lightbox";
 import ParallaxImage from "./ParallaxImage";
 import Reveal from "./Reveal";
@@ -14,8 +15,8 @@ import Reveal from "./Reveal";
 
    `spans` repeats over the items. Each pattern is built so its areas divide
    evenly by the column count at both breakpoints — otherwise the last row
-   comes up short and the flush bottom edge breaks. Keep the item count a
-   multiple of the pattern length (cms.ts trims CMS lists to whole blocks).
+   comes up short and the flush bottom edge breaks. Tiles left over after the
+   last full block get their own sizes (lib/mosaic.ts), which keep it flush.
 
    Every tile opens the Lightbox, which steps through the whole set. Video
    tiles (a clip or a film link) show a play badge on hover, and always on
@@ -38,7 +39,7 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
              so it takes the row height, which is what lets the frame inside
              resolve its h-full. */
           return (
-            <div key={`${m.src}-${i}`} className={spans[i % spans.length]}>
+            <div key={`${m.src}-${i}`} className={tileSpan(i, items.length, spans)}>
               <button
                 type="button"
                 onClick={() => setOpen(i)}
