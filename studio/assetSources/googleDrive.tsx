@@ -5,13 +5,17 @@
    photo or video imports that one. The last folder opened is remembered, so
    the next time the dialog goes straight back to it.
 
-   The file is downloaded in the browser through the Drive API (lib/drive.ts)
-   and handed to Sanity's own uploader, so the result is an ordinary Sanity
-   asset. Needs SANITY_STUDIO_GOOGLE_API_KEY (see .env.example). */
+   The file is downloaded in the browser through the Drive API (lib/drive.ts),
+   videos are compressed there unless that's switched off (lib/compress.ts), and
+   the result goes to Sanity's own uploader, so it's an ordinary Sanity asset.
+   Needs SANITY_STUDIO_GOOGLE_API_KEY (see .env.example). */
 import { Box, Button, Card, Dialog, Flex, Grid, Spinner, Stack, Text, TextInput } from "@sanity/ui";
+import { useToast } from "@sanity/ui/toast";
 import { ArrowLeft, Folder, HardDriveDownload } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { AssetFromSource, AssetSource, AssetSourceComponentProps, ImageAsset } from "sanity";
+import { CompressionCancelled, prepareVideo } from "../lib/compress";
+import { CompressionSettings } from "./compressedUpload";
 import {
   API_KEY,
   downloadFile,
@@ -44,6 +48,9 @@ function GoogleDriveDialog({ accept, assetType, onClose, onSelect }: AssetSource
   const [items, setItems] = useState<DriveItem[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<{ name: string; loaded: number; total: number } | null>(null);
+  /* How far compression is, 0 to 1, once the download has finished. */
+  const [compressed, setCompressed] = useState<number | null>(null);
+  const { push: toast } = useToast();
   const abort = useRef<AbortController | null>(null);
 
   useEffect(() => () => abort.current?.abort(), []);
@@ -92,18 +99,25 @@ function GoogleDriveDialog({ accept, assetType, onClose, onSelect }: AssetSource
         throw new Error(`"${item.name}" is a ${item.mimeType} file, which this field doesn't take.`);
       }
       setProgress({ name: item.name, loaded: 0, total: Number(item.size ?? 0) });
-      const file = await downloadFile(
+      const download = await downloadFile(
         item,
         (loaded, total) => setProgress({ name: item.name, loaded, total }),
         controller.signal,
       );
+      const { file, note, warning } = await prepareVideo(download, {
+        signal: controller.signal,
+        ask: true,
+        onProgress: setCompressed,
+      });
+      if (warning) toast({ status: "warning", title: warning, closable: true });
+      else if (note) toast({ status: "success", title: `${item.name}: ${note}`, closable: true });
       onSelect([
         {
           kind: "file",
           /* Typed as Sanity's schema `File`, but the uploader wants a DOM File. */
           value: file as unknown as AssetFromSource["value"],
           assetDocumentProps: {
-            originalFilename: item.name,
+            originalFilename: file.name,
             source: { name: "google-drive", id: item.id, url: driveUrl(item) },
           } as ImageAsset,
         },
@@ -111,6 +125,8 @@ function GoogleDriveDialog({ accept, assetType, onClose, onSelect }: AssetSource
     } catch (err) {
       if (controller.signal.aborted) return;
       setProgress(null);
+      setCompressed(null);
+      if (err instanceof CompressionCancelled) return;
       setError(err instanceof Error ? err.message : String(err));
     }
   }
@@ -180,6 +196,8 @@ function GoogleDriveDialog({ accept, assetType, onClose, onSelect }: AssetSource
               </Stack>
             </form>
 
+            {/video\//.test(accept) && <CompressionSettings disabled={busy} />}
+
             {error && (
               <Card padding={3} radius={2} tone="critical">
                 <Text size={1}>{error}</Text>
@@ -188,8 +206,16 @@ function GoogleDriveDialog({ accept, assetType, onClose, onSelect }: AssetSource
 
             {progress && (
               <Text size={1} muted>
-                Downloading {progress.name}… {formatSize(progress.loaded)}
-                {progress.total ? ` of ${formatSize(progress.total)} (${percent}%)` : ""}
+                {compressed !== null ? (
+                  <>
+                    Compressing {progress.name}… {Math.round(compressed * 100)}%
+                  </>
+                ) : (
+                  <>
+                    Downloading {progress.name}… {formatSize(progress.loaded)}
+                    {progress.total ? ` of ${formatSize(progress.total)} (${percent}%)` : ""}
+                  </>
+                )}
               </Text>
             )}
 

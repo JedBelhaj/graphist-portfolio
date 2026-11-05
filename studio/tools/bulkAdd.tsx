@@ -6,14 +6,20 @@
    and becomes its own Photo or Video document, added to the end of that list,
    where it can then be reordered, hidden or edited like any other.
 
-   Videos need a poster frame for the site to show them, so one is grabbed from
-   the clip in the browser, and the Landscape/Vertical format is read from its
-   shape. Uploads run a few at a time; a failed file doesn't stop the rest. */
+   Videos are compressed on this computer first, unless that's switched off, and
+   can be cut to their first seconds (lib/compress.ts). A single video that's too
+   long gets a popup asking; in a batch the list just says so. They need a poster
+   frame for the site to show them, so one
+   is grabbed from the clip in the browser, and the Landscape/Vertical format is
+   read from its shape. Uploads run a few at a time (compressed videos one at a
+   time); a failed file doesn't stop the rest. */
 import { Box, Button, Card, Checkbox, Container, Flex, Grid, Heading, Select, Stack, Text, TextInput } from "@sanity/ui";
 import { LexoRank } from "lexorank";
 import { FolderUp } from "lucide-react";
 import { useRef, useState, type DragEvent, type FormEvent } from "react";
 import { useClient, type Tool } from "sanity";
+import { CompressionSettings } from "../assetSources/compressedUpload";
+import { SIZE_LIMIT, prepareVideo, useCompressionEnabled } from "../lib/compress";
 import {
   API_KEY,
   downloadFile,
@@ -42,9 +48,6 @@ const CATEGORIES = [
   { title: "Event & venue", value: "event" },
 ];
 
-/* The site's loop clips are meant to be short; bigger files still upload, but
-   the list says so. */
-const CLIP_LIMIT = 15 * 1024 * 1024;
 const PARALLEL = 3;
 
 type Job = {
@@ -55,6 +58,8 @@ type Job = {
   source: { file: File } | { drive: DriveItem };
   status: "waiting" | "working" | "done" | "failed";
   note?: string;
+  /* Added, but the note says something needs a look. */
+  warned?: boolean;
 };
 
 /* "my_shoot-04.final.MOV" → "My shoot 04 final". */
@@ -106,6 +111,7 @@ function BulkAdd() {
   const [target, setTarget] = useState<Target>("photo");
   const [category, setCategory] = useState("");
   const [keepHidden, setKeepHidden] = useState(false);
+  const compressing = useCompressionEnabled();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [running, setRunning] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -178,7 +184,7 @@ function BulkAdd() {
     setDriveItems(null);
   }
 
-  async function addOne(job: Job, orderRank: string) {
+  async function addOne(job: Job, orderRank: string, ask: boolean) {
     update(job.key, { status: "working", note: undefined });
     const file =
       "file" in job.source
@@ -205,10 +211,14 @@ function BulkAdd() {
       return;
     }
 
+    const prepared = await prepareVideo(file, {
+      ask,
+      onProgress: (fraction) => update(job.key, { note: `compressing ${Math.round(fraction * 100)}%` }),
+    });
     update(job.key, { note: "grabbing a poster frame" });
-    const frame = await posterFrom(file).catch((err: Error) => err);
+    const frame = await posterFrom(prepared.file).catch((err: Error) => err);
     update(job.key, { note: "uploading" });
-    const clip = await client.assets.upload("file", file, { filename: job.name, source });
+    const clip = await client.assets.upload("file", prepared.file, { filename: prepared.file.name, source });
     const poster =
       frame instanceof Error
         ? null
@@ -222,11 +232,19 @@ function BulkAdd() {
       clip: { _type: "file", asset: { _type: "reference", _ref: clip._id } },
       ...(poster ? { poster: { _type: "image", asset: { _type: "reference", _ref: poster._id } } } : {}),
     });
+    const large = !prepared.warning && prepared.file.size > SIZE_LIMIT;
     const notes = [
+      prepared.warning ?? prepared.note,
       frame instanceof Error && `added without a poster (${frame.message}): set one by hand`,
-      job.size > CLIP_LIMIT && "large file: loop clips play best under 15 MB",
-    ].filter(Boolean);
-    update(job.key, { status: "done", note: notes.join("; ") || undefined });
+      large && "large file: loop clips play best under 15 MB",
+    ]
+      .filter((note): note is string => Boolean(note))
+      .map((note) => note.replace(/\.$/, ""));
+    update(job.key, {
+      status: "done",
+      note: notes.join("; ") || undefined,
+      warned: Boolean(prepared.warning) || frame instanceof Error || large,
+    });
   }
 
   async function run() {
@@ -247,13 +265,15 @@ function BulkAdd() {
       while (next < todo.length) {
         const i = next++;
         try {
-          await addOne(todo[i], ranks[i]);
+          await addOne(todo[i], ranks[i], todo.length === 1);
         } catch (err) {
           update(todo[i].key, { status: "failed", note: err instanceof Error ? err.message : String(err) });
         }
       }
     };
-    await Promise.all(Array.from({ length: Math.min(PARALLEL, todo.length) }, worker));
+    /* Compressing is heavy on memory and the video encoder: one at a time. */
+    const parallel = target === "video" && compressing ? 1 : PARALLEL;
+    await Promise.all(Array.from({ length: Math.min(parallel, todo.length) }, worker));
     setRunning(false);
   }
 
@@ -304,10 +324,21 @@ function BulkAdd() {
               </Stack>
             )}
             {target === "video" && (
-              <Text size={1} muted>
-                Each video gets a poster frame grabbed from the clip, and its format (landscape or vertical) is set from
-                its shape. Titles come from the file names; change them afterwards.
-              </Text>
+              <>
+                <Text size={1} muted>
+                  Each video gets a poster frame grabbed from the clip, and its format (landscape or vertical) is set from
+                  its shape. Titles come from the file names; change them afterwards.
+                </Text>
+                <Stack gap={2}>
+                  <CompressionSettings disabled={running} />
+                  {compressing && (
+                    <Text size={1} muted>
+                      Shrinks each video to at most 1080p and, where it can, under 15 MB, on this computer, one at a
+                      time. Keep this tab open until they&apos;re done. Your original files aren&apos;t changed.
+                    </Text>
+                  )}
+                </Stack>
+              </>
             )}
             <Flex as="label" align="center" gap={2}>
               <Checkbox checked={keepHidden} onChange={(e) => setKeepHidden(e.currentTarget.checked)} disabled={running} />
@@ -494,7 +525,15 @@ function BulkAdd() {
                     key={j.key}
                     padding={2}
                     radius={2}
-                    tone={j.status === "failed" ? "critical" : j.status === "done" ? "positive" : "default"}
+                    tone={
+                      j.status === "failed"
+                        ? "critical"
+                        : j.status === "done"
+                          ? j.warned
+                            ? "caution"
+                            : "positive"
+                          : "default"
+                    }
                   >
                     <Flex justify="space-between" gap={3}>
                       <Text size={1} textOverflow="ellipsis">
