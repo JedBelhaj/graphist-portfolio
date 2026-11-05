@@ -5,6 +5,7 @@ import HeroBurst from "./HeroBurst";
 import HeroOrbit from "./HeroOrbit";
 import HeroStream from "./HeroStream";
 import InViewGate from "./InViewGate";
+import ParallaxLayer from "./ParallaxLayer";
 import Stickers from "./Stickers";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
@@ -132,9 +133,9 @@ export default async function Hero() {
       {/* Desktop full-height photo panel. The photo also follows the screen's
           height, so on short laptops it stays clear of the header. */}
       <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-[rgb(238,234,255)] lg:flex">
-        <div className="relative left-[2%] xl:left-[-8%]">
+        <ParallaxLayer className="relative left-[2%] xl:left-[-8%]">
           <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[min(640px,76vh)] xl:max-h-[min(760px,76vh)]" enter="hero-in-right" />
-        </div>
+        </ParallaxLayer>
       </div>
     </section>
   );
