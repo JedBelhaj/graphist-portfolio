@@ -36,7 +36,7 @@ const showInRecent = defineField({
 });
 
 const MOSAIC_NOTE =
-  "The gallery is laid out in blocks of nine. Keep the number shown (not hidden) a multiple of nine (9, 18, 27…) so the bottom row sits flush — extras past the last full block are held back.";
+  "The gallery is laid out in blocks of nine, and the last few photos are resized to fill the rows. To hold them back until a block is full instead, change Gallery layout on the Photography page.";
 
 export const photo = defineType({
   name: "photo",
@@ -62,22 +62,9 @@ export const photo = defineType({
       type: "string",
       description: "What's in the picture, for screen readers and search.",
     }),
-    defineField({
-      name: "category",
-      title: "Category",
-      type: "string",
-      options: {
-        list: [
-          { title: "Brand & campaign", value: "brand" },
-          { title: "Product & menu", value: "product" },
-          { title: "Portrait & team", value: "portrait" },
-          { title: "Event & venue", value: "event" },
-        ],
-      },
-    }),
     showInRecent,
   ],
-  preview: preview({ title: "alt", subtitle: "category", media: "image" }, "Untitled photo"),
+  preview: preview({ title: "alt", media: "image" }, "Untitled photo"),
 });
 
 export const video = defineType({
@@ -210,7 +197,12 @@ export const result = defineType({
       options: { hotspot: true },
       validation: (r) => r.required(),
     }),
-    defineField({ name: "label", title: "Caption", type: "string", validation: (r) => r.required() }),
+    defineField({
+      name: "label",
+      title: "Caption",
+      type: "string",
+      description: "Optional. The short line under the screenshot on the site.",
+    }),
     defineField({
       name: "alt",
       title: "Alt text",
@@ -218,7 +210,7 @@ export const result = defineType({
       description: "What the message says, for screen readers.",
     }),
   ],
-  preview: preview({ title: "label", media: "image" }),
+  preview: preview({ title: "label", media: "image" }, "No caption"),
 });
 
 export const teamMember = defineType({

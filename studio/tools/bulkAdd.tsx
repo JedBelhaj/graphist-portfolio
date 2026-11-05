@@ -1,10 +1,11 @@
-/* "Bulk add" tab in the studio: turns a whole folder of photos or videos into
-   gallery items in one go, instead of creating them one at a time.
+/* "Bulk add" tab in the studio: turns a whole folder of photos, videos or client
+   message screenshots into items in one go, instead of creating them one at a
+   time.
 
    Files come from this computer (pick files, pick a folder, or drop them in)
    or from a shared Google Drive folder (lib/drive.ts). Each one is uploaded
-   and becomes its own Photo or Video document, added to the end of that list,
-   where it can then be reordered, hidden or edited like any other.
+   and becomes its own document, added to the end of that list, where it can
+   then be reordered, hidden or edited like any other.
 
    Videos are compressed on this computer first, unless that's switched off, and
    can be cut to their first seconds (lib/compress.ts). A single video that's too
@@ -13,7 +14,7 @@
    is grabbed from the clip in the browser, and the Landscape/Vertical format is
    read from its shape. Uploads run a few at a time (compressed videos one at a
    time); a failed file doesn't stop the rest. */
-import { Box, Button, Card, Checkbox, Container, Flex, Grid, Heading, Select, Stack, Text, TextInput } from "@sanity/ui";
+import { Box, Button, Card, Checkbox, Container, Flex, Grid, Heading, Stack, Text, TextInput } from "@sanity/ui";
 import { LexoRank } from "lexorank";
 import { FolderUp } from "lucide-react";
 import { useRef, useState, type DragEvent, type FormEvent } from "react";
@@ -32,21 +33,19 @@ import {
   type DriveItem,
 } from "../lib/drive";
 
-type Target = "photo" | "video";
+type Target = "photo" | "video" | "result";
+
+const TARGETS: { type: Target; title: string; plural: string; singular: string }[] = [
+  { type: "photo", title: "Photos", plural: "photos", singular: "photo" },
+  { type: "video", title: "Videos", plural: "videos", singular: "video" },
+  { type: "result", title: "Client messages", plural: "messages", singular: "message" },
+];
 
 const ACCEPT: Record<Target, string> = {
   photo: "image/*",
   video: "video/mp4,video/webm,video/quicktime",
+  result: "image/*",
 };
-
-/* Mirrors the Category options on the Photo document. */
-const CATEGORIES = [
-  { title: "No category", value: "" },
-  { title: "Brand & campaign", value: "brand" },
-  { title: "Product & menu", value: "product" },
-  { title: "Portrait & team", value: "portrait" },
-  { title: "Event & venue", value: "event" },
-];
 
 const PARALLEL = 3;
 
@@ -109,7 +108,6 @@ function posterFrom(file: File): Promise<{ poster: Blob; vertical: boolean }> {
 function BulkAdd() {
   const client = useClient({ apiVersion: "2026-10-13" });
   const [target, setTarget] = useState<Target>("photo");
-  const [category, setCategory] = useState("");
   const [keepHidden, setKeepHidden] = useState(false);
   const compressing = useCompressionEnabled();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -197,14 +195,13 @@ function BulkAdd() {
         ? { name: "google-drive", id: job.source.drive.id, url: `https://drive.google.com/file/d/${job.source.drive.id}/view` }
         : undefined;
 
-    if (target === "photo") {
+    if (target !== "video") {
       update(job.key, { note: "uploading" });
       const asset = await client.assets.upload("image", file, { filename: job.name, source });
       await client.create({
-        _type: "photo",
+        _type: target,
         orderRank,
         ...(keepHidden ? { hidden: true } : {}),
-        ...(category ? { category } : {}),
         image: { _type: "image", asset: { _type: "reference", _ref: asset._id } },
       });
       update(job.key, { status: "done", note: undefined });
@@ -279,7 +276,7 @@ function BulkAdd() {
 
   const waiting = jobs.filter((j) => j.status === "waiting" || j.status === "failed").length;
   const done = jobs.filter((j) => j.status === "done").length;
-  const label = target === "photo" ? "photos" : "videos";
+  const { plural, singular } = TARGETS.find((t) => t.type === target)!;
 
   return (
     <Container width={2} padding={4} paddingY={5}>
@@ -287,41 +284,33 @@ function BulkAdd() {
         <Stack gap={3}>
           <Heading size={3}>Bulk add</Heading>
           <Text muted size={1}>
-            Add a whole folder of photos or videos at once. Each file becomes its own item at the end of the Photos or
-            Videos list, where you can reorder, hide or edit it as usual.
+            Add a whole folder at once. Each file becomes its own item at the end of its list, where you can reorder,
+            hide or edit it as usual.
           </Text>
         </Stack>
 
         <Card padding={4} radius={3} border>
           <Stack gap={4}>
             <Flex gap={2}>
-              {(["photo", "video"] as const).map((t) => (
+              {TARGETS.map((t) => (
                 <Button
-                  key={t}
-                  text={t === "photo" ? "Photos" : "Videos"}
-                  mode={target === t ? "default" : "ghost"}
-                  tone={target === t ? "primary" : "default"}
+                  key={t.type}
+                  text={t.title}
+                  mode={target === t.type ? "default" : "ghost"}
+                  tone={target === t.type ? "primary" : "default"}
                   disabled={running || jobs.some((j) => j.status !== "done")}
                   onClick={() => {
-                    setTarget(t);
+                    setTarget(t.type);
                     setDriveItems(null);
                   }}
                 />
               ))}
             </Flex>
-            {target === "photo" && (
-              <Stack gap={2}>
-                <Text size={1} weight="medium">
-                  Category for this batch
-                </Text>
-                <Select value={category} onChange={(e) => setCategory(e.currentTarget.value)} disabled={running}>
-                  {CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>
-                      {c.title}
-                    </option>
-                  ))}
-                </Select>
-              </Stack>
+            {target === "result" && (
+              <Text size={1} muted>
+                They start with no caption, so keep them hidden until you&apos;ve added captions and alt text in Client
+                messages.
+              </Text>
             )}
             {target === "video" && (
               <>
@@ -435,7 +424,7 @@ function BulkAdd() {
             <Stack gap={4}>
               <Flex align="center" justify="space-between" gap={3} wrap="wrap">
                 <Text weight="medium">
-                  {picked.size} of {driveItems.length} {label} selected
+                  {picked.size} of {driveItems.length} {plural} selected
                 </Text>
                 <Flex gap={2}>
                   <Button
@@ -450,7 +439,7 @@ function BulkAdd() {
               </Flex>
               {driveItems.length === 0 && (
                 <Text size={1} muted>
-                  No {label} in that folder (subfolders aren&apos;t included; open each one).
+                  No {plural} in that folder (subfolders aren&apos;t included; open each one).
                 </Text>
               )}
               <Grid gridTemplateColumns={[3, 4, 6]} gap={2}>
@@ -512,7 +501,7 @@ function BulkAdd() {
                   />
                   <Button
                     tone="primary"
-                    text={running ? "Adding…" : `Add ${waiting} ${waiting === 1 ? label.slice(0, -1) : label}`}
+                    text={running ? "Adding…" : `Add ${waiting} ${waiting === 1 ? singular : plural}`}
                     loading={running}
                     disabled={running || !waiting}
                     onClick={run}

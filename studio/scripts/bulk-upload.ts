@@ -8,7 +8,6 @@
 
    Options:
      --videos            add to Videos instead of Photos
-     --category=brand    photos only: brand, product, portrait or event
      --hidden            add them hidden from the website, to check first
      --no-compress       upload videos as they are
      --max-seconds=15    videos: keep only the first 15 seconds
@@ -46,7 +45,6 @@ const videos = flag("videos");
 const apply = flag("apply");
 const hidden = flag("hidden");
 const compressVideos = videos && !flag("no-compress");
-const category = option("category");
 const maxSeconds = option("max-seconds") === undefined ? undefined : Math.floor(Number(option("max-seconds")));
 
 /* The same numbers as lib/compress.ts. */
@@ -58,7 +56,6 @@ const WEB_CODECS = ["h264", "vp9", "av1"];
 
 const PHOTO_EXT = [".jpg", ".jpeg", ".png", ".webp", ".avif", ".heic", ".tif", ".tiff"];
 const VIDEO_EXT = [".mp4", ".mov", ".webm", ".m4v"];
-const CATEGORIES = ["brand", "product", "portrait", "event"];
 
 /* "my_shoot-04.final.MOV" → "My shoot 04 final". */
 const titleFrom = (name: string) => {
@@ -167,7 +164,7 @@ async function upload(kind: "image" | "file", path: string) {
 
 async function main() {
   if (!folder || !existsSync(folder) || !statSync(folder).isDirectory()) {
-    console.log('Usage: npm run bulk-upload -- -- "<folder>" [--videos] [--category=brand] [--hidden] [--no-compress] [--max-seconds=15] [--apply]');
+    console.log('Usage: npm run bulk-upload -- -- "<folder>" [--videos] [--hidden] [--no-compress] [--max-seconds=15] [--apply]');
     process.exit(folder ? 1 : 0);
   }
   if (maxSeconds !== undefined && !(maxSeconds >= 1)) {
@@ -175,9 +172,6 @@ async function main() {
   }
   if (maxSeconds !== undefined && !compressVideos) {
     throw new Error("--max-seconds needs --videos, and can't be used with --no-compress.");
-  }
-  if (category && (videos || !CATEGORIES.includes(category))) {
-    throw new Error(`--category is for photos only, one of: ${CATEGORIES.join(", ")}`);
   }
 
   const type = videos ? "video" : "photo";
@@ -199,7 +193,7 @@ async function main() {
   }
 
   console.log(`${files.length} ${videos ? "video" : "photo"}(s) in ${folder} → the ${videos ? "Videos" : "Photos"} list` +
-    `${hidden ? ", hidden" : ""}${category ? `, category ${category}` : ""}${compressVideos ? ", compressed first" : ""}` +
+    `${hidden ? ", hidden" : ""}${compressVideos ? ", compressed first" : ""}` +
     `${maxSeconds ? `, cut to the first ${maxSeconds} s` : ""}`);
   for (const f of files) {
     const note = videos ? (posterFor(f, false) ? "poster beside it" : ffmpeg ? "poster from ffmpeg" : "NO POSTER") : "";
@@ -223,7 +217,6 @@ async function main() {
           _type: "photo",
           orderRank: rank.toString(),
           ...(hidden ? { hidden: true } : {}),
-          ...(category ? { category } : {}),
           image: await upload("image", f),
         });
       } else {

@@ -375,6 +375,22 @@ export const photographyPage = defineType({
     hero,
     defineField({ name: "heading", title: "Section heading", type: "heading", group: "content" }),
     strings("disciplines", "Disciplines", "content"),
+    defineField({
+      name: "galleryLayout",
+      title: "Gallery layout",
+      type: "string",
+      group: "content",
+      description:
+        "The gallery is built from blocks of nine photos. Fit every photo is used if nothing is selected: it shows them all and resizes the last few to fill the rows. Only full blocks holds back extras until the next block of nine is complete (with fewer than nine, all are shown).",
+      options: {
+        list: [
+          { title: "Fit every photo", value: "fit" },
+          { title: "Only full blocks of nine", value: "blocks" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "fit",
+    }),
   ],
   preview: { prepare: () => ({ title: "Photography" }) },
 });
