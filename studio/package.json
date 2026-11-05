@@ -11,6 +11,9 @@
     "migrate:video-sections": "sanity exec scripts/migrate-video-sections.ts --with-user-token",
     "sync-content": "sanity exec scripts/sync-content.ts --with-user-token",
     "bulk-upload": "sanity exec scripts/bulk-upload.ts --with-user-token",
+    "upwork:parse": "sanity exec scripts/upwork/parse.ts --",
+    "upwork:import": "sanity exec scripts/upwork/import.ts --",
+    "upwork:import:dry": "sanity exec scripts/upwork/import.ts -- --dry-run",
     "typegen": "sanity schemas extract --force && sanity typegen generate",
     "typecheck": "tsc --noEmit"
   },
@@ -30,8 +33,11 @@
     "styled-components": "^6.6.0"
   },
   "devDependencies": {
+    "@sanity/client": "^8.14.1",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
+    "acorn": "^8.19.0",
+    "cheerio": "^1.2.0",
     "typescript": "^5.9.3"
   }
 }

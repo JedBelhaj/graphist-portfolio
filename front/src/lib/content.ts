@@ -770,12 +770,16 @@ export type Testimonial = {
    Upwork reviews, quoted as the clients wrote them. Upwork doesn't show
    client names publicly, so each card reads "Upwork client" with the rating
    and, where the profile lists it, the job title. */
+export const UPWORK_CLIENT = "Upwork client";
+export const upworkTag = (rating?: number | null, job?: string | null) =>
+  [typeof rating === "number" ? `★ ${rating.toFixed(1)} on Upwork` : "On Upwork", job].filter(Boolean).join(" · ");
+
 const upwork = (quote: string, job?: string): Testimonial => ({
   quote,
-  name: "Upwork client",
+  name: UPWORK_CLIENT,
   handle: null,
   avatar: null,
-  tag: job ? `★ 5.0 on Upwork · ${job}` : "★ 5.0 on Upwork",
+  tag: upworkTag(5, job),
 });
 
 export const TESTIMONIALS: Testimonial[] = [

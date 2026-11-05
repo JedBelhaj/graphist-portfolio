@@ -1,0 +1,3 @@
+# Saved Upwork pages and what the parser makes of them (scripts/upwork).
+# Pages saved while logged in can hold session data, so none of it is committed.
+/data/upwork/
