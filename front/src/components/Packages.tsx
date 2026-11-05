@@ -1,106 +1,59 @@
-import { Check } from "lucide-react";
-import { ACCENT, FONT_DISPLAY, FONT_SCRIPT, INK } from "@/lib/brand";
+import { ACCENT, FONT_DISPLAY, INK } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
+
+/* A lighter step than ACCENT_WASH, so the section stays distinct from the
+   marquee belt that follows it. */
+const SECTION_BG = "rgb(248,246,255)";
 
 export default async function Packages() {
   const { services } = await getContent();
   const h = services.packagesHeading;
+  /* One centred line under the title: the heading's own body if the admin
+     has one, otherwise the packages note. */
+  const subtitle = h.body || services.packagesFootnote;
 
   return (
-    <section id="packages" className="bg-white px-5 py-20 sm:px-8 lg:py-28">
-      <div className="mx-auto max-w-[1180px]">
-        <div className="mb-14 text-center lg:mb-16">
+    <section id="packages" className="px-5 py-20 sm:px-8 lg:py-24" style={{ backgroundColor: SECTION_BG }}>
+      <div className="mx-auto max-w-[1120px]">
+        <div className="mb-12 text-center lg:mb-20">
           <Reveal>
-            <p
-              className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
-              style={{ color: ACCENT }}
-            >
-              {h.eyebrow}
-            </p>
-          </Reveal>
-          <Reveal delay={80}>
             <h2
-              className="text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[64px]"
+              className="text-3xl font-bold tracking-tight text-[rgb(10,11,16)] sm:text-4xl lg:text-[44px]"
               style={{ fontFamily: FONT_DISPLAY }}
             >
               {h.title}
-              <span className="block text-3xl sm:text-4xl lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
-                {h.accent}
-              </span>
             </h2>
           </Reveal>
+          {subtitle && (
+            <Reveal delay={80}>
+              <p className="mx-auto mt-6 max-w-2xl text-base text-[rgb(40,42,54)] lg:text-[17px]">{subtitle}</p>
+            </Reveal>
+          )}
         </div>
 
-        {/* items-stretch + h-full so the three cards share a height and their
-            buttons line up along the bottom regardless of feature count. */}
-        <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-3 lg:gap-8">
-          {services.packages.map((p, i) => {
-            const dark = p.featured;
-            return (
-              <Reveal key={p.name} delay={i * 110}>
-                <div
-                  className={`relative flex h-full flex-col rounded-3xl p-8 lg:p-10 ${
-                    dark
-                      ? "bg-[rgb(10,11,16)] text-white md:-my-4 md:py-12 lg:py-14"
-                      : "border border-black/10 bg-white text-[rgb(10,11,16)]"
-                  }`}
+        {/* Plain colour tiles, name and pitch only: ink for the regular
+            packages, the brand purple for the featured one. Content sits
+            centred vertically, so tiles with shorter copy start lower, and
+            items-stretch + h-full keeps the three the same height. */}
+        <div className="mx-auto grid max-w-md grid-cols-1 items-stretch gap-6 md:max-w-none md:grid-cols-3 md:gap-8 lg:gap-14">
+          {services.packages.map((p, i) => (
+            <Reveal key={p.name} delay={i * 110}>
+              <div
+                className="flex h-full min-h-[260px] flex-col justify-center rounded-xl px-7 py-10 text-white shadow-[0_14px_30px_-18px_rgba(10,11,16,0.4)] lg:min-h-[300px] lg:px-8"
+                style={{ backgroundColor: p.featured ? ACCENT : INK }}
+              >
+                <h3
+                  className="text-xl font-bold leading-[1.3] lg:text-2xl"
+                  style={{ fontFamily: FONT_DISPLAY }}
                 >
-                  {dark && (
-                    <span
-                      className="absolute right-6 top-6 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white"
-                      style={{ backgroundColor: ACCENT }}
-                    >
-                      Most popular
-                    </span>
-                  )}
-
-                  <div className="text-lg font-bold" style={{ fontFamily: FONT_DISPLAY }}>
-                    {p.name}
-                  </div>
-                  <p className={`mt-2 text-base leading-relaxed ${dark ? "text-white/70" : "text-[rgb(74,74,86)]"}`}>
-                    {p.pitch}
-                  </p>
-
-                  <div className="mt-8 flex items-baseline gap-2">
-                    <span
-                      className="text-5xl font-bold tracking-tight lg:text-6xl"
-                      style={{ fontFamily: FONT_DISPLAY }}
-                    >
-                      {p.price}
-                    </span>
-                    {p.cadence && (
-                      <span className={dark ? "text-white/60" : "text-[rgb(122,122,132)]"}>{p.cadence}</span>
-                    )}
-                  </div>
-
-                  <ul className="mb-10 mt-8 flex flex-col gap-3">
-                    {p.features.map((f) => (
-                      <li key={f} className="flex items-start gap-3 text-base">
-                        <Check size={18} className="mt-0.5 shrink-0" style={{ color: ACCENT }} />
-                        <span className={dark ? "text-white/90" : ""}>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <a
-                    href="#contact"
-                    className="mt-auto rounded-full px-6 py-3 text-center text-base font-medium transition-transform hover:scale-[1.03]"
-                    style={dark ? { backgroundColor: ACCENT, color: "#fff" } : { backgroundColor: INK, color: "#fff" }}
-                  >
-                    {p.price === "Custom" ? "Let's talk" : "Work with us"}
-                  </a>
-                </div>
-              </Reveal>
-            );
-          })}
+                  {p.name}
+                </h3>
+                <p className="mt-4 text-[15px] leading-[1.7] text-white/90">{p.pitch}</p>
+              </div>
+            </Reveal>
+          ))}
         </div>
-
-        <Reveal delay={200}>
-          <p className="mt-12 text-center text-sm text-[rgb(122,122,132)]">
-            {services.packagesFootnote}
-          </p>
-        </Reveal>
       </div>
     </section>
   );

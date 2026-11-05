@@ -77,7 +77,7 @@ export default async function AboutIntro({ page = false }: { page?: boolean }) {
               style={{ backgroundColor: ACCENT_WASH }}
             />
             <img
-              src={images.hero}
+              src={images.aboutCutout}
               alt={`${brand.founder}, founder of ${brand.name}`}
               className="relative mx-auto max-h-[560px] lg:max-h-[680px]"
             />

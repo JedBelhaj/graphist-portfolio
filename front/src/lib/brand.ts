@@ -5,7 +5,9 @@ export const BRAND = {
   name: "Soltani Media & Marketing",
   short: "Soltani Media",
   founder: "Soltani",
-  domain: "soltanimedia.co", // MOCK
+  /* The Vercel address until a custom domain is bought: swap it here and add
+     the domain in Vercel → Project → Settings → Domains. */
+  domain: "soltani-eight.vercel.app",
   email: "hello@soltanimedia.co", // MOCK
   linkedin: "https://www.linkedin.com/company/soltani-media", // MOCK
   instagram: "https://www.instagram.com/soltanimedia", // MOCK
@@ -41,5 +43,6 @@ export const A = (id: string, gen: string, ext = "png") =>
 export const MOCK_PHOTO = (seed: string, w: number, h: number) =>
   `https://picsum.photos/seed/${seed}/${w}/${h}`;
 
-/* Stand-in client headshots for the testimonial cards. */
+/* UNUSED since the Upwork reviews replaced the placeholder testimonials (they
+   have no avatars). Kept for stand-in headshots if named testimonials come back. */
 export const MOCK_AVATAR = (seed: string) => `https://i.pravatar.cc/160?u=${seed}`;

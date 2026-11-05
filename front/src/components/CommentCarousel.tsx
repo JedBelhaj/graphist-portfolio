@@ -1,15 +1,18 @@
-import { Quote, User } from "lucide-react";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Quote, User } from "lucide-react";
 import { ACCENT, ACCENT_WASH } from "@/lib/brand";
 import type { Testimonial } from "@/lib/content";
 
-/* Seconds for one full pass of the card set. Higher = slower. */
-const LOOP_SECONDS = 60;
+/* Seconds each card takes to drift past, so the speed stays the same however
+   many testimonials there are. Higher = slower. */
+const SECONDS_PER_CARD = 6;
 
-/* How many times the testimonials repeat inside one Row. With only three
-   cards, a single pass is ~1,700px — narrower than a wide monitor, so once
-   the track slid halfway the right edge ran out of cards. Two passes per
-   Row keeps it full past 3,000px. */
-const PASSES = 2;
+/* A Row needs at least this many cards to stay wider than a wide monitor
+   (~3,000px); below that the right edge runs out of cards once the track has
+   slid halfway. Short lists repeat inside the Row until they reach it. */
+const MIN_CARDS = 6;
 
 function Card({ t, hidden }: { t: Testimonial; hidden: boolean }) {
   return (
@@ -51,11 +54,13 @@ function Card({ t, hidden }: { t: Testimonial; hidden: boolean }) {
   );
 }
 
-/* One set of cards. Rendered twice so the -50% translate wraps seamlessly;
-   spacing lives on the cards (mr-5) rather than a container gap, or the
-   halfway point would land mid-gap and the loop would visibly jump. */
+/* One set of cards. Rendered twice so the track wraps seamlessly after one
+   Row's width; spacing lives on the cards (mr-5) rather than a container gap,
+   or the wrap point would land mid-gap and the loop would visibly jump. */
+const passes = (count: number) => Math.max(1, Math.ceil(MIN_CARDS / count));
+
 function Row({ items, duplicate = false }: { items: Testimonial[]; duplicate?: boolean }) {
-  const cards = Array.from({ length: PASSES }, () => items).flat();
+  const cards = Array.from({ length: passes(items.length) }, () => items).flat();
   return (
     /* Only the first pass of the first Row is announced; every repeat is
        decoration for the loop. */
@@ -67,14 +72,135 @@ function Row({ items, duplicate = false }: { items: Testimonial[]; duplicate?: b
   );
 }
 
-/* The drifting testimonial rail. Light cards, made for a pale ground. */
+/* Card width plus its mr-5, and one Row's width, read off the DOM so they
+   follow the breakpoints. */
+function measure(track: HTMLElement | null) {
+  const row = track?.firstElementChild as HTMLElement | null;
+  const card = row?.firstElementChild as HTMLElement | null;
+  const width = card?.offsetWidth ?? 0;
+  return { card: width, step: width + 20, row: row?.offsetWidth ?? 0 };
+}
+
+const NAV =
+  "absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0_8px_24px_rgba(10,11,16,0.18)] ring-1 ring-black/5 transition-[opacity,transform] duration-300 hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 sm:flex";
+
+/* The drifting testimonial rail. Light cards, made for a pale ground.
+
+   Driven from a frame loop rather than a CSS animation, because hovering
+   has to do more than pause: the nearest card eases into the exact centre,
+   and two buttons beside it step one card at a time. Leaving lets it drift on
+   from wherever it stopped. `x` is how far the track has moved left; it
+   wraps after one Row, where the duplicate Row looks identical. */
 export default function CommentCarousel({ items }: { items: Testimonial[] }) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const x = useRef(0);
+  /* Where the track is easing to while held; null while drifting. */
+  const target = useRef<number | null>(null);
+  const hovering = useRef(false);
+  const [held, setHeld] = useState(false);
+  const [still, setStill] = useState(false);
+
+  useEffect(() => {
+    /* Reduced motion: no drift at all. globals.css makes the rail scrollable
+       instead, and the buttons scroll it. */
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStill(true);
+      return;
+    }
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.1);
+      last = now;
+      const { step, row } = measure(trackRef.current);
+      if (target.current !== null) {
+        const d = target.current - x.current;
+        x.current = Math.abs(d) < 0.5 ? target.current : x.current + d * Math.min(1, dt * 9);
+      } else {
+        x.current += (step / SECONDS_PER_CARD) * dt;
+      }
+      if (row > 0) {
+        const wrap = x.current >= row ? -row : x.current < 0 ? row : 0;
+        x.current += wrap;
+        if (target.current !== null) target.current += wrap;
+      }
+      if (trackRef.current) trackRef.current.style.transform = `translate3d(${-x.current}px,0,0)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  /* The offset that puts the card nearest the middle exactly in the middle. */
+  const centred = () => {
+    const { card, step } = measure(trackRef.current);
+    const half = (viewportRef.current?.offsetWidth ?? 0) / 2;
+    const i = Math.round((x.current + half - card / 2) / step);
+    return i * step + card / 2 - half;
+  };
+
+  const hold = () => {
+    if (still || held) return;
+    setHeld(true);
+    target.current = centred();
+  };
+  const release = () => {
+    setHeld(false);
+    target.current = null;
+  };
+  const go = (dir: 1 | -1) => {
+    const { step } = measure(trackRef.current);
+    if (still) {
+      viewportRef.current?.scrollBy({ left: dir * step });
+      return;
+    }
+    target.current = (target.current ?? centred()) + dir * step;
+  };
+
   return (
-    <div className="testimonial-viewport overflow-hidden py-4">
-      <div className="testimonial-track flex w-max" style={{ ["--loop" as string]: `${LOOP_SECONDS}s` }}>
-        <Row items={items} />
-        <Row items={items} duplicate />
+    <div
+      className="relative"
+      onPointerEnter={(e) => {
+        if (e.pointerType !== "mouse") return;
+        hovering.current = true;
+        hold();
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "mouse") return;
+        hovering.current = false;
+        release();
+      }}
+      onFocus={hold}
+      onBlur={(e) => !hovering.current && !e.currentTarget.contains(e.relatedTarget) && release()}
+    >
+      <div ref={viewportRef} className="testimonial-viewport overflow-hidden py-4">
+        <div ref={trackRef} className="flex w-max will-change-transform">
+          <Row items={items} />
+          <Row items={items} duplicate />
+        </div>
       </div>
+
+      {/* Just outside the centred card's edges (half a card + a gap + the
+          button). Hidden on touch screens, which can't hover; there the rail
+          just drifts. */}
+      {(
+        [
+          [-1, "Previous review", ChevronLeft, "sm:left-[calc(50%-266px)] lg:left-[calc(50%-306px)]"],
+          [1, "Next review", ChevronRight, "sm:right-[calc(50%-266px)] lg:right-[calc(50%-306px)]"],
+        ] as const
+      ).map(([dir, label, Icon, place]) => (
+        <button
+          key={dir}
+          type="button"
+          aria-label={label}
+          onClick={() => go(dir)}
+          className={`${NAV} ${place} ${held || still ? "opacity-100" : "pointer-events-none opacity-0"}`}
+          style={{ color: ACCENT, outlineColor: ACCENT }}
+        >
+          <Icon size={22} />
+        </button>
+      ))}
     </div>
   );
 }

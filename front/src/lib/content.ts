@@ -1,13 +1,4 @@
-import {
-  A,
-  ACCENT,
-  BRAND,
-  ACCENT_TINT,
-  INK,
-  MOCK_AVATAR,
-  MOCK_PHOTO,
-  TEAL,
-} from "./brand";
+import { A, ACCENT, BRAND, ACCENT_TINT, INK, MOCK_PHOTO, TEAL } from "./brand";
 
 /* Decorative mark kept from the original design system. */
 export const HERO_ARROW = A(
@@ -17,48 +8,157 @@ export const HERO_ARROW = A(
 );
 
 /* ---------- Real assets (front/public) ---------- */
-/* Circular SM badge: big in About, and the marquee separator. */
-export const LOGO_MARK = "/logo.png";
-
 /* Wordmark lockups, cut from public/soltani_logo.png (see Logo.tsx). */
 export const LOGO_FULL = "/soltani-logo.png";
 export const LOGO_WORDMARK = "/soltani-wordmark.png";
 
-/* Transparent cut-out, 1152x2048. The subject sits in the bottom ~80% of the
-   frame; the top 19.7% is empty, which the layouts below account for. */
-export const HERO_PHOTO = "/hero.png";
+/* Transparent cut-out, 1152x2048 (shoot frame A7403822, background removed).
+   The subject sits in the bottom 80% of the frame; the top 20% is empty,
+   which the layouts below account for. */
+export const HERO_PHOTO = "/photos/hero-oussama.webp";
 
-export const PHOTOSHOP = "/adobe-photoshop-icon.png";
 export const PREMIERE = "/adobe-premiere-pro-icon.png";
 export const AFTER_EFFECTS = "/adobe-after-effects-icon.png";
+export const CAPCUT = "/capcut-icon.png";
+export const HIGGSFIELD = "/higgsfield-icon.png";
+export const META = "/meta-icon.png";
 
-/* ---------- Photography (MOCK) ---------- */
-export const STUDIO_PHOTO = MOCK_PHOTO("soltani-onset", 900, 1050);
-export const FOUNDER_PORTRAIT = MOCK_PHOTO("soltani-founder", 640, 720);
+/* ---------- Portraits ----------
+   From the studio shoot (originals in public/content/shooting, not committed),
+   cropped and resized into public/photos. */
+export const STUDIO_PHOTO = "/photos/oussama-on-set.webp";
+export const FOUNDER_PORTRAIT = "/photos/oussama-founder.webp";
+/* Cut-out for the home "what we do" section, where the service bubbles float
+   around it. Sized to that section's 400x575 box (at 2x). Not in the studio
+   yet, so it isn't editable there. */
+export const SERVICES_PHOTO = "/photos/oussama-stool.webp";
+/* The About page's own pair, so it doesn't repeat the home page: a cut-out
+   for the arch in its intro (same 1152x2048 canvas as the hero) and an on-set
+   shot for the About section. Not in the studio yet either. */
+export const ABOUT_CUTOUT = "/photos/oussama-phone-cutout.webp";
+export const ABOUT_STUDIO_PHOTO = "/photos/oussama-desk.webp";
 
-/* Positions are tuned to the cut-out's silhouette: the head occupies x 45-75%
-   from y 20-35%, the body x 10-85% below that. Anything that clips the subject
+/* Positions are tuned to the cut-out's silhouette: the head occupies x 43-67%
+   from y 20-39%, the body and laptop x 5-95% below that. Anything that clips the subject
    tucks behind it, since the photo carries a higher z-index. */
 /* The burst is drawn by HeroBurst.tsx rather than loaded, so only its placement
    lives here — same tuned position the remote asset used to sit at. */
-export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[20%]";
+export const HERO_BURST_CLS = "w-16 sm:w-20 lg:w-28 top-[10%] right-[9%]";
 
-/* Array order is the pop-in order — Hero.tsx staggers off the index, so moving
-   an entry retimes it without touching its position, which rides on `cls`.
-   Google Ads sits last on purpose: it lands the sequence on the marketing
-   side of the kit rather than another Adobe app. */
+/* Array order is the pop-in order and the order the stickers travel in. Meta
+   sits last on purpose: it lands the sequence on the marketing side of the kit
+   rather than another editing app. */
 export const HERO_STICKERS = [
-  { id: PHOTOSHOP, cls: "w-14 lg:w-[96px] left-[30%] top-[4%]" },
-  { id: AFTER_EFFECTS, cls: "w-14 lg:w-[96px] left-[6%] top-[15%]" },
-  { id: PREMIERE, cls: "w-12 lg:w-[80px] left-[-6%] top-[35%]" },
-  {
-    id: A(
-      "feb195c82de9f8e8a5a03ccf6feefe3f9f33277c",
-      "1789909498674904",
-      "svg",
-    ),
-    cls: "w-12 lg:w-[80px] left-[-5%] top-[55%]",
+  PREMIERE,
+  AFTER_EFFECTS,
+  CAPCUT,
+  HIGGSFIELD,
+  META,
+];
+
+/* How the stickers move: "orbit" circles the head on a tilted ring
+   (HERO_ORBIT), "stream" flows from behind the head to behind the laptop
+   (HERO_STREAM). */
+export const HERO_STICKER_MOTION: "orbit" | "stream" = "orbit";
+
+/* The tilted ring the stickers circle the head on (HeroOrbit.tsx). Centre as
+   fractions of the photo's width and height; both radii as fractions of its
+   width, so the ring keeps its shape at any photo size. `tilt` lifts the right
+   end, in degrees. The upper-left half is the far side, where the stickers
+   shrink and pass behind the subject; the lower-right half crosses in front
+   of the chest. `period` is seconds per lap. */
+export const HERO_ORBIT = {
+  cx: 0.56,
+  cy: 0.4,
+  rx: 0.55,
+  ry: 0.18,
+  tilt: -24,
+  period: 20,
+};
+
+/* The curve the stickers stream along (HeroStream.tsx): out from behind the
+   head, round its left side, and in behind the laptop. A cubic Bézier, every
+   point as [x, y] fractions of the photo's width and height so it stays on
+   the silhouette at any photo size. `lap` is the seconds one sticker takes
+   end to end. */
+export const HERO_STREAM = {
+  from: [0.43, 0.29],
+  c1: [0.22, 0.02],
+  c2: [-0.06, 0.42],
+  to: [0.29, 0.7],
+  lap: 10,
+};
+
+/* The stickers either side of the Wall of Love heading, placed against its
+   full-width block. Same fields as the hero's below. */
+export const LOVE_STICKERS = [
+  { src: "/stickers/love-cards.webp", cls: "w-12 -top-[66px] left-[8%] lg:w-24 lg:-top-[44px]", tilt: -8, lean: -14 },
+  { src: "/stickers/love-banknote.webp", cls: "w-20 -top-[56px] left-[34%] lg:w-40 lg:top-[112px] lg:left-[2%]", tilt: 5, lean: 12 },
+  { src: "/stickers/love-pack.webp", cls: "w-10 -top-[66px] right-[8%] lg:w-20 lg:-top-[14px]", tilt: 8, lean: 14 },
+];
+
+/* The stickers scattered across the joins between sections (StickerSeam.tsx).
+   Each `top` is measured from the join, so a negative one reaches up into the
+   section above. Keyed by page, then by the section the join comes before.
+   Each sticker appears once across the site. */
+const seam = (name: string, cls: string, tilt: number, lean: number) => ({
+  src: `/stickers/scatter/${name}.webp`,
+  cls,
+  tilt,
+  lean,
+});
+
+export const SEAM_STICKERS = {
+  home: {
+    services: [seam("jasmine", "w-24 -top-[30px] right-[4%] lg:w-44 lg:-top-[54px] lg:right-[7%]", 8, 12)],
+    packages: [seam("poster-zidane", "w-16 -top-[44px] left-[4%] lg:w-28 lg:-top-[80px]", -6, -12)],
   },
+  about: {
+    team: [seam("clock-tower", "w-8 -top-[66px] right-[7%] lg:w-14 lg:-top-[110px]", 5, 10)],
+  },
+  services: {
+    groups: [
+      seam("espresso", "w-16 -top-[44px] right-[4%] lg:w-32 lg:-top-[150px] lg:right-[8%]", 6, 12),
+      seam("adobe-pack", "w-14 -top-[44px] right-[30%] lg:w-24 lg:-top-[80px] lg:right-[22%]", -8, -14),
+    ],
+    packages: [seam("coin-100", "w-14 top-[6px] left-[4%] lg:w-24 lg:top-[10px] lg:left-[5%]", -10, -14)],
+  },
+  work: {
+    recent: [
+      seam("crocodile", "w-14 -top-[44px] left-[4%] lg:w-24 lg:-top-[76px]", -7, -12),
+      seam("boga", "w-8 -top-[56px] right-[6%] lg:w-14 lg:-top-[90px]", 10, 14),
+    ],
+  },
+  photography: {
+    gallery: [
+      seam("poster-dua", "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]", 6, 12),
+      seam("cologne", "w-10 -top-[50px] right-[28%] lg:w-16 lg:-top-[80px] lg:right-[22%]", -8, -14),
+    ],
+  },
+  videography: {
+    gallery: [
+      seam("poster-mj", "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]", 6, 12),
+      seam("coin-1", "w-12 -top-[34px] right-[28%] lg:w-20 lg:-top-[50px] lg:right-[22%]", -12, -14),
+    ],
+  },
+  webDesign: {
+    gallery: [
+      seam("monkey", "w-16 -top-[52px] right-[4%] lg:w-28 lg:-top-[120px] lg:right-[8%]", 6, 12),
+      seam("federation", "w-14 -top-[36px] right-[28%] lg:w-24 lg:-top-[56px] lg:right-[22%]", -9, -14),
+    ],
+  },
+  faq: {
+    list: [seam("stamp", "w-12 -top-[44px] right-[6%] lg:w-20 lg:-top-[110px] lg:right-[10%]", -7, -12)],
+  },
+};
+
+/* The die-cut stickers round the hero slogan (Stickers.tsx), in pop-in
+   order. Placed against the slogan block, in the open space above and to its
+   right. `tilt` is how each one rests, `lean` which way it tips on hover. */
+export const HERO_SLOGAN_STICKERS = [
+  { src: "/stickers/sticker-1.webp", cls: "w-12 -top-[66px] left-[2%] lg:w-28 lg:-top-[130px]", tilt: -8, lean: -14 },
+  { src: "/stickers/sticker-2.webp", cls: "w-12 -top-[66px] left-[38%] lg:w-28 lg:-top-[130px] lg:left-[44%]", tilt: 7, lean: 14 },
+  { src: "/stickers/sticker-3.webp", cls: "w-12 -top-[52px] left-[80%] lg:w-28 lg:top-[10px] lg:left-[82%]", tilt: 6, lean: 14 },
 ];
 
 /* The four bubble colourways. The CMS stores the key; components get the
@@ -73,18 +173,21 @@ export const SERVICE_COLORS = {
 export type ServiceColor = keyof typeof SERVICE_COLORS;
 
 /* Colour order is deliberate — it sets the rhythm of the bubble cluster. */
+/* The three things we sell, photo, video and web design, broken into the
+   bubbles round the photo. Order matters: each sits in the matching slot of
+   BUBBLE_POSITIONS (Services.tsx), whose width is sized to the label. */
 export const SERVICES: { label: string; color: ServiceColor }[] = [
   { label: "Brand Photography", color: "accent" },
   { label: "Video Production", color: "tint" },
   { label: "Reels & Short-Form Editing", color: "ink" },
-  { label: "Social Media Strategy", color: "teal" },
-  { label: "Paid Ads & Creative Testing", color: "ink" },
+  { label: "Website Design", color: "teal" },
+  { label: "Brand Films", color: "ink" },
   { label: "Brand Storytelling", color: "teal" },
   { label: "Product & Menu Photography", color: "tint" },
-  { label: "Social Media Content", color: "tint" },
+  { label: "Landing Pages", color: "tint" },
   { label: "Event & Venue Coverage", color: "accent" },
-  { label: "Email Marketing & Automation", color: "ink" },
-  { label: "Reporting & Analytics", color: "tint" },
+  { label: "Website Redesigns", color: "ink" },
+  { label: "Testimonial Videos", color: "tint" },
 ];
 
 export const TOOLBOX = [
@@ -215,81 +318,130 @@ export const COUNTRIES = [
 ];
 
 /* ---------- Results (Wall of Love) ----------
-   Real client messages from public/results. Filenames are as delivered, so
-   encodeURI handles the spaces and the accented é.
+   Real client messages and ad screenshots from public/content/results.
+   Filenames are as delivered, so encodeURI handles the spaces and the
+   accented é. Ordered so tall posts and short quotes alternate in the columns.
    TODO before launch: confirm consent, or crop/blur names and avatars. */
+const shot = (file: string) => encodeURI(`/content/results/${file}`);
+
 export const RESULTS = [
   {
-    src: encodeURI("/results/WhatsApp Image 2026-06-21 at 4.53.50 PM.jpeg"),
+    src: shot("Capture d_écran 2026-10-23 202852.png"),
+    alt: "CaniMoov Facebook ad for a rigid dog seat cover, with 3.9K likes, 317 comments and 315 shares",
+    label: "CaniMoov ad · 3.9K likes",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 203319.png"),
+    alt: "Client message in French recommending Oussama's video editing: he understands the vision, takes feedback well and delivers fast",
+    label: "Video editing client",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 202903.png"),
+    alt: "CaniMoov winter Facebook ad warning about copycat seat covers, with 1.4K likes, 230 comments and 109 shares",
+    label: "CaniMoov ad · 1.4K likes",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 203110.png"),
+    alt: "LinkedIn recommendation from client Nourddine Taieb praising Oussama's engaging content and dedication to quality",
+    label: "LinkedIn recommendation",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 202952.png"),
+    alt: "HVH Marketing Instagram post introducing Oussama as their video editing specialist",
+    label: "Featured by HVH Marketing",
+  },
+  {
+    src: shot("WhatsApp Image 2026-06-21 at 4.53.50 PM.jpeg"),
     alt: "Client message thanking Lauren and the team for a surprise birthday video that made her cry",
     label: "Surprise birthday film",
   },
   {
-    src: encodeURI("/results/Capture d_écran 2026-09-29 200451.png"),
+    src: shot("Capture d_écran 2026-10-23 202703.png"),
+    alt: "CaniMoov Facebook ad with a German shepherd sitting on the seat cover: 40% more space for your dog",
+    label: "CaniMoov product ad",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-27 193111.png"),
+    alt: "Message from Pascal Cadorette asking when the current 8 videos will be done, with 8 more lined up after",
+    label: "Repeat client",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 202717.png"),
+    alt: "CaniMoov Facebook ad showing the seat cover unpacked, installed in 2 minutes, with 338 likes",
+    label: "CaniMoov launch ad",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 203103.png"),
+    alt: "LinkedIn recommendation from Ahmed Aziz Elj calling Oussama an exceptional content creator",
+    label: "LinkedIn recommendation",
+  },
+  {
+    src: shot("Capture d_écran 2026-09-29 200451.png"),
     alt: "Message shouting out Oussama Soltani Photography: Dr. Sydney loved the reel",
     label: "Clinic reel",
   },
   {
-    src: encodeURI("/results/WhatsApp Image 2026-09-29 at 12.33.24 AM.jpeg"),
+    src: shot("Capture d_écran 2026-10-23 202654.png"),
+    alt: "CaniMoov Facebook post showing the seat cover fitted across a car's back seat",
+    label: "CaniMoov ad creative",
+  },
+  {
+    src: shot("WhatsApp Image 2026-09-29 at 12.33.24 AM.jpeg"),
     alt: "Dr. Alex Martin saying the editing on the reel from today is fabulous",
     label: "Same-day reel edit",
   },
+  {
+    src: shot("Capture d_écran 2026-10-23 202628.png"),
+    alt: "CaniMoov reel of the seat cover being unpacked: installation in 2 minutes",
+    label: "CaniMoov reel",
+  },
+  {
+    src: shot("Capture d_écran 2026-10-23 203006.png"),
+    alt: "Instagram comment from dl_mayssa saying Oussama makes the things he's part of better",
+    label: "Instagram shout-out",
+  },
 ];
 
-/* ---------- Packages (MOCK) ----------
-   Placeholder tiers and prices — swap in the real offer before launch.
-   `featured` gets the highlighted card; keep it to one. */
+/* ---------- What makes us different ----------
+   Stored in the studio's "Packages" list, which the section now uses for
+   these tiles: only name and pitch are shown, price/cadence/features are not.
+   `featured` gets the purple tile; keep it to one. */
 export const PACKAGES = [
   {
-    name: "Starter",
-    price: "$750",
-    cadence: "/ month",
-    pitch: "A steady, good-looking feed without thinking about it.",
-    features: [
-      "Half-day shoot every month",
-      "20 edited photos",
-      "4 short-form reels",
-      "Monthly content calendar",
-    ],
+    name: "One team, shoot to post",
+    price: "",
+    cadence: "",
+    pitch:
+      "The people who film your content also edit it, post it and run the ads behind it. Nothing gets lost between the studio, the editor and the media buyer.",
+    features: [] as string[],
     featured: false,
   },
   {
-    name: "Growth",
-    price: "$1,800",
-    cadence: "/ month",
-    pitch: "Content plus the strategy that makes it perform.",
-    features: [
-      "Full-day shoot every month",
-      "40 edited photos",
-      "10 short-form reels",
-      "Social management on 2 platforms",
-      "Paid ad creative & testing",
-      "Monthly results report",
-    ],
+    name: "First edits in 72 hours",
+    price: "",
+    cadence: "",
+    pitch:
+      "Your first edits land within three days of the shoot, so fresh content is out working for you while the moment still matters.",
+    features: [] as string[],
     featured: true,
   },
   {
-    name: "Signature",
-    price: "Custom",
+    name: "No account managers",
+    price: "",
     cadence: "",
-    pitch: "A full production and marketing team, without the hiring.",
-    features: [
-      "Multi-day productions",
-      "Brand film + campaign assets",
-      "Every platform, fully managed",
-      "Dedicated producer",
-      "Quarterly strategy workshop",
-    ],
+    pitch:
+      "You talk directly to whoever is doing the work. Feedback goes straight to the person holding the camera or the timeline, and changes happen fast.",
+    features: [] as string[],
     featured: false,
   },
 ];
 
 /* ---------- Services page ----------
-   `icon` is a key into the icon map in ServiceGroups.tsx. */
+   Photos are MOCK placeholders until real ones are uploaded in the studio. */
 export const SERVICE_GROUPS = [
   {
     title: "Photography",
-    icon: "camera",
+    photo: MOCK_PHOTO("soltani-svc-photo", 800, 600),
     body: "Stills lit for where they are going — the grid, the menu, the website, the ad set.",
     items: [
       "Brand & campaign",
@@ -300,7 +452,7 @@ export const SERVICE_GROUPS = [
   },
   {
     title: "Video",
-    icon: "clapperboard",
+    photo: MOCK_PHOTO("soltani-svc-video", 800, 600),
     body: "Shot, directed and cut in-house, so the person framing the shot knows where it lands.",
     items: [
       "Brand films",
@@ -310,21 +462,15 @@ export const SERVICE_GROUPS = [
     ],
   },
   {
-    title: "Social",
-    icon: "megaphone",
-    body: "A plan for what goes out, when, and why — then the posting, so you don't have to.",
+    title: "Web Design",
+    photo: MOCK_PHOTO("soltani-svc-web", 800, 600),
+    body: "Sites built around your photos and video, fast on a phone and easy to keep up to date.",
     items: [
-      "Strategy & calendar",
-      "Content creation",
-      "Community management",
-      "Reporting",
+      "Business websites",
+      "Landing pages",
+      "Redesigns",
+      "Hosting & upkeep",
     ],
-  },
-  {
-    title: "Growth",
-    icon: "trending",
-    body: "Paid creative built from the same shoot, tested until something beats the control.",
-    items: ["Paid ads", "Creative testing", "Email & automation", "Analytics"],
   },
 ];
 
@@ -343,8 +489,8 @@ export const FAQS = [
     a: "Placeholder — first edits usually land within 72 hours of the shoot, with reels on a rolling schedule after that.",
   },
   {
-    q: "Can we book a one-off shoot instead of a package?",
-    a: "Placeholder — absolutely. Packages are for ongoing work; one-off shoots are quoted per project.",
+    q: "Can we book a one-off project?",
+    a: "Placeholder — absolutely. Every shoot, edit or website is quoted on its own.",
   },
   {
     q: "Who owns the photos and videos?",
@@ -357,9 +503,8 @@ export const FAQS = [
 ];
 
 /* ---------- Videography (MOCK) ----------
-   Nine stills, which is one full repeat of the span pattern in Videography.tsx.
-   Add or remove in nines or the mosaic's bottom row stops sitting flush.
-   Source dimensions barely matter — every tile is object-cover cropped. */
+   Stand-in posters. The first one fronts the Videography card on the Work page
+   until a real video is published. */
 export const VIDEO_TILES = [
   MOCK_PHOTO("soltani-video-1", 1200, 900),
   MOCK_PHOTO("soltani-video-2", 1200, 900),
@@ -391,6 +536,27 @@ export const VIDEO_STATS = [
   { figure: "120+", label: "Projects delivered" },
   { figure: "6K", label: "Capture standard" },
   { figure: "72h", label: "Typical first cut" },
+];
+
+/* ---------- Videography categories (MOCK) ----------
+   One section per category on the Videography page, until the studio has its
+   own: a big title, then the videos (VideoSections.tsx). The format strings
+   mix verticals (v) and landscapes (l) so every grid shape gets exercised. */
+const mockVideos = (seed: string, formats: string) =>
+  [...formats].map((f, i) =>
+    f === "v"
+      ? { src: MOCK_PHOTO(`${seed}-${i}`, 900, 1600), tall: true }
+      : { src: MOCK_PHOTO(`${seed}-${i}`, 1600, 900), tall: false },
+  );
+
+export const VIDEO_SECTIONS: {
+  title: string;
+  videos: { src: string; tall: boolean }[];
+}[] = [
+  { title: "Restaurants", videos: mockVideos("soltani-vc-1", "vvvv") },
+  { title: "Medical", videos: mockVideos("soltani-vc-2", "ll") },
+  { title: "Financial", videos: mockVideos("soltani-vc-3", "vvv") },
+  { title: "IT", videos: mockVideos("soltani-vc-4", "lvv") },
 ];
 
 /* ---------- Photography grid (MOCK) ----------
@@ -464,30 +630,31 @@ export const WEB_PROCESS = [
   },
 ];
 
-/* ---------- Team (MOCK) ---------- */
+/* ---------- Team ----------
+   Roles are real; the three stock photos are placeholders until real ones. */
 export const TEAM = [
   {
-    name: "Soltani",
-    role: "Founder & Director of Photography",
-    focus: "Stills, lighting, and the final say on the grade.",
-    photo: MOCK_PHOTO("soltani-team-lead", 640, 800),
+    name: "Oussama Soltani",
+    role: "Founder · Editor & Marketing",
+    focus: "Runs the studio, cuts the edit, and makes sure the work gets seen.",
+    photo: "/photos/oussama-team.webp",
   },
   {
-    name: "Nadia",
-    role: "Head of Strategy",
-    focus: "Turns one shoot day into a quarter of posts that perform.",
+    name: "Jed Belhaj",
+    role: "Web Designer & Editor",
+    focus: "Builds the sites the work lives on, and cuts video in between.",
     photo: MOCK_PHOTO("soltani-team-strategy", 640, 800),
   },
   {
-    name: "Omar",
-    role: "Editor & Motion",
-    focus: "Cuts the long form, then the forty verticals hiding inside it.",
+    name: "Oubaid Beldi",
+    role: "Video Editor",
+    focus: "Turns hours of raw footage into reels that hold attention.",
     photo: MOCK_PHOTO("soltani-team-editor", 640, 800),
   },
   {
-    name: "Lina",
-    role: "Producer",
-    focus: "Locations, permits, call sheets — the reason days run on time.",
+    name: "Houssemeddine Farah",
+    role: "Video Editor",
+    focus: "Cuts the long form, then the short-form pieces hiding inside it.",
     photo: MOCK_PHOTO("soltani-team-producer", 640, 800),
   },
 ];
@@ -500,32 +667,56 @@ export type Testimonial = {
   tag: string | null;
 };
 
-/* MOCK testimonials — replace once consent is collected (see docs/problems.md). */
+/* ---------- Testimonials (Wall of Love) ----------
+   Upwork reviews, quoted as the clients wrote them. Upwork doesn't show
+   client names publicly, so each card reads "Upwork client" with the rating
+   and, where the profile lists it, the job title. */
+const upwork = (quote: string, job?: string): Testimonial => ({
+  quote,
+  name: "Upwork client",
+  handle: null,
+  avatar: null,
+  tag: job ? `★ 5.0 on Upwork · ${job}` : "★ 5.0 on Upwork",
+});
+
 export const TESTIMONIALS: Testimonial[] = [
-  {
-    quote:
-      "Soltani Media is the rare shop that can shoot the thing and then tell you what to do with it. We came in expecting a photographer and left with a quarter's worth of content, a posting calendar, and an ad set that finally beat our old control. Two people delivered what our last agency needed six to half-do.",
-    name: null,
-    handle: null,
-    avatar: null,
-    tag: null,
-  },
-  {
-    quote:
-      "We booked one menu shoot and ended up handing over the whole content side. The photos were the easy part — what actually moved the needle was Soltani rebuilding how we post and turning the shoot into eight weeks of reels. Delivery day for delivery day, our online orders are up and I stopped dreading the content calendar. He's organised, fast, and he shows up with a plan instead of a mood board.",
-    name: "Yasmine",
-    handle: "@cafenomad",
-    avatar: MOCK_AVATAR("yasmine"),
-    tag: "Owner | Cafe Nomad",
-  },
-  {
-    quote:
-      "We've worked with Soltani across two product launches now. He handles the shoot, the edit, and the paid creative, which means nothing gets lost in translation between three different vendors. He'll also tell you straight when an idea won't perform — that honesty saved us a whole campaign budget last spring. Can't recommend the studio enough.",
-    name: "Karim",
-    handle: "@atlasoutfitters",
-    avatar: MOCK_AVATAR("karim"),
-    tag: "Founder | Atlas Outfitters",
-  },
+  upwork(
+    "I hired Oussama to edit a short Facebook ad for our product. He understood the brief immediately, delivered a polished 20–30s video optimized for mobile, and responded quickly to revision requests. Professional, talented, and great value, I’ll hire him again.",
+  ),
+  upwork(
+    "Oussama is one of the most talented editors i worked with, very creative and a great problem solver",
+  ),
+  upwork(
+    "Oussama was professional, responsive, and easy to work with. He delivered the work on time, communicated well throughout the project, and was open to feedback and revisions. Overall, a good experience.",
+    "Creative Strategist & Video Editor For E-commerce Ads",
+  ),
+  upwork(
+    "Oussama creating a reel for a client of mine that turned out better than I ever imagined. I gave him a rundown of what I was looking for and he exceeded my expectations by a long shot. Would recommend using Ousamma and will be using him again in the future.",
+  ),
+  upwork(
+    "Oussama always creates exactly what I am looking for! He does it In a timely manner and exceeds my expectations every time.",
+  ),
+  upwork(
+    "Oussama a été très réactif et efficace. Les ads qu'il m'a crée mon permit de générer des prospects supplémentaires. Merci à lui.",
+  ),
+  upwork(
+    "Oussama is a top-notch freelancer , fast, reliable, and delivers excellent quality every time. Great communication and attention to detail. Highly recommended!",
+  ),
+  upwork(
+    "Oussama was easy to work with, responsive and professional throughout the project. He delivered quality work, communicated clearly and was receptive to feedback and revisions. Looking forward to working together again on future projects.",
+    "Video ads editor",
+  ),
+  upwork("Great execution, on time, very good video editing quality"),
+  upwork(
+    "Oussama did a great job on my short reel! He was super easy to work with, understood exactly what I wanted, and delivered a really polished result. I’m really happy with how it turned out and would definitely work with him again. Highly recommend!",
+  ),
+  upwork(
+    "Great work as always. Appreciate all your help and hope to work with you again!",
+  ),
+  upwork(
+    "You were very committed and very professional thank you Oussama for this magnificent work you have done i will definitely work again",
+  ),
+  upwork("SUPER JOB LOT OF SKILLS THANKS A LOT"),
 ];
 
 export type NavItem = {
@@ -662,13 +853,12 @@ export const COPY = {
       eyebrow: "Services",
       title: "Everything it takes",
       accent: "to get seen.",
-      body: "Four disciplines, one team. Pick the pieces you need, or hand over the whole content side and we'll run it end to end.",
+      body: "Three disciplines, one team. Pick the pieces you need, or hand over the whole content side and we'll run it end to end.",
     }),
     toolboxTitle: "What's in our kit",
     packagesHeading: heading({
-      eyebrow: "Packages",
-      title: "Pick your pace",
-      accent: "[or we'll build one]",
+      title: "What makes us different",
+      body: "Beyond great photos and video, every project comes with a team that knows what the content is for.",
     }),
     packagesFootnote:
       "Need a one-off shoot instead? Every project can be quoted on its own.",

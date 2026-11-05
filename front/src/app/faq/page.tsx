@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getContent } from "@/lib/cms";
+import { SEAM_STICKERS } from "@/lib/content";
 import PageHero from "@/components/PageHero";
+import StickerSeam from "@/components/StickerSeam";
 import Faq from "@/components/Faq";
 
 export const metadata: Metadata = {
@@ -17,6 +19,7 @@ export default async function FaqPage() {
         {hero.body || undefined}
       </PageHero>
 
+      <StickerSeam stickers={SEAM_STICKERS.faq.list} />
       <Faq />
     </>
   );
