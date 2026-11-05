@@ -17,6 +17,7 @@ export type ParsedReview = {
   date: string | null;
   dateRange: string | null;
   earnings: string | null;
+  hourlyRate: string | null;
   sourceFile: string;
   via: "state" | "dom";
 };

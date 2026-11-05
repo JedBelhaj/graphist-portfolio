@@ -318,7 +318,8 @@ function walk(data: Json): Found {
         clientName: clean(from(["clientName", "buyerName", "companyName"]) ?? (client && pick(client, ["name", "displayName", "companyName"]))),
         date: end ? ymd(end) : start ? ymd(start) : null,
         dateRange: start ? `${monthYear(start)} – ${end ? monthYear(end) : "Present"}` : null,
-        earnings: total ?? (rate ? `${rate}/hr` : null),
+        earnings: total,
+        hourlyRate: rate ? `${rate}/hr` : null,
       });
       if (score !== null && (score < 0 || score > 5)) problem(`review score ${score} isn't 0–5, left blank: "${text.slice(0, 50)}…"`);
       return;
@@ -381,16 +382,19 @@ function domReviews($: cheerio.CheerioAPI): Review[] {
   tiles.each((i, el) => {
     const tile = $(el);
     const title = clean(tile.find('h4, h5, [data-test*="title"], [data-qa*="title"]').first().text());
+    /* Upwork currently puts the review in an <em>, wrapped in quote marks. */
     const text = clean(
-      tile.find('[data-test*="feedback"] p, [data-test*="comment"], [data-qa*="feedback"], q, blockquote').first().text() ||
+      tile.find('[data-test*="feedback"] p, [data-test*="comment"], [data-qa*="feedback"], q, blockquote, em').first().text() ||
         tile.find('[data-test*="feedback"]').first().text(),
-    );
-    const label = tile.find('[aria-label*="out of"], [aria-label*="Rating"], [class*="rating"]').first();
-    const ratingText = label.attr("aria-label") ?? label.text();
-    const rating = num(ratingText.match(/(\d(?:\.\d+)?)/)?.[1]);
+    )?.replace(/^["“]\s*|\s*["”]$/g, "");
     const whole = tile.text().replace(/\s+/g, " ");
+    const label = tile.find('[aria-label*="out of"], [aria-label*="Rating"], [class*="rating"]').first();
+    const ratingText = whole.match(/Rating is \d(?:\.\d+)? out of/)?.[0] ?? label.attr("aria-label") ?? label.text();
+    const rating = num(ratingText.match(/(\d(?:\.\d+)?)/)?.[1]);
     const range = whole.match(MONTH_RANGE)?.[0] ?? null;
-    const earnings = whole.match(/\$[\d,]+(?:\.\d+)?(?:\s*\/\s*hr)?/)?.[0] ?? null;
+    /* The tile reads "$25.00 $5.00 /hr 8 hours": the total, then the rate. */
+    const earnings = whole.match(/\$[\d,]+(?:\.\d+)?(?![\d.,]|\s*\/\s*hr)/)?.[0] ?? null;
+    const rate = whole.match(/\$[\d,]+(?:\.\d+)?(?=\s*\/\s*hr)/)?.[0] ?? null;
     if (!text) {
       problem(`HTML tile ${i + 1}${title ? ` ("${title}")` : ""}: no feedback text found, skipped`);
       return;
@@ -408,6 +412,7 @@ function domReviews($: cheerio.CheerioAPI): Review[] {
       /* Same wording as the embedded-data path; as shown if it won't parse. */
       dateRange: start ? `${monthYear(start)} – ${end ? monthYear(end) : "Present"}` : range,
       earnings,
+      hourlyRate: rate ? `${rate}/hr` : null,
     });
   });
   return out;

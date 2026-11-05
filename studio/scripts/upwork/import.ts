@@ -109,21 +109,28 @@ async function main() {
 
   for (const r of data.reviews) {
     const own = `upwork-review-${r.key}`;
-    const match = byId.get(own) ?? byQuote.get(norm(r.text));
+    /* Upwork cuts long reviews off with "..." on the profile. Match those on the
+       part it shows, and keep the full quote already in the studio. */
+    const shown = r.text.match(/^(.*?)(?:\.\.\.|…)$/s)?.[1];
+    const prefix = shown && norm(shown);
+    const whole = prefix ? [...byQuote].find(([quote]) => quote.startsWith(prefix))?.[1] : undefined;
+    const match = byId.get(own) ?? byQuote.get(norm(r.text)) ?? whole;
     const _id = match?._id ?? own;
     if (match && match._id !== own) notes.push(`review "${r.text.slice(0, 40)}…" matches testimonial ${match._id}; updating it`);
+    if (shown && !match) notes.push(`review "${r.text.slice(0, 40)}…" is cut off on the saved page; expand it in the studio`);
     docs.push({
       _id,
       _type: "testimonial",
       ...keep("testimonial", match),
       ...compact({
-        quote: r.text,
+        quote: shown && match ? (match.quote as string) : r.text,
         source: "Upwork",
         rating: r.rating,
         projectTitle: r.projectTitle,
         date: r.date,
         dateRange: r.dateRange,
         earnings: r.earnings,
+        hourlyRate: r.hourlyRate,
       }),
       /* Upwork rarely shows client names; never blank out one set in the studio. */
       ...(r.clientName ? { name: r.clientName } : {}),
