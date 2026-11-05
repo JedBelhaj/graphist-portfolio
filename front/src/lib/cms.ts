@@ -30,8 +30,7 @@ import {
   TESTIMONIALS,
   TOOLBOX,
   UPWORK_CLIENT,
-  upworkDetails,
-  upworkTag,
+  parseUpworkTag,
   VIDEO_CAPABILITIES,
   VIDEO_SECTIONS,
   VIDEO_STATS,
@@ -159,6 +158,12 @@ const fullBlocks = <T>(items: T[], size = 9) =>
   items.length <= size ? items : items.slice(0, items.length - (items.length % size));
 
 const asTiles = (srcs: string[]): MediaTile[] => srcs.map((src) => ({ src, alt: "" }));
+
+/* "Sep 2025 – Sep 2025" reads as just "Sep 2025". */
+const oneMonth = (range?: string | null) => {
+  const [from, to] = range?.split(" – ") ?? [];
+  return from && from === to ? from : (range ?? null);
+};
 
 const lane = (l: Partial<Lane> = {}, fallback: Lane): Lane => {
   return { title: text(l.title, fallback.title), blurb: text(l.blurb, fallback.blurb), tags: strings(l.tags, fallback.tags) };
@@ -288,20 +293,19 @@ function build(raw: Raw | null) {
       /* Hidden for every card on the Home page, or for this card on its own. */
       const off = new Set([...(home.hideReviewDetails ?? []), ...(t.hideDetails ?? [])]);
       const show = <T>(detail: string, value: T) => (off.has(detail) ? null : value);
+      /* A ★ tag was typed in by hand from the Upwork data, so it is read back
+         into the same parts as an imported review. A tag worded by an editor stays. */
+      const typed = parseUpworkTag(t.tag);
+      const upwork = t.source === "Upwork" || !!typed;
       return {
         quote: t.quote!,
-        /* Imported Upwork reviews leave these blank; they read like the defaults.
-           A tag starting with ★ was typed in by hand from the same data, so the
-           imported rating and job title replace it. A tag worded by an editor stays. */
-        name: t.name || (t.source === "Upwork" ? UPWORK_CLIENT : null),
-        tag:
-          t.source === "Upwork" && (!t.tag || t.tag.startsWith("★"))
-            ? upworkTag(show("rating", t.rating), show("jobTitle", t.projectTitle))
-            : t.tag || null,
-        details:
-          t.source === "Upwork"
-            ? upworkDetails(show("earnings", t.earnings), show("hourlyRate", t.hourlyRate), show("dates", t.dateRange))
-            : null,
+        name: t.name || (upwork ? UPWORK_CLIENT : null),
+        tag: typed ? null : t.tag || null,
+        rating: show("rating", t.rating ?? typed?.rating ?? null),
+        jobTitle: show("jobTitle", t.projectTitle ?? typed?.jobTitle ?? null),
+        earned: show("earnings", t.earnings?.replace(/\.00$/, "") ?? null),
+        rate: show("hourlyRate", t.hourlyRate?.replace(".00", "") ?? null),
+        dates: show("dates", oneMonth(t.dateRange)),
         handle: t.handle || null,
         /* No photo yet: keep the original placeholder for that person, if any. */
         avatar: hasImage(t.avatar)
@@ -309,7 +313,10 @@ function build(raw: Raw | null) {
           : (TESTIMONIALS.find((d) => d.name && d.name === t.name)?.avatar ?? null),
       };
     }),
-    TESTIMONIALS,
+    TESTIMONIALS.map((t) => {
+      const typed = parseUpworkTag(t.tag);
+      return typed ? { ...t, ...typed, tag: null } : t;
+    }),
   );
 
   const results: ResultShot[] = list(

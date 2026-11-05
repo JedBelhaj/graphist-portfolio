@@ -764,8 +764,12 @@ export type Testimonial = {
   handle: string | null;
   avatar: string | null;
   tag: string | null;
-  /* What the job was worth and when, as Upwork lists it. */
-  details?: string | null;
+  /* The job behind an Upwork review, as Upwork lists it. */
+  rating?: number | null;
+  jobTitle?: string | null;
+  earned?: string | null;
+  rate?: string | null;
+  dates?: string | null;
 };
 
 /* ---------- Testimonials (Wall of Love) ----------
@@ -775,8 +779,12 @@ export type Testimonial = {
 export const UPWORK_CLIENT = "Upwork client";
 export const upworkTag = (rating?: number | null, job?: string | null) =>
   [typeof rating === "number" ? `★ ${rating.toFixed(1)} on Upwork` : "On Upwork", job].filter(Boolean).join(" · ");
-export const upworkDetails = (earnings?: string | null, hourlyRate?: string | null, dateRange?: string | null) =>
-  [earnings && `${earnings.replace(/\.00$/, "")} earned`, hourlyRate?.replace(".00", ""), dateRange].filter(Boolean).join(" · ") || null;
+/* Reads a tag in upworkTag's wording back into its parts, for the reviews first
+   typed in by hand; null for a tag worded any other way. */
+export const parseUpworkTag = (tag?: string | null) => {
+  const m = tag?.match(/^★\s*(\d(?:\.\d+)?) on Upwork(?: · (.+))?$/);
+  return m ? { rating: Number(m[1]), jobTitle: m[2] ?? null } : null;
+};
 
 const upwork = (quote: string, job?: string): Testimonial => ({
   quote,
