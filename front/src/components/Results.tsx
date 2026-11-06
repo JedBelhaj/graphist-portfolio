@@ -19,56 +19,48 @@ export default async function Results() {
   ];
 
   return (
-    <section id="results" className="bg-[rgb(10,11,16)] py-20 lg:py-28">
-      <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <div className="mb-14 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <Reveal>
-              <p
-                className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
-                style={{ color: ACCENT }}
+    <section id="results" className="bg-[rgb(10,11,16)] py-14 lg:py-16">
+      <div className="mx-auto mb-6 flex max-w-[1180px] flex-col gap-6 px-5 sm:px-8 lg:mb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+        <div className="lg:shrink-0">
+          <Reveal>
+            <p
+              className="mb-3 text-sm font-semibold uppercase tracking-[0.22em]"
+              style={{ color: ACCENT }}
+            >
+              {h.eyebrow}
+            </p>
+          </Reveal>
+          <Reveal delay={80}>
+            <h2
+              className="text-4xl font-bold leading-[1.05] tracking-tight text-[rgb(254,254,254)] lg:text-5xl"
+              style={{ fontFamily: FONT_DISPLAY }}
+            >
+              {h.title}
+              <span
+                className="block text-2xl font-normal sm:text-3xl lg:text-4xl"
+                style={{ fontFamily: FONT_SCRIPT, color: ACCENT_TINT }}
               >
-                {h.eyebrow}
-              </p>
-            </Reveal>
-            <Reveal delay={80}>
-              <h2
-                className="text-4xl font-bold leading-[1.05] tracking-tight text-[rgb(254,254,254)] sm:text-5xl lg:text-[64px]"
-                style={{ fontFamily: FONT_DISPLAY }}
-              >
-                {h.title}
-                <span
-                  className="block text-3xl font-normal sm:text-4xl lg:text-5xl"
-                  style={{ fontFamily: FONT_SCRIPT, color: ACCENT_TINT }}
-                >
-                  {h.accent}
-                </span>
-              </h2>
-            </Reveal>
-          </div>
-          <Reveal delay={160}>
-            <p className="max-w-sm text-base leading-relaxed text-[rgb(160,160,172)]">{h.body}</p>
+                {h.accent}
+              </span>
+            </h2>
           </Reveal>
         </div>
 
-        <div className="mb-10 grid grid-cols-3 gap-4 border-y border-white/10 py-10 lg:mb-14">
+        <div className="grid grid-cols-3 gap-4 lg:gap-10">
           {stats.map((s, i) => (
-            <Reveal key={s.label} delay={i * 90}>
-              <div className="text-center">
-                <div
-                  className="text-4xl font-bold tracking-tight text-[rgb(254,254,254)] sm:text-5xl lg:text-6xl"
-                  style={{ fontFamily: FONT_DISPLAY }}
-                >
-                  {s.figure}
-                </div>
-                <div className="mt-2 text-xs uppercase tracking-[0.14em] text-[rgb(120,120,132)] sm:text-sm">
-                  {s.label}
-                </div>
+            <Reveal key={s.label} delay={120 + i * 70}>
+              <div
+                className="text-3xl font-bold tracking-tight text-[rgb(254,254,254)] lg:text-4xl"
+                style={{ fontFamily: FONT_DISPLAY }}
+              >
+                {s.figure}
+              </div>
+              <div className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[rgb(120,120,132)]">
+                {s.label}
               </div>
             </Reveal>
           ))}
         </div>
-
       </div>
 
       {/* Outside the width cap, so the banner runs edge to edge. */}

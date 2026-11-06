@@ -40,7 +40,7 @@ export default async function TrustedBy() {
   const { logos, countries } = await getContent();
 
   return (
-    <section aria-label="Brands we've worked with" className="border-b border-black/5 bg-white py-12 lg:py-16">
+    <section aria-label="Brands we've worked with" className="border-b border-black/5 bg-white py-12 lg:py-10">
       <Reveal>
         <p className="mb-8 text-balance px-5 text-center text-xs font-semibold uppercase tracking-[0.22em] text-[rgb(122,122,132)] lg:mb-10">
           Trusted by {logos.length} brands across {countries.length} countries
