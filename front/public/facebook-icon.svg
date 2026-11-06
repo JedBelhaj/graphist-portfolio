@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Facebook">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Facebook">
   <defs>
-    <clipPath id="tile">
-      <rect width="512" height="512" rx="112" />
+    <clipPath id="disc">
+      <circle cx="12" cy="12" r="12" />
     </clipPath>
   </defs>
-  <g clip-path="url(#tile)">
-    <rect width="512" height="512" fill="#1877f2" />
-    <path transform="scale(21.3333)" fill="#fff" d="M16.671 15.543l.532-3.47h-3.328v-2.25c0-.949.465-1.874 1.956-1.874h1.513V4.996s-1.374-.235-2.686-.235c-2.741 0-4.533 1.662-4.533 4.669v2.643H7.078v3.47h3.047V24h3.75v-8.457z" />
+  <g clip-path="url(#disc)">
+    <rect width="24" height="24" fill="#1877f2" />
+    <path fill="#fff" d="M16.671 15.543l.532-3.47h-3.328v-2.25c0-.949.465-1.874 1.956-1.874h1.513V4.996s-1.374-.235-2.686-.235c-2.741 0-4.533 1.662-4.533 4.669v2.643H7.078v3.47h3.047V24h3.75v-8.457z" />
   </g>
 </svg>
