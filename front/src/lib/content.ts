@@ -33,7 +33,7 @@ export const FOUNDER_PORTRAIT = "/photos/oussama-founder.webp";
 /* Cut-out for the home "what we do" section, where the service bubbles float
    around it. Sized to that section's 400x575 box (at 2x). Not in the studio
    yet, so it isn't editable there. */
-export const SERVICES_PHOTO = "/photos/oussama-stool.webp";
+export const SERVICES_PHOTO = "/photos/oussama-laptop.webp";
 /* The About page's own pair, so it doesn't repeat the home page: a cut-out
    for the arch in its intro (same 1152x2048 canvas as the hero) and an on-set
    shot for the About section. Not in the studio yet either. */
