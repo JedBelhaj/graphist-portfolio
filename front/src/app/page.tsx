@@ -40,7 +40,6 @@ export default async function Page() {
         textColor={INK}
       />
 
-      <StickerSeam stickers={seams.services} />
       <Services
         bubbles={services.bubbles}
         title={home.services.title}
