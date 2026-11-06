@@ -5,18 +5,20 @@ import Link from "next/link";
 import { FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import type { ServiceBubble } from "@/lib/cms";
 
+/* Spots are relative to the 820px ring box (photo centred in it), so the
+   bubbles hug the figure instead of spreading across the whole column. */
 const BUBBLE_POSITIONS = [
-  "top-[-13%] right-[17%] w-[180px]",
-  "right-[20%] bottom-[21%] w-[120px]",
-  "right-[1%] bottom-[52%] w-[130px]",
-  "right-[-1%] bottom-[9%] w-40",
-  "right-[52%] bottom-[91%] w-[120px]",
-  "right-[78%] bottom-[83%] w-[140px]",
-  "right-[64%] bottom-[60%] w-[120px]",
-  "right-[87%] bottom-[53%] w-[200px]",
-  "right-[92%] bottom-[5%] w-[200px]",
-  "right-[70%] bottom-[9%] w-[200px]",
-  "right-[-3%] bottom-[89%] w-[120px]",
+  "top-[-6%] right-[18%] w-[144px]",
+  "right-[20%] bottom-[22%] w-[100px]",
+  "right-[4%] bottom-[50%] w-[108px]",
+  "right-[2%] bottom-[12%] w-[128px]",
+  "right-[52%] bottom-[84%] w-[100px]",
+  "right-[76%] bottom-[76%] w-[116px]",
+  "right-[63%] bottom-[56%] w-[100px]",
+  "right-[84%] bottom-[50%] w-[160px]",
+  "right-[88%] bottom-[8%] w-[160px]",
+  "right-[68%] bottom-[10%] w-[160px]",
+  "right-[2%] bottom-[80%] w-[100px]",
 ];
 
 /* Gap between each bubble popping in, in ms. */
@@ -95,7 +97,7 @@ export default function Services({
           {title}
           {/* The large bottom margin is only for desktop, where the bubble ring
               floats up into this space; the mobile pills don't. */}
-          <span className="block text-2xl sm:text-4xl lg:mb-30 lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
+          <span className="block text-2xl sm:text-4xl lg:mb-20 lg:text-5xl" style={{ fontFamily: FONT_SCRIPT }}>
             {accent}
           </span>
         </h2>
@@ -118,7 +120,7 @@ export default function Services({
           </div>
 
           {/* Desktop: photo with floating bubbles */}
-          <div className="relative mx-auto hidden justify-center lg:flex">
+          <div className="relative mx-auto hidden w-[820px] justify-center lg:flex">
             {/* Fixed 575px box keeps the bubble ring's tuned positions intact, while
                 object-bottom crops the cut-out's empty top so the subject fills it.
                 The drop shadows follow the cut-out's outline: a tight one softens
@@ -137,7 +139,7 @@ export default function Services({
               return (
                 <div key={s.label} className={`absolute ${BUBBLE_POSITIONS[i]} ${className}`} style={style}>
                   <div
-                    className="bubble-float flex items-center justify-center rounded-full px-2 py-6 text-center text-base font-bold"
+                    className="bubble-float flex items-center justify-center rounded-full px-2 py-4 text-center text-sm font-bold"
                     style={{ backgroundColor: s.bg, color: s.fg, fontFamily: FONT_DISPLAY, ...float(i) }}
                   >
                     {s.label}
