@@ -22,6 +22,8 @@ export const AFTER_EFFECTS = "/adobe-after-effects-icon.png";
 export const CAPCUT = "/capcut-icon.png";
 export const HIGGSFIELD = "/higgsfield-icon.png";
 export const META = "/meta-icon.png";
+export const INSTAGRAM = "/instagram-icon.svg";
+export const FACEBOOK = "/facebook-icon.svg";
 
 /* ---------- Portraits ----------
    From the studio shoot (originals in public/content/shooting, not committed),
@@ -110,7 +112,7 @@ const seam = (name: string, cls: string, tilt: number, lean: number) => ({
 
 export const SEAM_STICKERS = {
   home: {
-    services: [seam("jasmine", "w-24 -top-[30px] right-[4%] lg:w-44 lg:-top-[54px] lg:right-[7%]", 8, 12)],
+    services: [seam("jasmine", "w-24 -top-[30px] right-[4%] lg:w-44 lg:top-[14px] lg:right-[7%]", 8, 12)],
     packages: [seam("poster-zidane", "w-16 -top-[44px] left-[4%] lg:w-28 lg:-top-[80px]", -6, -12)],
   },
   about: {
@@ -190,15 +192,9 @@ export const SERVICES: { label: string; color: ServiceColor }[] = [
   { label: "Testimonial Videos", color: "tint" },
 ];
 
-export const TOOLBOX = [
-  A("6dda1d55e1edd24f8e8b7263a69d2a7d2df3ac43", "1789909498771927", "svg"),
-  A("d38c31018c606d20f2dcfc13f9aa6fd0f5d9a30a", "1789909498817571", "svg"),
-  A("ccddafeee887321cad7ca56d5f194d62ab2db49d", "1789909498815883", "svg"),
-  A("34e1708d8ca04800513036b8863dd4b78de2ba9d", "1789909498820724", "svg"),
-  A("85768e3a65404cb9c5abde92cd5d02c9a13e574d", "1789909498819935", "svg"),
-  A("8af38476fe7dec33409f061d249565f929de1896", "1789909498819401", "svg"),
-  A("d3e00aca30ddff4029550347b4446aa0a44d7870", "1789909498828438", "svg"),
-];
+/* The kit strip: editing tools first, then where the ads run. Square app
+   icons, so Toolbox.tsx shows them a little larger than a wordmark. */
+export const TOOLBOX = [PREMIERE, AFTER_EFFECTS, CAPCUT, HIGGSFIELD, META, INSTAGRAM, FACEBOOK];
 
 export const WORK_TABS = [
   "Photography",

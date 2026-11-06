@@ -1,4 +1,4 @@
-import { ACCENT_TINT, ACCENT_WASH, INK } from "@/lib/brand";
+import { ACCENT_WASH, INK } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import { SEAM_STICKERS } from "@/lib/content";
 import Hero from "@/components/Hero";
@@ -8,6 +8,7 @@ import StickerSeam from "@/components/StickerSeam";
 import Testimonials from "@/components/Testimonials";
 import WorkTeaser from "@/components/WorkTeaser";
 import Marquee from "@/components/Marquee";
+import Toolbox from "@/components/Toolbox";
 import Services from "@/components/Services";
 import Packages from "@/components/Packages";
 import AboutIntro from "@/components/AboutIntro";
@@ -34,11 +35,7 @@ export default async function Page() {
 
       <WorkTeaser />
 
-      <Marquee
-        items={Array(4).fill(home.marqueeOne)}
-        bg={ACCENT_TINT}
-        textColor={INK}
-      />
+      <Toolbox />
 
       <StickerSeam stickers={seams.services} />
       <Services
