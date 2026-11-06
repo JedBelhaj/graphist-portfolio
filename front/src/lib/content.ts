@@ -125,14 +125,6 @@ const seam = (name: string, cls: string, tilt: number, lean: number) => ({
 
 export const SEAM_STICKERS = {
   home: {
-    services: [
-      seam(
-        "jasmine",
-        "w-24 -top-[30px] right-[4%] lg:w-44 lg:-top-[54px] lg:right-[7%]",
-        8,
-        12,
-      ),
-    ],
     packages: [
       seam(
         "poster-zidane",
