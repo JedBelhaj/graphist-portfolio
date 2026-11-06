@@ -4,6 +4,7 @@ import { BRAND, FONT_BODY } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import Header from "@/components/Header";
 import PageLoader from "@/components/PageLoader";
+import ScrollCue from "@/components/ScrollCue";
 import SiteFooter from "@/components/SiteFooter";
 import "./globals.css";
 
@@ -73,6 +74,7 @@ export default async function RootLayout({
           <main id="top">{children}</main>
           <SiteFooter />
         </div>
+        <ScrollCue />
       </body>
     </html>
   );

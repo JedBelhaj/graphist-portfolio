@@ -28,35 +28,16 @@ export default async function Photography() {
 
   return (
     <section id="photography" style={{ backgroundColor: ACCENT_WASH }}>
-      <div className="mx-auto max-w-[1180px] px-5 pb-14 pt-20 sm:px-8 lg:pb-20 lg:pt-28">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <Reveal>
-              <p
-                className="mb-4 text-sm font-semibold uppercase tracking-[0.22em]"
-                style={{ color: ACCENT }}
-              >
-                {h.eyebrow}
-              </p>
-            </Reveal>
-
-            <Reveal delay={80}>
-              <h2
-                className="max-w-2xl text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[64px]"
-                style={{ fontFamily: FONT_DISPLAY }}
-              >
-                {h.title}
-                <span className="block" style={{ fontFamily: FONT_SCRIPT }}>
-                  {h.accent}
-                </span>
-              </h2>
-            </Reveal>
-          </div>
-
-          <Reveal delay={160}>
-            <p className="max-w-md text-base leading-relaxed text-[rgb(74,74,86)]">{h.body}</p>
-          </Reveal>
-        </div>
+      <div className="mx-auto max-w-[1180px] px-5 pb-6 pt-10 sm:px-8 lg:pb-8 lg:pt-12">
+        <Reveal>
+          <h2
+            className="text-3xl font-semibold leading-[1.1] tracking-tight text-[rgb(10,11,16)] lg:text-4xl"
+            style={{ fontFamily: FONT_DISPLAY }}
+          >
+            {h.title}{" "}
+            <span style={{ fontFamily: FONT_SCRIPT, color: ACCENT }}>{h.accent}</span>
+          </h2>
+        </Reveal>
       </div>
 
       <MediaMosaic items={photography.tiles} spans={PHOTO_SPANS} />
