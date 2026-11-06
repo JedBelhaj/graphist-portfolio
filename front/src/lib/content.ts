@@ -22,6 +22,22 @@ export const AFTER_EFFECTS = "/adobe-after-effects-icon.png";
 export const CAPCUT = "/capcut-icon.png";
 export const HIGGSFIELD = "/higgsfield-icon.png";
 export const META = "/meta-icon.png";
+export const INSTAGRAM = "/instagram-icon.svg";
+export const FACEBOOK = "/facebook-icon.svg";
+
+/* The home page belt above Services. Lives here rather than in the studio. */
+export const TOOLKIT_BELT = {
+  title: "Toolkit",
+  tools: [
+    { src: PREMIERE, name: "Adobe Premiere Pro" },
+    { src: AFTER_EFFECTS, name: "Adobe After Effects" },
+    { src: CAPCUT, name: "CapCut" },
+    { src: HIGGSFIELD, name: "Higgsfield" },
+    { src: META, name: "Meta" },
+    { src: INSTAGRAM, name: "Instagram" },
+    { src: FACEBOOK, name: "Facebook" },
+  ],
+};
 
 /* ---------- Portraits ----------
    From the studio shoot (originals in public/content/shooting, not committed),
