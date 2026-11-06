@@ -46,19 +46,18 @@ function Row({
             aria-hidden={repeat || undefined}
             tabIndex={repeat ? -1 : undefined}
             aria-label={`View: ${r.alt || r.label}`}
-            className={`group mr-5 flex h-[320px] shrink-0 cursor-pointer flex-col rounded-2xl bg-white p-2 text-left shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition-transform duration-500 ease-out hover:rotate-0 hover:scale-[1.03] focus-visible:rotate-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mr-8 sm:h-[400px] ${
+            className={`group mr-5 flex shrink-0 cursor-pointer flex-col rounded-2xl bg-white p-2 text-left shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition-transform duration-500 ease-out hover:rotate-0 hover:scale-[1.03] focus-visible:rotate-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mr-8 ${
               TILTS[i % TILTS.length]
             }`}
           >
-            {/* Capped rather than cropped: the wide messages and the tall ad
-                screenshots share a card height, and each stays whole. */}
-            <span className="flex min-h-0 flex-1 items-center justify-center rounded-xl bg-[rgb(240,240,244)]">
-              <img
-                src={r.src}
-                alt={repeat ? "" : r.alt}
-                className="max-h-[260px] w-auto max-w-[78vw] rounded-xl sm:max-h-[340px] sm:max-w-[480px]"
-              />
-            </span>
+            {/* Capped rather than cropped, and the card hugs the result: a wide
+                message gets a short card, a tall ad a tall one, with no empty
+                frame around either. The row centres them on one line. */}
+            <img
+              src={r.src}
+              alt={repeat ? "" : r.alt}
+              className="block max-h-[260px] w-auto max-w-[78vw] rounded-xl sm:max-h-[340px] sm:max-w-[480px]"
+            />
             <span className="flex items-center justify-between gap-3 px-2 pb-1 pt-3">
               <span
                 className="whitespace-nowrap text-sm font-semibold text-[rgb(10,11,16)]"
