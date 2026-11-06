@@ -37,7 +37,6 @@ export default async function Page() {
 
       <Toolbox />
 
-      <StickerSeam stickers={seams.services} />
       <Services
         bubbles={services.bubbles}
         title={home.services.title}
