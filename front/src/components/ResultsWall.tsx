@@ -50,14 +50,23 @@ function Row({
               TILTS[i % TILTS.length]
             }`}
           >
-            {/* Capped rather than cropped, and the card hugs the result: a wide
-                message gets a short card, a tall ad a tall one, with no empty
-                frame around either. The row centres them on one line. */}
-            <img
-              src={r.src}
-              alt={repeat ? "" : r.alt}
-              className="block max-h-[260px] w-auto max-w-[78vw] rounded-xl sm:max-h-[340px] sm:max-w-[480px]"
-            />
+            {/* Every card is the same size. The screenshot is shown whole
+                (contained, never cropped) over a blurred, enlarged copy of
+                itself, so a wide message or a tall ad fills the frame with
+                its own colours instead of an empty grey margin. */}
+            <span className="relative block h-[230px] w-[300px] overflow-hidden rounded-xl sm:h-[300px] sm:w-[420px]">
+              <img
+                src={r.src}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full scale-150 object-cover blur-2xl saturate-150"
+              />
+              <img
+                src={r.src}
+                alt={repeat ? "" : r.alt}
+                className="relative h-full w-full object-contain p-2 drop-shadow-[0_6px_14px_rgba(0,0,0,0.25)]"
+              />
+            </span>
             <span className="flex items-center justify-between gap-3 px-2 pb-1 pt-3">
               <span
                 className="whitespace-nowrap text-sm font-semibold text-[rgb(10,11,16)]"
