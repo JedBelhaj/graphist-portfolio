@@ -5,7 +5,6 @@ import HeroBurst from "./HeroBurst";
 import HeroOrbit from "./HeroOrbit";
 import HeroStream from "./HeroStream";
 import InViewGate from "./InViewGate";
-import ParallaxLayer from "./ParallaxLayer";
 import Stickers from "./Stickers";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
@@ -62,11 +61,9 @@ export default async function Hero() {
   const { home, images } = await getContent();
 
   return (
-    <section className="relative overflow-hidden bg-[rgb(254,254,254)] pt-24 lg:pt-15">
-      <div className="mx-auto grid max-w-[1300px] grid-cols-1 items-center gap-6 px-5 sm:px-8 lg:min-h-[85vh] lg:grid-cols-2 lg:gap-6 lg:px-[43px]">
-        {/* More room above than below: the slogan stickers sit over the headline
-            and mustn't reach the logo on short laptops. */}
-        <div className="py-6 lg:pb-16 lg:pt-32">
+    <section className="relative overflow-hidden bg-[rgb(254,254,254)] pt-28 lg:pt-15">
+      <div className="mx-auto grid max-w-[1300px] grid-cols-1 items-center gap-10 px-5 sm:px-8 lg:min-h-screen lg:grid-cols-2 lg:gap-6 lg:px-[43px]">
+        <div className="py-6 lg:py-40">
           <div className="relative mb-8">
             <div className="hero-rise flex flex-wrap gap-x-3">
               <h1
@@ -121,21 +118,20 @@ export default async function Hero() {
             the page being dragged. px-10 leaves room for the stickers that sit
             past the photo's left edge, so the card's clipping doesn't cut
             them off. */}
-        <div className="pb-8 lg:hidden">
+        <div className="pb-10 lg:hidden">
           {/* Gated: with the copy first, this card often starts below the fold,
               and the sticker sequence would finish before anyone saw it. */}
           <InViewGate className="mx-auto flex max-w-md items-end justify-center overflow-hidden rounded-3xl bg-[rgb(238,234,255)] px-10 pt-8">
-            <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[380px] sm:max-h-[440px]" enter="hero-rise" />
+            <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[420px] sm:max-h-[480px]" enter="hero-rise" />
           </InViewGate>
         </div>
       </div>
 
-      {/* Desktop full-height photo panel. The photo also follows the screen's
-          height, so on short laptops it stays clear of the header. */}
+      {/* Desktop full-height photo panel */}
       <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-[rgb(238,234,255)] lg:flex">
-        <ParallaxLayer className="relative left-[2%] xl:left-[-8%]">
-          <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[min(640px,76vh)] xl:max-h-[min(760px,76vh)]" enter="hero-in-right" />
-        </ParallaxLayer>
+        <div className="relative left-[2%] xl:left-[-8%]">
+          <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[640px] xl:max-h-[760px]" enter="hero-in-right" />
+        </div>
       </div>
     </section>
   );

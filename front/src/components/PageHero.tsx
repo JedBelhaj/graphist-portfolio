@@ -17,7 +17,7 @@ export default function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="bg-white px-5 pb-10 pt-28 sm:px-8 lg:pb-12 lg:pt-36">
+    <section className="bg-white px-5 pb-12 pt-36 sm:px-8 lg:pb-16 lg:pt-48">
       <div className="mx-auto max-w-[1180px]">
         <p
           className="hero-rise mb-5 text-sm font-semibold uppercase tracking-[0.22em]"

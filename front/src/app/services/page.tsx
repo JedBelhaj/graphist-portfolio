@@ -5,6 +5,7 @@ import PageHero from "@/components/PageHero";
 import ServiceGroups from "@/components/ServiceGroups";
 import StickerSeam from "@/components/StickerSeam";
 import Packages from "@/components/Packages";
+import Toolbox from "@/components/Toolbox";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -23,6 +24,8 @@ export default async function ServicesPage() {
 
       <StickerSeam stickers={SEAM_STICKERS.services.groups} />
       <ServiceGroups />
+
+      <Toolbox />
 
       <StickerSeam stickers={SEAM_STICKERS.services.packages} />
       <Packages />
