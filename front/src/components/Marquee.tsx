@@ -17,7 +17,7 @@ export default function Marquee({
         <div key={i} className="flex items-center">
           {/* The nav's wordmark as the separator, kept small so the phrase
               stays the loudest thing on the line. */}
-          <Logo className="mx-4 h-[7px] sm:mx-5 sm:h-2 lg:mx-6 lg:h-[10px]" />
+          <Logo variant="wordmark" className="mx-4 h-[7px] sm:mx-5 sm:h-2 lg:mx-6 lg:h-[10px]" />
           <span
             className="whitespace-nowrap text-lg font-bold uppercase sm:text-xl lg:text-2xl"
             style={{ color: textColor }}
