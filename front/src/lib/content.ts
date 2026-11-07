@@ -8,10 +8,6 @@ export const HERO_ARROW = A(
 );
 
 /* ---------- Real assets (front/public) ---------- */
-/* Wordmark lockups, cut from public/soltani_logo.png (see Logo.tsx). */
-export const LOGO_FULL = "/soltani-logo.png";
-export const LOGO_WORDMARK = "/soltani-wordmark.png";
-
 /* Transparent cut-out, 1152x2048 (shoot frame A7403822, background removed).
    The subject sits in the bottom 80% of the frame; the top 20% is empty,
    which the layouts below account for. */
