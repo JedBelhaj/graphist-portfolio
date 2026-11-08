@@ -13,7 +13,7 @@ export default async function SiteFooter() {
       <div className="mx-auto max-w-[1180px]">
         {/* CTA card */}
         <div className="mb-12 flex flex-col items-center gap-6 rounded-2xl bg-[rgb(124,92,252)] p-8 text-center lg:flex-row lg:justify-between lg:gap-16 lg:text-left">
-          <Logo tone="light" className="h-12 shrink-0 lg:h-14" />
+          <Logo tone="light" className="h-6 shrink-0 lg:h-7" />
           <h3
             className="text-3xl font-normal leading-tight tracking-tight text-[rgb(254,254,254)]"
             style={{ fontFamily: FONT_SCRIPT }}
