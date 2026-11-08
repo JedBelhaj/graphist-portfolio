@@ -68,6 +68,9 @@ export type RecentTab = { label: string; tiles: MediaTile[] };
 /* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
 export type VideoTile = MediaTile & { tall: boolean };
 export type VideoSection = { key: string; title: string; videos: VideoTile[] };
+/* A category on the Photography page. None set up: the page shows every photo
+   in one gallery instead. */
+export type PhotoSection = { key: string; title: string; photos: MediaTile[] };
 export type WebShot = { src: string; address: string; real: boolean };
 export type Lane = { title: string; blurb: string; tags: string[] };
 export type Country = { code: string; name: string; note: string | null };
@@ -97,7 +100,13 @@ const CONTENT_QUERY = defineQuery(`{
   "about": *[_type == "aboutPage" && _id == "aboutPage"][0],
   "services": *[_type == "servicesPage" && _id == "servicesPage"][0],
   "work": *[_type == "workPage" && _id == "workPage"][0],
-  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0],
+  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0]{
+    ...,
+    "sections": sections[_type == "categorySection" && hidden != true]{
+      _key, title,
+      "photos": photos[]->{ image, alt, hidden }
+    }
+  },
   "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{
     ...,
     "sections": sections[_type == "categorySection" && hidden != true]{
@@ -414,6 +423,15 @@ function build(raw: Raw | null) {
     VIDEO_SECTIONS.map((s) => ({ ...s, key: s.title, videos: s.videos.map((v) => ({ ...v, alt: "" })) })),
   );
 
+  /* A category needs a title and at least one visible photo. */
+  const photoSections: PhotoSection[] = (photography.sections ?? []).flatMap((s) => {
+    const shots: MediaTile[] = (s.photos ?? []).flatMap((p) =>
+      p && hasImage(p.image) && !p.hidden ? [{ src: imageUrl(p.image, 1800), alt: p.alt ?? "" }] : [],
+    );
+    const shown = photography.galleryLayout === "blocks" ? fullBlocks(shots) : shots;
+    return s.title && shown.length > 0 ? [{ key: s._key, title: s.title, photos: shown }] : [];
+  });
+
   const stats = list(
     (videography.stats ?? []).flatMap((x) => (x.figure && x.label ? [{ figure: x.figure, label: x.label }] : [])),
     VIDEO_STATS,
@@ -504,6 +522,7 @@ function build(raw: Raw | null) {
       heading: heading(photography.heading, COPY.photography.heading),
       disciplines: strings(photography.disciplines, PHOTO_DISCIPLINES),
       tiles: photoTiles,
+      sections: photoSections,
     },
 
     videography: {
