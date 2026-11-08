@@ -5,9 +5,7 @@ import { singletonTypes } from "./schemaTypes/pages";
 /* The admin sidebar: pages first (each opens straight into its one
    document), then the media and people lists, which are drag-to-reorder. */
 const ORDERABLE: { type: string; title: string }[] = [
-  { type: "photo", title: "Photos" },
-  { type: "photoCategory", title: "Photo categories" },
-  { type: "video", title: "Videos" },
+  { type: "photo", title: "Photos" },  { type: "video", title: "Videos" },
   { type: "webProject", title: "Websites" },
   { type: "result", title: "Client messages" },
   { type: "testimonial", title: "Testimonials" },

@@ -381,11 +381,59 @@ export const photographyPage = defineType({
   groups: [
     { name: "hero", title: "Hero", default: true },
     { name: "content", title: "Content" },
+    { name: "sections", title: "Categories" },
   ],
   fields: [
     hero,
     defineField({ name: "heading", title: "Section heading", type: "heading", group: "content" }),
     strings("disciplines", "Disciplines", "content"),
+    defineField({
+      name: "sections",
+      title: "Categories",
+      type: "array",
+      group: "sections",
+      description:
+        "One section per category (Portraits, Events…): a big title, then its photos. Shown in this order below the intro; drag to reorder. Only photos added to a category appear on this page. Leave empty to show every photo in one gallery.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "categorySection",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Title",
+              type: "string",
+              description: "The category, shown big above its photos. Keep it short: one or two words.",
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "photos",
+              title: "Photos",
+              type: "array",
+              description:
+                "Pick from the Photos list, or use “Create new” to add one here. Photos switched to “Hide from website” are skipped.",
+              of: [defineArrayMember({ type: "reference", to: [{ type: "photo" }], weak: true })],
+              validation: (r) => r.min(1).warning("A category with no photos is not shown."),
+            }),
+            defineField({
+              name: "hidden",
+              title: "Hide from website",
+              type: "boolean",
+              description: "Keeps this category in the studio but off the site.",
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: { title: "title", photos: "photos", hidden: "hidden" },
+            prepare: ({ title, photos, hidden }) => {
+              const count = Array.isArray(photos) ? photos.length : 0;
+              const subtitle = [hidden ? "Hidden" : null, `${count} photo${count === 1 ? "" : "s"}`];
+              return { title, subtitle: subtitle.filter(Boolean).join(" · ") };
+            },
+          },
+        }),
+      ],
+    }),
     defineField({
       name: "galleryLayout",
       title: "Gallery layout",
