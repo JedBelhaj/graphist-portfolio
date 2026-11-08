@@ -6,6 +6,7 @@ import { singletonTypes } from "./schemaTypes/pages";
    document), then the media and people lists, which are drag-to-reorder. */
 const ORDERABLE: { type: string; title: string }[] = [
   { type: "photo", title: "Photos" },
+  { type: "photoCategory", title: "Photo categories" },
   { type: "video", title: "Videos" },
   { type: "webProject", title: "Websites" },
   { type: "result", title: "Client messages" },

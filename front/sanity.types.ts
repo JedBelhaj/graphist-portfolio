@@ -273,6 +273,13 @@ export type Video = {
   showInRecent?: boolean;
 };
 
+export type PhotoCategoryReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "photoCategory";
+};
+
 export type Photo = {
   _id: string;
   _type: "photo";
@@ -289,7 +296,18 @@ export type Photo = {
     _type: "image";
   };
   alt?: string;
+  category?: PhotoCategoryReference;
   showInRecent?: boolean;
+};
+
+export type PhotoCategory = {
+  _id: string;
+  _type: "photoCategory";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  orderRank?: string;
+  title?: string;
 };
 
 export type FaqPage = {
@@ -683,7 +701,9 @@ export type AllSanitySchemaTypes =
   | WebProject
   | SanityFileAssetReference
   | Video
+  | PhotoCategoryReference
   | Photo
+  | PhotoCategory
   | FaqPage
   | WebDesignPage
   | VideoReference
