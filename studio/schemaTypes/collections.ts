@@ -1,5 +1,5 @@
 import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
-import { Briefcase, Camera, Film, Image as ImageIcon, MessageSquareQuote, Monitor, Sparkles, Users } from "lucide-react";
+import { Briefcase, Camera, Film, Image as ImageIcon, MessageSquareQuote, Monitor, Sparkles, Tag, Users } from "lucide-react";
 import { defineField, defineType, type PreviewValue } from "sanity";
 
 /* The repeatable content: one document per photo, video, person, logo.
@@ -70,9 +70,44 @@ export const photo = defineType({
       type: "string",
       description: "What's in the picture, for screen readers and search.",
     }),
+    defineField({
+      name: "category",
+      title: "Category",
+      type: "reference",
+      to: [{ type: "photoCategory" }],
+      weak: true,
+      description: "Optional. Pick from the Photo categories list, or use “Create new” to add one here.",
+    }),
     showInRecent,
   ],
-  preview: preview({ title: "alt", media: "image" }, "Untitled photo"),
+  preview: {
+    select: { title: "alt", subtitle: "category.title", media: "image", hidden: "hidden" },
+    prepare: ({ title, subtitle, media, hidden }: PreviewFields) => ({
+      title: title || "Untitled photo",
+      subtitle: hidden ? ["Hidden", subtitle].filter(Boolean).join(" · ") : subtitle,
+      media,
+    }),
+  },
+});
+
+export const photoCategory = defineType({
+  name: "photoCategory",
+  title: "Photo category",
+  type: "document",
+  icon: Tag,
+  description: "Groups for photos (Portraits, Events, Products…). Assign one on each photo.",
+  orderings: [orderRankOrdering],
+  fields: [
+    orderRankField({ type: "photoCategory" }),
+    defineField({
+      name: "title",
+      title: "Title",
+      type: "string",
+      description: "Keep it short: one or two words.",
+      validation: (r) => r.required(),
+    }),
+  ],
+  preview: { select: { title: "title" } },
 });
 
 export const video = defineType({
@@ -107,8 +142,7 @@ export const video = defineType({
       title: "Poster frame",
       type: "image",
       options: { hotspot: true },
-      description: "The still shown in the gallery, and before the clip loads.",
-      validation: (r) => r.required(),
+      description: "Optional. The still shown in the gallery, and before the clip loads.",
     }),
     defineField({
       name: "clip",
@@ -413,4 +447,4 @@ export const clientLogo = defineType({
   preview: preview({ title: "name", media: "logo" }),
 });
 
-export const collectionTypes = [photo, video, webProject, testimonial, result, teamMember, clientLogo, portfolioItem];
+export const collectionTypes = [photo, photoCategory, video, webProject, testimonial, result, teamMember, clientLogo, portfolioItem];

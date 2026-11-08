@@ -141,8 +141,8 @@ export default function Lightbox({
             }
           />
         ) : m.video ? (
-          <VideoPlayer src={m.video} poster={m.src} label={m.alt} />
-        ) : (
+          <VideoPlayer src={m.video} poster={m.src || undefined} label={m.alt} />
+        ) : !m.src ? null : (
           <img src={m.src} alt={m.alt} className="max-h-[80vh] max-w-[92vw] rounded-lg object-contain" />
         )}
 

@@ -61,7 +61,8 @@ import {
 
 /* A tile in the photo/video mosaics. `video` is a loop clip that replaces the
    still; `href` is the full film, played in the
-   Lightbox when it is a YouTube/Vimeo link. */
+   Lightbox when it is a YouTube/Vimeo link. `src` is "" for a video with no
+   poster frame: the clip's first frame (or a plain tile) stands in. */
 export type MediaTile = { src: string; alt: string; video?: string; href?: string };
 export type RecentTab = { label: string; tiles: MediaTile[] };
 /* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
@@ -108,7 +109,7 @@ const CONTENT_QUERY = defineQuery(`{
   "faq": *[_type == "faqPage" && _id == "faqPage"][0],
   "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)
     { image, alt, showInRecent, _createdAt },
-  "videos": *[_type == "video" && defined(poster.asset) && hidden != true] | order(orderRank)
+  "videos": *[_type == "video" && (defined(poster.asset) || defined(clip.asset) || defined(link)) && hidden != true] | order(orderRank)
     { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },
   "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)
     { title, screenshot, address },
@@ -227,7 +228,7 @@ function build(raw: Raw | null) {
   }));
   const videos = r.videos.map((v) => ({
     tile: {
-      src: imageUrl(v.poster!, 1800),
+      src: hasImage(v.poster) ? imageUrl(v.poster, 1800) : "",
       alt: v.title ?? "",
       video: v.clip ?? undefined,
       href: v.link,
@@ -396,10 +397,10 @@ function build(raw: Raw | null) {
   const videoSections: VideoSection[] = list(
     (videography.sections ?? []).flatMap((s) => {
       const clips: VideoTile[] = (s.videos ?? []).flatMap((v) =>
-        v && hasImage(v.poster) && !v.hidden
+        v && (hasImage(v.poster) || v.clip || v.link) && !v.hidden
           ? [
               {
-                src: imageUrl(v.poster, 1600),
+                src: hasImage(v.poster) ? imageUrl(v.poster, 1600) : "",
                 alt: v.title ?? "",
                 video: v.clip ?? undefined,
                 href: v.link ?? undefined,
@@ -491,7 +492,7 @@ function build(raw: Raw | null) {
       hero: heading(work.hero, COPY.work.hero),
       lanes: {
         photo: { ...photoLane, img: photoTiles[0].src },
-        video: { ...videoLane, img: videoTiles[0].src },
+        video: { ...videoLane, img: videoTiles.find((t) => t.src)?.src ?? VIDEO_TILES[0] },
         web: { ...webLane, img: webShots[0].src, real: webShots[0].real },
       },
       recentTitle: text(work.recentTitle, COPY.work.recentTitle),
