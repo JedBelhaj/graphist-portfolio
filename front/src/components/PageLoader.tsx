@@ -78,7 +78,7 @@ export default function PageLoader() {
       }`}
       aria-hidden
     >
-      <Logo className="h-4 sm:h-5" />
+      <Logo className="h-[14px] sm:h-4" />
       <div className="h-[3px] w-44 overflow-hidden rounded-full" style={{ backgroundColor: ACCENT_WASH }}>
         <div
           ref={fillRef}
