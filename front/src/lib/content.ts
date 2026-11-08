@@ -90,9 +90,8 @@ export const HERO_STREAM = {
 /* The stickers either side of the Wall of Love heading, placed against its
    full-width block. Same fields as the hero's below. */
 export const LOVE_STICKERS = [
-  { src: "/stickers/love-cards.webp", cls: "w-12 -top-[66px] left-[8%] lg:w-24 lg:-top-[44px]", tilt: -8, lean: -14 },
   { src: "/stickers/love-banknote.webp", cls: "w-20 -top-[56px] left-[34%] lg:w-40 lg:top-[112px] lg:left-[2%]", tilt: 5, lean: 12 },
-  { src: "/stickers/love-pack.webp", cls: "w-10 -top-[66px] right-[8%] lg:w-20 lg:-top-[14px]", tilt: 8, lean: 14 },
+  { src: "/stickers/love-cards.webp", cls: "w-12 -top-[66px] right-[8%] lg:w-24 lg:-top-[24px]", tilt: 8, lean: 14 },
 ];
 
 /* The stickers scattered across the joins between sections (StickerSeam.tsx).
