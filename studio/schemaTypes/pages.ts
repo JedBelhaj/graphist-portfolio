@@ -10,6 +10,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { PhotoPicker } from "../components/PhotoPicker";
 import { REVIEW_DETAILS } from "./collections";
 
 /* One document per page, each holding that page's copy. These are
@@ -411,8 +412,9 @@ export const photographyPage = defineType({
               title: "Photos",
               type: "array",
               description:
-                "Pick from the Photos list, or use “Create new” to add one here. Photos switched to “Hide from website” are skipped.",
+                "Tick the photos for this category. The numbers are the order they show in on the site. Photos switched to “Hide from website” are skipped. Only published photos are listed.",
               of: [defineArrayMember({ type: "reference", to: [{ type: "photo" }], weak: true })],
+              components: { input: PhotoPicker },
               validation: (r) => r.min(1).warning("A category with no photos is not shown."),
             }),
             defineField({
