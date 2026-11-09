@@ -8,9 +8,8 @@ import Lightbox from "./Lightbox";
 import ParallaxImage from "./ParallaxImage";
 import Reveal from "./Reveal";
 
-/* Wide mosaic with breathing room: a small margin around the grid, an even
-   gutter between tiles, and rounded corners on each, so every photo reads as
-   its own print rather than one continuous wall.
+/* Flush mosaic: no gap between tiles, but held in from the left and right
+   edges of the page by a side margin.
 
    Rows are sized in vw rather than px so the whole thing scales with the
    viewport and the tiles keep their proportions instead of squashing.
@@ -34,7 +33,7 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
        The low threshold matters here — the grid is several viewports tall on
        mobile, so it can never reach a high intersection ratio. */
     <Reveal>
-      <div className="grid w-full auto-rows-[42vw] grid-cols-2 gap-2 px-3 sm:gap-3 sm:px-5 lg:auto-rows-[15vw] lg:grid-cols-4 lg:gap-4 lg:px-8">
+      <div className="grid w-full auto-rows-[42vw] grid-cols-2 px-3 sm:px-5 lg:auto-rows-[15vw] lg:grid-cols-4 lg:px-8">
         {items.map((m, i) => {
           const isVideo = Boolean(m.video || m.href);
           /* Plain grid item carrying the span classes. Stretched by default,
@@ -50,7 +49,7 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
                     ? m.alt ? `Play: ${m.alt}` : "Play the video"
                     : m.alt ? `View: ${m.alt}` : "View the photo"
                 }
-                className="group relative block h-full w-full cursor-pointer overflow-hidden rounded-xl lg:rounded-2xl"
+                className="group relative block h-full w-full cursor-pointer"
               >
                 <ParallaxImage
                   src={m.src}
