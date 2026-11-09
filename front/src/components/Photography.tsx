@@ -1,7 +1,26 @@
 import { ACCENT, ACCENT_WASH, FONT_DISPLAY, FONT_SCRIPT } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
-import PhotoGallery from "./PhotoGallery";
+import MediaMosaic from "./MediaMosaic";
 import Reveal from "./Reveal";
+
+/* A different arrangement from the video mosaic on purpose — the anchor tile
+   lands third here instead of first, so the two sections don't read as the
+   same block twice.
+
+   Same tiling rule: the areas must divide by the column count. At 2 columns
+   this is 1+1+4+2+2+2+2+1+1 = 16 (8 rows); at 4 columns the spans are
+   unchanged, so it is 16 again (4 rows). */
+const PHOTO_SPANS = [
+  "",
+  "",
+  "col-span-2 row-span-2",
+  "col-span-2",
+  "col-span-2",
+  "row-span-2",
+  "row-span-2",
+  "",
+  "",
+];
 
 export default async function Photography() {
   const { photography } = await getContent();
@@ -40,7 +59,7 @@ export default async function Photography() {
         </div>
       </div>
 
-      <PhotoGallery items={photography.tiles} />
+      <MediaMosaic items={photography.tiles} spans={PHOTO_SPANS} />
 
       <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8 lg:py-20">
         <div className="flex flex-wrap justify-center gap-3">
