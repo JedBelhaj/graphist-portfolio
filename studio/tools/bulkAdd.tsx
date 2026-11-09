@@ -13,11 +13,16 @@
    frame for the site to show them, so one
    is grabbed from the clip in the browser, and the Landscape/Vertical format is
    read from its shape. Uploads run a few at a time (compressed videos one at a
-   time); a failed file doesn't stop the rest. */
-import { Box, Button, Card, Checkbox, Container, Flex, Grid, Heading, Stack, Text, TextInput } from "@sanity/ui";
+   time); a failed file doesn't stop the rest.
+
+   Photos and videos can also go straight into a category of the Photography /
+   Videography page: pick one (or type a new one) for the whole batch, and once
+   the uploads finish, everything that was added is put in it, in the order it
+   was queued. */
+import { Box, Button, Card, Checkbox, Container, Flex, Grid, Heading, Select, Stack, Text, TextInput } from "@sanity/ui";
 import { LexoRank } from "lexorank";
 import { FolderUp } from "lucide-react";
-import { useRef, useState, type DragEvent, type FormEvent } from "react";
+import { useEffect, useRef, useState, type DragEvent, type FormEvent } from "react";
 import { useClient, type Tool } from "sanity";
 import { CompressionSettings } from "../assetSources/compressedUpload";
 import { SIZE_LIMIT, prepareVideo, useCompressionEnabled } from "../lib/compress";
@@ -48,6 +53,21 @@ const ACCEPT: Record<Target, string> = {
 };
 
 const PARALLEL = 3;
+
+/* Where each kind of item is grouped into categories: the page document (a
+   singleton, with a published copy and maybe a draft), and the array inside
+   each category that holds the references. */
+const CATEGORY_PAGES: Partial<Record<Target, { pageType: string; pageId: string; field: string }>> = {
+  photo: { pageType: "photographyPage", pageId: "photographyPage", field: "photos" },
+  video: { pageType: "videographyPage", pageId: "videographyPage", field: "videos" },
+};
+
+const NEW_CATEGORY = "__new__";
+
+type Category = { _key: string; title: string };
+type PageSections = { _id: string; sections?: Category[] | null };
+
+const newKey = () => Math.random().toString(36).slice(2, 12);
 
 type Job = {
   key: string;
@@ -123,7 +143,77 @@ function BulkAdd() {
   const filesInput = useRef<HTMLInputElement>(null);
   const folderInput = useRef<HTMLInputElement>(null);
 
-  const update = (key: string, patch: Partial<Job>) =>
+  /* "" = no category, NEW_CATEGORY = the name typed below, else a category's _key. */
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryChoice, setCategoryChoice] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [categoryReport, setCategoryReport] = useState<{ ok: boolean; text: string } | null>(null);
+  const categoryPage = CATEGORY_PAGES[target];
+
+  /* The page's categories, from its draft if it has one, plus any only the
+     published copy has. */
+  async function loadCategories(): Promise<Category[]> {
+    if (!categoryPage) return [];
+    const docs = await client.fetch<PageSections[]>(
+      `*[_id in [$id, "drafts." + $id]]{ _id, "sections": sections[]{ _key, title } }`,
+      { id: categoryPage.pageId },
+    );
+    const ordered = [...docs].sort((a) => (a._id.startsWith("drafts.") ? -1 : 1));
+    const seen = new Set<string>();
+    return ordered
+      .flatMap((d) => d.sections ?? [])
+      .filter((s) => s.title && !seen.has(s._key) && seen.add(s._key));
+  }
+
+  useEffect(() => {
+    let live = true;
+    setCategories([]);
+    setCategoryChoice("");
+    setNewCategory("");
+    loadCategories()
+      .then((list) => live && setCategories(list))
+      .catch(() => {
+        /* The picker just offers "No category" and "New category". */
+      });
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target]);
+
+  /* Puts the new items at the end of a category, in both the published page
+     and its draft (if there is one), so they show on the site right away and
+     publishing the draft later doesn't take them out. A category that doesn't
+     exist yet is created, with the same key in both. */
+  async function addToCategory(ids: string[], category: { key: string; title: string }) {
+    if (!categoryPage || !ids.length) return;
+    const { pageType, pageId, field } = categoryPage;
+    const refs = ids.map((id) => ({ _key: newKey(), _type: "reference" as const, _ref: id, _weak: true }));
+    const docs = await client.fetch<PageSections[]>(`*[_id in [$id, "drafts." + $id]]{ _id, "sections": sections[]{ _key } }`, {
+      id: pageId,
+    });
+    if (docs.length === 0) {
+      await client.createIfNotExists({ _id: pageId, _type: pageType });
+      docs.push({ _id: pageId, sections: [] });
+    }
+    const tx = client.transaction();
+    for (const doc of docs) {
+      const exists = (doc.sections ?? []).some((s) => s._key === category.key);
+      const section = `sections[_key=="${category.key}"]`;
+      if (exists) {
+        tx.patch(doc._id, (p) => p.setIfMissing({ [`${section}.${field}`]: [] }).insert("after", `${section}.${field}[-1]`, refs));
+      } else {
+        tx.patch(doc._id, (p) =>
+          p
+            .setIfMissing({ sections: [] })
+            .append("sections", [{ _key: category.key, _type: "categorySection", title: category.title, [field]: refs }]),
+        );
+      }
+    }
+    await tx.commit();
+  }
+
+  const update =(key: string, patch: Partial<Job>) =>
     setJobs((all) => all.map((j) => (j.key === key ? { ...j, ...patch } : j)));
 
   function queueFiles(list: FileList | File[]) {
@@ -182,7 +272,8 @@ function BulkAdd() {
     setDriveItems(null);
   }
 
-  async function addOne(job: Job, orderRank: string, ask: boolean) {
+  /* Returns the _id of the document it created. */
+  async function addOne(job: Job, orderRank: string, ask: boolean): Promise<string> {
     update(job.key, { status: "working", note: undefined });
     const file =
       "file" in job.source
@@ -198,14 +289,14 @@ function BulkAdd() {
     if (target !== "video") {
       update(job.key, { note: "uploading" });
       const asset = await client.assets.upload("image", file, { filename: job.name, source });
-      await client.create({
+      const created = await client.create({
         _type: target,
         orderRank,
         ...(keepHidden ? { hidden: true } : {}),
         image: { _type: "image", asset: { _type: "reference", _ref: asset._id } },
       });
       update(job.key, { status: "done", note: undefined });
-      return;
+      return created._id;
     }
 
     const prepared = await prepareVideo(file, {
@@ -220,7 +311,7 @@ function BulkAdd() {
       frame instanceof Error
         ? null
         : await client.assets.upload("image", frame.poster, { filename: `${titleFrom(job.name)} poster.jpg` });
-    await client.create({
+    const created = await client.create({
       _type: "video",
       orderRank,
       title: titleFrom(job.name),
@@ -242,12 +333,28 @@ function BulkAdd() {
       note: notes.join("; ") || undefined,
       warned: Boolean(prepared.warning) || frame instanceof Error || large,
     });
+    return created._id;
   }
 
   async function run() {
     const todo = jobs.filter((j) => j.status === "waiting" || j.status === "failed");
     if (!todo.length) return;
     setRunning(true);
+    setCategoryReport(null);
+
+    /* The category for this batch: an existing one, or a new one (unless a
+       category with that name is already there). */
+    const typed = newCategory.trim();
+    const chosen = categoryPage
+      ? categoryChoice === NEW_CATEGORY
+        ? (() => {
+            const same = categories.find((c) => c.title.trim().toLowerCase() === typed.toLowerCase());
+            return { key: same?._key ?? newKey(), title: same?.title ?? typed };
+          })()
+        : categories.find((c) => c._key === categoryChoice)
+          ? { key: categoryChoice, title: categories.find((c) => c._key === categoryChoice)!.title }
+          : null
+      : null;
 
     /* Ranks after the current last item, so the new ones land at the end of
        the list in the order they were queued. */
@@ -257,12 +364,14 @@ function BulkAdd() {
     let rank = last ? LexoRank.parse(last) : LexoRank.min();
     const ranks = todo.map(() => (rank = rank.genNext().genNext()).toString());
 
+    /* Ids of what was added, by queue position, so the category keeps the order. */
+    const created: (string | undefined)[] = [];
     let next = 0;
     const worker = async () => {
       while (next < todo.length) {
         const i = next++;
         try {
-          await addOne(todo[i], ranks[i], todo.length === 1);
+          created[i] = await addOne(todo[i], ranks[i], todo.length === 1);
         } catch (err) {
           update(todo[i].key, { status: "failed", note: err instanceof Error ? err.message : String(err) });
         }
@@ -271,6 +380,31 @@ function BulkAdd() {
     /* Compressing is heavy on memory and the video encoder: one at a time. */
     const parallel = target === "video" && compressing ? 1 : PARALLEL;
     await Promise.all(Array.from({ length: Math.min(parallel, todo.length) }, worker));
+
+    const ids = created.filter((id): id is string => Boolean(id));
+    if (chosen && ids.length) {
+      try {
+        await addToCategory(ids, chosen);
+        setCategoryReport({
+          ok: true,
+          text: `${ids.length} added to the category “${chosen.title}”.`,
+        });
+        const list = await loadCategories().catch(() => null);
+        if (list) {
+          setCategories(list);
+          /* A new category now exists: keep the batch pointed at it. */
+          setCategoryChoice(chosen.key);
+          setNewCategory("");
+        }
+      } catch (err) {
+        setCategoryReport({
+          ok: false,
+          text: `The files were added, but couldn’t be put in the category “${chosen.title}” (${
+            err instanceof Error ? err.message : String(err)
+          }). Add them to it by hand in the ${singular === "photo" ? "Photography" : "Videography"} page.`,
+        });
+      }
+    }
     setRunning(false);
   }
 
@@ -328,6 +462,37 @@ function BulkAdd() {
                   )}
                 </Stack>
               </>
+            )}
+            {categoryPage && (
+              <Stack gap={3}>
+                <Text size={1} weight="medium">
+                  Category for this whole batch
+                </Text>
+                <Select
+                  value={categoryChoice}
+                  onChange={(e) => setCategoryChoice(e.currentTarget.value)}
+                  disabled={running}
+                >
+                  <option value="">No category (add them to a category later)</option>
+                  {categories.map((c) => (
+                    <option key={c._key} value={c._key}>
+                      {c.title}
+                    </option>
+                  ))}
+                  <option value={NEW_CATEGORY}>＋ New category…</option>
+                </Select>
+                {categoryChoice === NEW_CATEGORY && (
+                  <TextInput
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.currentTarget.value)}
+                    placeholder="Name of the new category, e.g. Portraits"
+                    disabled={running}
+                  />
+                )}
+                <Text size={1} muted>
+                  Everything added below goes into this category, at the end, in the order it was queued.
+                </Text>
+              </Stack>
             )}
             <Flex as="label" align="center" gap={2}>
               <Checkbox checked={keepHidden} onChange={(e) => setKeepHidden(e.currentTarget.checked)} disabled={running} />
@@ -503,11 +668,16 @@ function BulkAdd() {
                     tone="primary"
                     text={running ? "Adding…" : `Add ${waiting} ${waiting === 1 ? singular : plural}`}
                     loading={running}
-                    disabled={running || !waiting}
+                    disabled={running || !waiting || (categoryChoice === NEW_CATEGORY && !newCategory.trim())}
                     onClick={run}
                   />
                 </Flex>
               </Flex>
+              {categoryReport && (
+                <Card padding={3} radius={2} tone={categoryReport.ok ? "positive" : "critical"}>
+                  <Text size={1}>{categoryReport.text}</Text>
+                </Card>
+              )}
               <Stack gap={2}>
                 {jobs.map((j) => (
                   <Card
