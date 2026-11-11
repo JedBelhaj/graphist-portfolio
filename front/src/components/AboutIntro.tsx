@@ -84,7 +84,12 @@ export default async function AboutIntro({ page = false }: { page?: boolean }) {
           </Reveal>
         ) : (
           <Reveal delay={120}>
-            <div className="overflow-hidden rounded-[32px]">
+            {/* Capped two ways so the whole photo is always in view: never
+                wider than 460px (on a tablet the column is the full screen),
+                and never wider than 52% of the screen's height, which keeps
+                the 4:5 photo at most ~65% of the screen tall on short
+                laptops. Centred in its column. */}
+            <div className="mx-auto w-full max-w-[min(460px,52svh)] overflow-hidden rounded-[32px]">
               <img
                 src={images.studio}
                 alt="On set with the Soltani Media crew"
