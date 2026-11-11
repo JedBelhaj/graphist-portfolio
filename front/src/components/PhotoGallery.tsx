@@ -21,91 +21,83 @@ function ratio(src: string) {
   return 2 / 3;
 }
 
-/* Grid copies don't need the 1800px file the lightbox shows; ~1000px covers
-   the largest tile on a retina screen at a fraction of the weight. */
+/* Grid copies don't need the 1800px file the lightbox shows; ~1200px covers
+   the widest tile on a retina screen at a fraction of the weight. */
 function thumb(src: string) {
-  return src.includes("cdn.sanity.io") ? src.replace(/([?&])w=\d+/, "$1w=1000") : src;
+  return src.includes("cdn.sanity.io") ? src.replace(/([?&])w=\d+/, "$1w=1200") : src;
 }
 
-/* Target row height for a gallery this wide. Rows land near it, never exactly.
-   Big on purpose: two to four photos a row, so each one gets real presence. */
-const targetRow = (width: number) => (width < 600 ? 240 : width < 1000 ? 340 : 520);
+/* Row sizes, repeated down the gallery: 3 then 2 on tablets and up, 2 then 1
+   on phones. The alternation is what gives the collage its rhythm. */
+const pattern = (small: boolean) => (small ? [2, 1] : [3, 2]);
 
-type Box = { w: number; h: number };
+/* How wide a tile may be relative to its height, by how many share its row.
+   A photo's own shape is used when it falls inside the range; outside it, the
+   tile is clamped and the photo is cropped to fit (object-cover). That keeps
+   a row of three tall portraits from towering, and a pair of portraits from
+   filling the whole screen, so every row lands at a comfortable height. */
+const RANGE: Record<number, [number, number]> = {
+  1: [1.2, 1.8],
+  2: [1.15, 1.9],
+  3: [0.95, 1.6],
+  4: [0.8, 1.4],
+};
+const SMALL_PAIR: [number, number] = [0.75, 1.3];
 
-const total = (rs: number[]) => rs.reduce((a, b) => a + b, 0);
+type Box = { w: number; h: number; crop: boolean };
 
-/* Splits the photos into justified rows for a given width: each row scales so
-   its photos (and the gaps between them) fill the width exactly at one shared
-   height. A row closes at the photo that brings its height closest to the
-   target, which keeps every row near the same height (instead of the odd
-   giant row a plain wrap produces).
-
-   A last row that would fill less than ~60% of the width joins the row above
-   (which just runs a little shorter), so the gallery never ends on one stray
-   photo. A fuller last row keeps the target height and sits left-aligned. */
-function justify(ratios: number[], width: number, gap: number): Box[] {
-  const target = targetRow(width);
-  /* The height a row of these photos takes when it fills the width. */
-  const fit = (rs: number[]) => (width - gap * (rs.length - 1)) / total(rs);
-  const rows: number[][] = [];
-  let row: number[] = [];
-
-  for (const r of ratios) {
-    const withIt = fit([...row, r]);
-    if (row.length > 0 && withIt < target) {
-      /* Close the row here, keeping whichever of with/without this photo
-         lands nearer the target height. */
-      if (Math.abs(withIt - target) < Math.abs(fit(row) - target)) {
-        rows.push([...row, r]);
-        row = [];
-      } else {
-        rows.push(row);
-        row = [r];
-      }
-    } else {
-      row.push(r);
-    }
+/* Groups the photos into the alternating rows, then sizes each row so its
+   tiles (and the gaps between them) fill the width exactly at one shared
+   height: every row is flush on both edges, like the reference collage.
+   A lone photo left at the end on a wide screen joins the row before it. */
+function collage(ratios: number[], width: number, gap: number): Box[] {
+  const small = width < 600;
+  const sizes: number[] = [];
+  for (let used = 0, p = 0; used < ratios.length; p++) {
+    const size = Math.min(pattern(small)[p % 2], ratios.length - used);
+    sizes.push(size);
+    used += size;
   }
-  if (row.length) {
-    if (rows.length && (total(row) * target) / width < 0.6) rows[rows.length - 1].push(...row);
-    else rows.push(row);
+  if (!small && sizes.length > 1 && sizes[sizes.length - 1] === 1) {
+    sizes.pop();
+    sizes[sizes.length - 1] += 1;
   }
 
   const boxes: Box[] = [];
-  rows.forEach((rs, n) => {
-    const fitted = fit(rs);
-    /* Only a final row that's still short is left unstretched. */
-    const fill = !(n === rows.length - 1 && fitted > target);
-    const h = fill ? fitted : target;
-    const room = width - gap * (rs.length - 1);
-    let used = 0;
-    rs.forEach((r, k) => {
-      /* Whole pixels; the last photo of a full row takes the remainder so
-         the right edge is exactly flush. */
-      const w = fill && k === rs.length - 1 ? room - used : Math.floor(r * h);
-      used += w;
-      boxes.push({ w, h: Math.round(h) });
+  let start = 0;
+  for (const size of sizes) {
+    const [min, max] = small && size === 2 ? SMALL_PAIR : RANGE[size];
+    const rs = ratios.slice(start, start + size);
+    const shapes = rs.map((r) => Math.min(max, Math.max(min, r)));
+    const room = width - gap * (size - 1);
+    const h = room / shapes.reduce((a, b) => a + b, 0);
+    let usedW = 0;
+    shapes.forEach((s, k) => {
+      /* Whole pixels; the last tile takes the remainder so the right edge is
+         exactly flush. */
+      const w = k === size - 1 ? room - usedW : Math.floor(s * h);
+      usedW += w;
+      boxes.push({ w, h: Math.round(h), crop: rs[k] < s });
     });
-  });
+    start += size;
+  }
   return boxes;
 }
 
-/* The photography portfolio as justified rows, the layout most photographers'
-   sites use: every photo shown whole at its own proportions (never cropped
-   into a fixed tile), all photos in a row the same height, and each row
-   filling the width so both edges stay flush. It reads left to right in the
-   admin's order, so the first photo in the list is the one that opens the
-   gallery.
+/* The photography portfolio as an organised collage: rows of three, then
+   two, alternating, each row filling the width at one height with a thin gap
+   between tiles. It reads left to right in the admin's order, so the first
+   photo in the list is the one that opens the gallery.
+
+   Tile shapes follow the photos where they can and are evened out where they
+   can't (see RANGE), so a tall portrait in a wide tile is cropped. The crop
+   sits just above centre, which keeps both standing and crouching subjects
+   in frame across this set. The full, uncropped
+   photo opens in the Lightbox on click.
 
    The rows are worked out in the browser from the gallery's width (and again
-   when it changes). Before that (the server render), a CSS approximation
-   stands in: each photo's flex-basis is its ratio x the row height and it
-   grows in proportion to its ratio.
-
-   A thin, even gap between photos (the grid's CSS gap, read back so the
-   maths always matches it), and a side margin from the page's edges. Every
-   photo opens the Lightbox, which steps through the set. */
+   when it changes); the server render shows a simple wrap until then. The
+   gap is read back from the CSS so the maths always matches it. */
 export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
   /* The same photo added twice in the admin shows once: a repeat reads as a
      mistake in a portfolio. */
@@ -128,7 +120,7 @@ export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
       const gap = parseFloat(css.columnGap) || 0;
       if (width > 0 && width !== last) {
         last = width;
-        setBoxes(justify(rs, width, gap));
+        setBoxes(collage(rs, width, gap));
       }
     };
     measure();
@@ -139,14 +131,11 @@ export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
 
   return (
     <Reveal>
-      <div
-        ref={gridRef}
-        className="flex flex-wrap gap-1 px-3 [--row-h:240px] after:grow-[999] after:content-[''] sm:gap-2 sm:px-5 sm:[--row-h:340px] lg:px-8 lg:[--row-h:520px]"
-      >
+      <div ref={gridRef} className="flex flex-wrap gap-1 px-3 sm:gap-2 sm:px-5 lg:px-8">
         {items.map((m, i) => {
-          const r = ratios[i];
           const box = boxes?.[i];
           const isVideo = Boolean(m.video || m.href);
+          const fit = `h-full w-full object-cover ${box?.crop ? "object-[50%_42%]" : ""}`;
           return (
             <button
               key={`${m.src}-${i}`}
@@ -161,7 +150,7 @@ export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
               style={
                 box
                   ? { flex: "none", width: box.w, height: box.h }
-                  : { flexGrow: r, flexBasis: `calc(var(--row-h) * ${r})`, aspectRatio: r }
+                  : { flex: "1 1 30%", aspectRatio: 1 }
               }
             >
               {m.video ? (
@@ -174,7 +163,7 @@ export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
                   playsInline
                   autoPlay
                   preload="none"
-                  className="h-full w-full object-cover"
+                  className={fit}
                 />
               ) : (
                 <img
@@ -182,7 +171,7 @@ export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
                   alt={m.alt}
                   loading={i < EAGER ? "eager" : "lazy"}
                   decoding="async"
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  className={`${fit} transition-transform duration-700 ease-out group-hover:scale-[1.03]`}
                 />
               )}
               {/* A light veil on hover says "click me" without hiding the photo. */}
