@@ -27,73 +27,80 @@ function thumb(src: string) {
   return src.includes("cdn.sanity.io") ? src.replace(/([?&])w=\d+/, "$1w=1200") : src;
 }
 
-/* Row sizes, repeated down the gallery: 3 then 2 on tablets and up, 2 then 1
-   on phones. The alternation is what gives the collage its rhythm. */
-const pattern = (small: boolean) => (small ? [2, 1] : [3, 2]);
-
-/* How wide a tile may be relative to its height, by how many share its row.
-   A photo's own shape is used when it falls inside the range; outside it, the
-   tile is clamped and the photo is cropped to fit (object-cover). That keeps
-   a row of three tall portraits from towering, and a pair of portraits from
-   filling the whole screen, so every row lands at a comfortable height. */
-const RANGE: Record<number, [number, number]> = {
-  1: [1.2, 1.8],
-  2: [1.15, 1.9],
-  3: [0.95, 1.6],
-  4: [0.8, 1.4],
+/* Width weights for the tiles in a row, cycled down the gallery. Varying them
+   row to row is what staggers the joins like brickwork, so no two rows split
+   in the same places. Three per row from tablets up, two on phones. */
+const BRICKS: Record<"small" | "wide", number[][]> = {
+  wide: [
+    [1.45, 1, 0.85],
+    [1, 1.15, 1],
+    [0.85, 1, 1.45],
+    [1.2, 0.85, 1.15],
+  ],
+  small: [
+    [1.25, 0.8],
+    [0.8, 1.25],
+    [1, 1],
+  ],
 };
-const SMALL_PAIR: [number, number] = [0.75, 1.3];
+
+/* How wide the tiles of one row add up to, in row heights. The same for
+   every row, so every row is the same height: wider than the photos' own
+   shapes, which keeps the rows low enough to see a few at a time. */
+const ROW_SPAN = { wide: 3.3, small: 2.1 };
 
 type Box = { w: number; h: number; crop: boolean };
 
-/* Groups the photos into the alternating rows, then sizes each row so its
-   tiles (and the gaps between them) fill the width exactly at one shared
-   height: every row is flush on both edges, like the reference collage.
-   A lone photo left at the end on a wide screen joins the row before it. */
-function collage(ratios: number[], width: number, gap: number): Box[] {
-  const small = width < 600;
+/* Lays the photos out as a brick wall for a given width: rows of three (two
+   on phones), every row the same height and flush on both edges, tile widths
+   following the BRICKS pattern, nudged wider for landscape photos and
+   narrower for portraits so each is cropped less. A lone photo left at the
+   end joins the row before it rather than stretching across a row alone. */
+function brick(ratios: number[], width: number, gap: number): Box[] {
+  const kind = width < 600 ? "small" : "wide";
+  const per = kind === "small" ? 2 : 3;
   const sizes: number[] = [];
-  for (let used = 0, p = 0; used < ratios.length; p++) {
-    const size = Math.min(pattern(small)[p % 2], ratios.length - used);
-    sizes.push(size);
-    used += size;
-  }
-  if (!small && sizes.length > 1 && sizes[sizes.length - 1] === 1) {
+  for (let used = 0; used < ratios.length; used += per) sizes.push(Math.min(per, ratios.length - used));
+  if (sizes.length > 1 && sizes[sizes.length - 1] === 1) {
     sizes.pop();
     sizes[sizes.length - 1] += 1;
   }
 
   const boxes: Box[] = [];
   let start = 0;
-  for (const size of sizes) {
-    const [min, max] = small && size === 2 ? SMALL_PAIR : RANGE[size];
+  sizes.forEach((size, n) => {
+    const pattern = BRICKS[kind][n % BRICKS[kind].length];
     const rs = ratios.slice(start, start + size);
-    const shapes = rs.map((r) => Math.min(max, Math.max(min, r)));
+    /* The row's pattern (stretched or cut to its length), times a softened
+       version of each photo's own shape. */
+    const raw = rs.map((r, k) => (pattern[k] ?? 1) * Math.sqrt(Math.min(1.8, Math.max(0.6, r))));
+    const total = raw.reduce((a, b) => a + b, 0);
+    const shapes = raw.map((s) => (s / total) * ROW_SPAN[kind]);
     const room = width - gap * (size - 1);
-    const h = room / shapes.reduce((a, b) => a + b, 0);
+    const h = (width - gap * (per - 1)) / ROW_SPAN[kind];
     let usedW = 0;
     shapes.forEach((s, k) => {
       /* Whole pixels; the last tile takes the remainder so the right edge is
          exactly flush. */
-      const w = k === size - 1 ? room - usedW : Math.floor(s * h);
+      const w = k === size - 1 ? room - usedW : Math.floor((s / ROW_SPAN[kind]) * room);
       usedW += w;
-      boxes.push({ w, h: Math.round(h), crop: rs[k] < s });
+      boxes.push({ w, h: Math.round(h), crop: rs[k] < w / h });
     });
     start += size;
-  }
+  });
   return boxes;
 }
 
-/* The photography portfolio as an organised collage: rows of three, then
-   two, alternating, each row filling the width at one height with a thin gap
-   between tiles. It reads left to right in the admin's order, so the first
-   photo in the list is the one that opens the gallery.
+/* The photography portfolio as a brick wall: rows of three (two on phones),
+   all the same height, each filling the width, with tile widths that change
+   from row to row so the joins stagger, and a clear gap between tiles. It
+   reads left to right in the admin's order, so the first photo in the list
+   is the one that opens the gallery.
 
-   Tile shapes follow the photos where they can and are evened out where they
-   can't (see RANGE), so a tall portrait in a wide tile is cropped. The crop
-   sits just above centre, which keeps both standing and crouching subjects
-   in frame across this set. The full, uncropped
-   photo opens in the Lightbox on click.
+   Every tile is filled edge to edge (object-cover), so photos are cropped to
+   their tile. The crop sits just above centre, which keeps both standing and
+   crouching subjects in frame across this set. The full, uncropped photo
+   opens in the Lightbox on click.
 
    The rows are worked out in the browser from the gallery's width (and again
    when it changes); the server render shows a simple wrap until then. The
@@ -120,7 +127,7 @@ export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
       const gap = parseFloat(css.columnGap) || 0;
       if (width > 0 && width !== last) {
         last = width;
-        setBoxes(collage(rs, width, gap));
+        setBoxes(brick(rs, width, gap));
       }
     };
     measure();
@@ -131,7 +138,7 @@ export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
 
   return (
     <Reveal>
-      <div ref={gridRef} className="flex flex-wrap gap-1 px-3 sm:gap-2 sm:px-5 lg:px-8">
+      <div ref={gridRef} className="flex flex-wrap gap-1.5 px-3 sm:gap-2 sm:px-5 lg:gap-2.5 lg:px-8">
         {items.map((m, i) => {
           const box = boxes?.[i];
           const isVideo = Boolean(m.video || m.href);
