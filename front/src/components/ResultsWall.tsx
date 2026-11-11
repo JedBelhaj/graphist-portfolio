@@ -51,16 +51,8 @@ function Row({
             }`}
           >
             {/* Every card is the same size. The screenshot is shown whole
-                (contained, never cropped) over a blurred, enlarged copy of
-                itself, so a wide message or a tall ad fills the frame with
-                its own colours instead of an empty grey margin. */}
-            <span className="relative block h-[230px] w-[300px] overflow-hidden rounded-xl sm:h-[300px] sm:w-[420px]">
-              <img
-                src={r.src}
-                alt=""
-                aria-hidden
-                className="absolute inset-0 h-full w-full scale-150 object-cover blur-2xl saturate-150"
-              />
+                (contained, never cropped) on a solid grey panel. */}
+            <span className="relative block h-[230px] w-[300px] overflow-hidden rounded-xl bg-[rgb(234,234,238)] sm:h-[300px] sm:w-[420px]">
               <img
                 src={r.src}
                 alt={repeat ? "" : r.alt}
