@@ -8,10 +8,6 @@ export const HERO_ARROW = A(
 );
 
 /* ---------- Real assets (front/public) ---------- */
-/* Wordmark lockups, cut from public/soltani_logo.png (see Logo.tsx). */
-export const LOGO_FULL = "/soltani-logo.png";
-export const LOGO_WORDMARK = "/soltani-wordmark.png";
-
 /* Transparent cut-out, 1152x2048 (shoot frame A7403822, background removed).
    The subject sits in the bottom 80% of the frame; the top 20% is empty,
    which the layouts below account for. */
@@ -33,7 +29,7 @@ export const FOUNDER_PORTRAIT = "/photos/oussama-founder.webp";
 /* Cut-out for the home "what we do" section, where the service bubbles float
    around it. Sized to that section's 400x575 box (at 2x). Not in the studio
    yet, so it isn't editable there. */
-export const SERVICES_PHOTO = "/photos/oussama-stool.webp";
+export const SERVICES_PHOTO = "/photos/oussama-laptop.webp";
 /* The About page's own pair, so it doesn't repeat the home page: a cut-out
    for the arch in its intro (same 1152x2048 canvas as the hero) and an on-set
    shot for the About section. Not in the studio yet either. */
@@ -95,20 +91,14 @@ export const HERO_STREAM = {
    full-width block. Same fields as the hero's below. */
 export const LOVE_STICKERS = [
   {
-    src: "/stickers/love-cards.webp",
-    cls: "w-12 -top-[66px] left-[8%] lg:w-24 lg:-top-[44px]",
-    tilt: -8,
-    lean: -14,
-  },
-  {
     src: "/stickers/love-banknote.webp",
     cls: "w-20 -top-[56px] left-[34%] lg:w-40 lg:top-[112px] lg:left-[2%]",
     tilt: 5,
     lean: 12,
   },
   {
-    src: "/stickers/love-pack.webp",
-    cls: "w-10 -top-[66px] right-[8%] lg:w-20 lg:-top-[14px]",
+    src: "/stickers/love-cards.webp",
+    cls: "w-12 -top-[66px] right-[8%] lg:w-24 lg:-top-[24px]",
     tilt: 8,
     lean: 14,
   },
@@ -294,6 +284,8 @@ export const SERVICES: { label: string; color: ServiceColor }[] = [
   { label: "Testimonial Videos", color: "tint" },
 ];
 
+/* The kit strip: editing tools first, then where the ads run. Square app
+   icons, so Toolbox.tsx shows them a little larger than a wordmark. */
 export const TOOLBOX = [
   PREMIERE,
   AFTER_EFFECTS,

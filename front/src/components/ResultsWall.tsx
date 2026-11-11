@@ -46,17 +46,17 @@ function Row({
             aria-hidden={repeat || undefined}
             tabIndex={repeat ? -1 : undefined}
             aria-label={`View: ${r.alt || r.label}`}
-            className={`group mr-5 flex h-[320px] shrink-0 cursor-pointer flex-col rounded-2xl bg-white p-2 text-left shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition-transform duration-500 ease-out hover:rotate-0 hover:scale-[1.03] focus-visible:rotate-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mr-8 sm:h-[400px] ${
+            className={`group mr-5 flex shrink-0 cursor-pointer flex-col rounded-2xl bg-white p-2 text-left shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition-transform duration-500 ease-out hover:rotate-0 hover:scale-[1.03] focus-visible:rotate-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mr-8 ${
               TILTS[i % TILTS.length]
             }`}
           >
-            {/* Capped rather than cropped: the wide messages and the tall ad
-                screenshots share a card height, and each stays whole. */}
-            <span className="flex min-h-0 flex-1 items-center justify-center rounded-xl bg-[rgb(240,240,244)]">
+            {/* Every card is the same size. The screenshot is shown whole
+                (contained, never cropped) on a solid grey panel. */}
+            <span className="relative block h-[230px] w-[300px] overflow-hidden rounded-xl bg-[rgb(234,234,238)] sm:h-[300px] sm:w-[420px]">
               <img
                 src={r.src}
                 alt={repeat ? "" : r.alt}
-                className="max-h-[260px] w-auto max-w-[78vw] rounded-xl sm:max-h-[340px] sm:max-w-[480px]"
+                className="relative h-full w-full object-contain p-2 drop-shadow-[0_6px_14px_rgba(0,0,0,0.25)]"
               />
             </span>
             <span className="flex items-center justify-between gap-3 px-2 pb-1 pt-3">

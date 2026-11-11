@@ -116,16 +116,22 @@ export default async function Hero() {
           </a>
         </div>
 
-        {/* Mobile / tablet photo card, below the copy. Rises rather than
-            sliding in from the right — a sideways entrance on a phone reads as
-            the page being dragged. px-10 leaves room for the stickers that sit
-            past the photo's left edge, so the card's clipping doesn't cut
-            them off. */}
+        {/* Mobile / tablet photo, below the copy. A square-cornered colour
+            block fills the full width behind the lower part of the cut-out
+            only, so the head and shoulders break out of it onto the white
+            page. Nothing clips the figure, so the stickers can travel past
+            its edges (the section's overflow-hidden keeps them on screen).
+            Rises rather than sliding in from the right — a sideways entrance
+            on a phone reads as the page being dragged. */}
         <div className="pb-8 lg:hidden">
-          {/* Gated: with the copy first, this card often starts below the fold,
+          {/* Gated: with the copy first, the photo often starts below the fold,
               and the sticker sequence would finish before anyone saw it. */}
-          <InViewGate className="mx-auto flex max-w-md items-end justify-center overflow-hidden rounded-3xl bg-[rgb(238,234,255)] px-10 pt-8">
-            <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[380px] sm:max-h-[440px]" enter="hero-rise" />
+          <InViewGate className="relative flex items-end justify-center pt-4">
+            {/* Starts at the shoulders, so only the head and neck rise above it. */}
+            <div aria-hidden className="absolute inset-x-0 bottom-0 top-[31%] bg-[rgb(238,234,255)]" />
+            {/* Phone size keeps the sticker orbit, which reaches past the photo's
+                sides, on screen. */}
+            <HeroFigure src={images.hero} stickers={home.heroStickers} imgCls="max-h-[min(390px,104vw)] sm:max-h-[520px]" enter="hero-rise" />
           </InViewGate>
         </div>
       </div>

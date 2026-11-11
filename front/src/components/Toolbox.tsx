@@ -13,7 +13,7 @@ export default async function Toolbox() {
         >
           {services.toolboxTitle}
         </h2>
-        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
           {services.toolbox.map((src, i) => (
             <img key={i} src={src} alt="" className="h-8 sm:h-10" />
           ))}

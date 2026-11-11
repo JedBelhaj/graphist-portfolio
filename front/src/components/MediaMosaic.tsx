@@ -8,7 +8,8 @@ import Lightbox from "./Lightbox";
 import ParallaxImage from "./ParallaxImage";
 import Reveal from "./Reveal";
 
-/* Full-bleed mosaic: edge to edge, no gap between tiles and none around them.
+/* Flush mosaic: no gap between tiles, but held in from the left and right
+   edges of the page by a side margin.
 
    Rows are sized in vw rather than px so the whole thing scales with the
    viewport and the tiles keep their proportions instead of squashing.
@@ -32,7 +33,7 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
        The low threshold matters here — the grid is several viewports tall on
        mobile, so it can never reach a high intersection ratio. */
     <Reveal>
-      <div className="grid w-full auto-rows-[42vw] grid-cols-2 lg:auto-rows-[15vw] lg:grid-cols-4">
+      <div className="grid w-full auto-rows-[42vw] grid-cols-2 px-3 sm:px-5 lg:auto-rows-[15vw] lg:grid-cols-4 lg:px-8">
         {items.map((m, i) => {
           const isVideo = Boolean(m.video || m.href);
           /* Plain grid item carrying the span classes. Stretched by default,
