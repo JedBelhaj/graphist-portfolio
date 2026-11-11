@@ -40,7 +40,38 @@ export default async function Photography() {
         </div>
       </div>
 
-      <PhotoGallery items={photography.tiles} />
+      {photography.sections.length > 0 ? (
+        /* Categories set in the studio, laid out like the Videography page:
+           a hairline with the number and count, the category in big type,
+           then its photos in the collage. */
+        photography.sections.map((s, i) => (
+          <div key={s.key} aria-labelledby={`photo-category-${i + 1}`} role="group" className="pb-10 lg:pb-14">
+            <Reveal>
+              <div className="mx-auto max-w-[1180px] px-5 pb-8 pt-10 sm:px-8 lg:pb-12 lg:pt-16">
+                <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.22em] text-[rgb(10,11,16)]/45">
+                  <span className="tabular-nums" style={{ color: ACCENT }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span aria-hidden className="h-px flex-1 bg-[rgb(10,11,16)]/15" />
+                  <span>
+                    {s.photos.length} {s.photos.length === 1 ? "photo" : "photos"}
+                  </span>
+                </div>
+                <h2
+                  id={`photo-category-${i + 1}`}
+                  className="mt-5 text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-[rgb(10,11,16)] sm:text-7xl lg:text-[128px]"
+                  style={{ fontFamily: FONT_DISPLAY }}
+                >
+                  {s.title}
+                </h2>
+              </div>
+            </Reveal>
+            <PhotoGallery items={s.photos} />
+          </div>
+        ))
+      ) : (
+        <PhotoGallery items={photography.tiles} />
+      )}
 
       <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8 lg:py-20">
         <div className="flex flex-wrap justify-center gap-3">

@@ -91,16 +91,21 @@ export default function ParallaxImage({
           ref={(el) => {
             mediaRef.current = el;
           }}
-          src={video}
-          poster={src}
+          /* Without a poster, load the first frame so the tile isn't blank
+             (#t nudges Safari into painting it). */
+          src={src ? video : `${video}#t=0.001`}
+          poster={src || undefined}
           aria-label={alt || undefined}
           muted
           loop
           playsInline
-          preload="none"
+          preload={src ? "none" : "metadata"}
           className="absolute left-0 h-[130%] w-full object-cover"
           style={{ top: "-15%", willChange: "transform" }}
         />
+      ) : !src ? (
+        /* A video with a link but no poster or clip: a plain tile. */
+        <div className="absolute inset-0 bg-neutral-900" aria-label={alt || undefined} />
       ) : (
         <img
           ref={(el) => {

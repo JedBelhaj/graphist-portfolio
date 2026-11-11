@@ -107,8 +107,7 @@ export const video = defineType({
       title: "Poster frame",
       type: "image",
       options: { hotspot: true },
-      description: "The still shown in the gallery, and before the clip loads.",
-      validation: (r) => r.required(),
+      description: "Optional. The still shown in the gallery, and before the clip loads.",
     }),
     defineField({
       name: "clip",
