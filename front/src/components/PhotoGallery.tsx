@@ -29,12 +29,15 @@ function thumb(src: string) {
 
 /* The row height the layout aims for at a given gallery width. Phones get
    tall rows, so photos wrap one or two to a row and are big enough to look
-   at; wider screens fit three to five. */
+   at; laptops and monitors fit three to six. Very wide screens scale the
+   photos down instead of letting them grow huge, so the rows fill up with
+   more of them (a 2560px screen fits nine or ten). */
 const targetRow = (width: number) =>
-  width < 600 ? 300 : width < 1000 ? 320 : width < 1300 ? 360 : 440;
+  width < 600 ? 300 : width < 1000 ? 320 : width < 1300 ? 360 : width < 2000 ? 440 : width * 0.17;
 
-/* Most photos a row may hold: two on phones, so none shrink to a sliver. */
-const maxPerRow = (width: number) => (width < 600 ? 2 : 6);
+/* Most photos a row may hold: two on phones, so none shrink to a sliver,
+   and more on very wide screens, where there's room. */
+const maxPerRow = (width: number) => (width < 600 ? 2 : width < 2000 ? 6 : 10);
 
 type Box = { w: number; h: number };
 
