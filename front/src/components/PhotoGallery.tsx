@@ -27,50 +27,49 @@ function thumb(src: string) {
   return src.includes("cdn.sanity.io") ? src.replace(/([?&])w=\d+/, "$1w=1200") : src;
 }
 
-/* The row height the layout aims for at a given gallery width. Phones get
-   tall rows, so photos wrap one or two to a row and are big enough to look
-   at; laptops and monitors fit three to six. Very wide screens scale the
-   photos down instead of letting them grow huge, so the rows fill up with
-   more of them (a 2560px screen fits nine or ten). */
-const targetRow = (width: number) =>
-  width < 600 ? 300 : width < 1000 ? 320 : width < 1300 ? 360 : width < 2000 ? 440 : width * 0.17;
+/* Screen-size bands. Which photos share a row is decided once per band, for
+   that band's typical gallery width; across the band the rows just scale. So
+   the arrangement only changes at these few widths, never from one pixel to
+   the next. Per band: the gallery width the rows are planned for, the row
+   height aimed for there, and the most photos a row may hold. Phones keep
+   rows tall (one or two photos, big enough to look at); very wide screens fit
+   many smaller photos rather than a few huge ones. */
+const BANDS = [
+  { upTo: 600, plan: 360, target: 300, per: 2 },
+  { upTo: 1000, plan: 760, target: 320, per: 4 },
+  { upTo: 1500, plan: 1376, target: 420, per: 6 },
+  { upTo: 2100, plan: 1856, target: 460, per: 7 },
+  { upTo: Infinity, plan: 2496, target: 430, per: 10 },
+];
+const bandFor = (width: number) => BANDS.findIndex((b) => width < b.upTo);
 
-/* Most photos a row may hold: two on phones, so none shrink to a sliver,
-   and more on very wide screens, where there's room. */
-const maxPerRow = (width: number) => (width < 600 ? 2 : width < 2000 ? 6 : 10);
+/* The band used for the server render and first paint, before the browser
+   reports the real width: the laptop one. */
+const DEFAULT_BAND = 2;
 
-type Box = { w: number; h: number };
+/* Row planning gap, in px: close to the CSS gaps below. Only used to plan. */
+const PLAN_GAP = 10;
 
 const total = (rs: number[]) => rs.reduce((a, b) => a + b, 0);
 
-/* Justified rows: every photo keeps its own shape (nothing is cropped), the
-   photos in a row share one height, and every row, the last one included,
-   fills the width exactly, so no row has empty space at its end.
-
-   Where to break the rows is worked out over the whole set at once (a small
-   dynamic programme): of all the ways to split the photos into full rows, it
-   picks the one whose row heights stay closest to the target. That's what
-   keeps the last row from ending up as one giant photo or a near-empty
-   strip, which a simple left-to-right fill can't avoid. */
-function justify(ratios: number[], width: number, gap: number): Box[] {
+/* Splits the photos into rows for one band. Every row will fill the width
+   (CSS does that, below), so the only choice is where the rows break: of all
+   the ways to split the set, this picks the one whose rows come out closest
+   to the band's target height (a small dynamic programme over the whole set,
+   so the last row never ends up a giant single photo or a thin strip). A row
+   too short costs three times one too tall: small photos are the hard ones
+   to see. Returns [start, end) index pairs. */
+function plan(ratios: number[], band: number): [number, number][] {
   const n = ratios.length;
-  if (n === 0) return [];
-  const target = targetRow(width);
-  const heightOf = (i: number, j: number) =>
-    (width - gap * (j - i - 1)) / total(ratios.slice(i, j));
+  const { plan: width, target, per } = BANDS[band];
+  const height = (i: number, j: number) => (width - PLAN_GAP * (j - i - 1)) / total(ratios.slice(i, j));
 
-  /* best[j]: lowest cost of laying out the first j photos; from[j]: where
-     its last row starts. */
-  const per = maxPerRow(width);
   const best = new Array<number>(n + 1).fill(Infinity);
   const from = new Array<number>(n + 1).fill(0);
   best[0] = 0;
   for (let j = 1; j <= n; j++) {
     for (let i = Math.max(0, j - per); i < j; i++) {
-      /* Relative miss from the target, squared. A row that comes out too
-         short costs three times as much as one too tall: small photos are
-         the hard ones to see, a bigger one is just a bigger photo. */
-      const miss = (heightOf(i, j) - target) / target;
+      const miss = (height(i, j) - target) / target;
       const cost = best[i] + (miss < 0 ? 3 : 1) * miss ** 2;
       if (cost < best[j]) {
         best[j] = cost;
@@ -78,127 +77,104 @@ function justify(ratios: number[], width: number, gap: number): Box[] {
       }
     }
   }
-
   const rows: [number, number][] = [];
   for (let j = n; j > 0; j = from[j]) rows.unshift([from[j], j]);
-
-  const boxes: Box[] = [];
-  for (const [i, j] of rows) {
-    const h = heightOf(i, j);
-    const room = width - gap * (j - i - 1);
-    let used = 0;
-    for (let k = i; k < j; k++) {
-      /* Whole pixels; the last photo takes the remainder so the right edge
-         is exactly flush. */
-      const w = k === j - 1 ? room - used : Math.floor(ratios[k] * h);
-      used += w;
-      boxes.push({ w, h: Math.round(h) });
-    }
-  }
-  return boxes;
+  return rows;
 }
 
-/* The photography portfolio as justified rows, with a gap between photos:
+/* The photography portfolio as justified rows with a gap between photos:
    each photo shown whole at its own proportions, the photos in a row at one
    height, and every row filling the width edge to edge. It reads left to
    right in the admin's order, so the first photo in the list is the one that
-   opens the gallery. On phones the rows wrap to one or two photos each, so
-   every photo is big enough to see properly. Clicking opens the Lightbox,
-   which steps through the set.
+   opens the gallery. On phones the rows hold one or two photos, so each is
+   big enough to see. Clicking opens the Lightbox, which steps through the
+   set.
 
-   The rows are worked out in the browser from the gallery's width (and again
-   when it changes); before that (the server render) a CSS approximation
-   stands in, each photo growing in proportion to its shape. The gap is read
-   back from the CSS so the maths always matches it. */
+   How each row fills the width: it's its own flex line, and every photo in it
+   grows in proportion to its shape (flex-grow = 100 x width/height) from a
+   zero basis, with that same aspect ratio. The browser shares the row's width out
+   exactly, gaps included, so the photos land at one height and the row is
+   flush at any width, fractional pixels and display scaling included. Rows
+   are separate lines, so nothing can ever wrap onto the next one. */
 export default function PhotoGallery({ items: all }: { items: MediaTile[] }) {
   /* The same photo added twice in the admin shows once: a repeat reads as a
      mistake in a portfolio. */
   const items = all.filter((m, i) => all.findIndex((o) => o.src === m.src) === i);
   const [open, setOpen] = useState<number | null>(null);
-  const [boxes, setBoxes] = useState<Box[] | null>(null);
+  const [band, setBand] = useState(DEFAULT_BAND);
   const gridRef = useRef<HTMLDivElement>(null);
   const ratios = items.map((m) => ratio(m.src));
-  const key = ratios.join(",");
+  const rows = plan(ratios, band);
 
   useEffect(() => {
     const el = gridRef.current;
     if (!el) return;
-    const rs = key.split(",").map(Number);
-    let last = 0;
-    const measure = () => {
-      /* The content box: the side margin is padding, so it's excluded. */
-      const css = getComputedStyle(el);
-      const width = Math.floor(el.clientWidth - parseFloat(css.paddingLeft) * 2);
-      const gap = parseFloat(css.columnGap) || 0;
-      if (width > 0 && width !== last) {
-        last = width;
-        setBoxes(justify(rs, width, gap));
-      }
-    };
+    const measure = () => setBand(bandFor(el.getBoundingClientRect().width));
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [key]);
+  }, []);
 
   return (
     <Reveal>
-      <div
-        ref={gridRef}
-        className="flex flex-wrap gap-1.5 px-3 [--row-h:300px] sm:gap-2 sm:px-5 sm:[--row-h:320px] lg:gap-2.5 lg:px-8 lg:[--row-h:360px] xl:[--row-h:440px]"
-      >
-        {items.map((m, i) => {
-          const box = boxes?.[i];
-          const r = ratios[i];
-          const isVideo = Boolean(m.video || m.href);
-          return (
-            <button
-              key={`${m.src}-${i}`}
-              type="button"
-              onClick={() => setOpen(i)}
-              aria-label={
-                isVideo
-                  ? m.alt ? `Play: ${m.alt}` : "Play the video"
-                  : m.alt ? `View: ${m.alt}` : "View the photo"
-              }
-              className="group relative block cursor-zoom-in overflow-hidden"
-              style={
-                box
-                  ? { flex: "none", width: box.w, height: box.h }
-                  : { flexGrow: r, flexBasis: `calc(var(--row-h) * ${r})`, aspectRatio: r }
-              }
-            >
-              {m.video ? (
-                <video
-                  src={m.video}
-                  poster={m.src}
-                  aria-label={m.alt || undefined}
-                  muted
-                  loop
-                  playsInline
-                  autoPlay
-                  preload="none"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <img
-                  src={thumb(m.src)}
-                  alt={m.alt}
-                  loading={i < EAGER ? "eager" : "lazy"}
-                  decoding="async"
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                />
-              )}
-              {/* A light veil on hover says "click me" without hiding the photo. */}
-              <span className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/15" />
-              {isVideo && (
-                <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md">
-                  <Play size={22} fill="currentColor" className="ml-1" />
-                </span>
-              )}
-            </button>
-          );
-        })}
+      <div ref={gridRef} className="flex flex-col gap-1.5 px-3 sm:gap-2 sm:px-5 lg:gap-2.5 lg:px-8">
+        {rows.map(([start, end]) => (
+          <div key={start} className="flex gap-1.5 sm:gap-2 lg:gap-2.5">
+            {items.slice(start, end).map((m, k) => {
+              const i = start + k;
+              const r = ratios[i];
+              const isVideo = Boolean(m.video || m.href);
+              return (
+                <button
+                  key={`${m.src}-${i}`}
+                  type="button"
+                  onClick={() => setOpen(i)}
+                  aria-label={
+                    isVideo
+                      ? m.alt ? `Play: ${m.alt}` : "Play the video"
+                      : m.alt ? `View: ${m.alt}` : "View the photo"
+                  }
+                  className="group relative block min-w-0 cursor-zoom-in overflow-hidden"
+                  /* Grow is the shape x100: same proportions, but a row's
+                     grows always add up past 1. Below 1 the browser hands
+                     out only that fraction of the space, which left a lone
+                     portrait (0.67) at two thirds of its row. */
+                  style={{ flex: `${r * 100} 1 0%`, aspectRatio: r }}
+                >
+                  {m.video ? (
+                    <video
+                      src={m.video}
+                      poster={m.src}
+                      aria-label={m.alt || undefined}
+                      muted
+                      loop
+                      playsInline
+                      autoPlay
+                      preload="none"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={thumb(m.src)}
+                      alt={m.alt}
+                      loading={i < EAGER ? "eager" : "lazy"}
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    />
+                  )}
+                  {/* A light veil on hover says "click me" without hiding the photo. */}
+                  <span className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/15" />
+                  {isVideo && (
+                    <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md">
+                      <Play size={22} fill="currentColor" className="ml-1" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
       <Lightbox items={items} index={open} onIndex={setOpen} />
     </Reveal>
