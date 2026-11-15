@@ -78,7 +78,9 @@ function Tile({ v, onOpen }: { v: VideoTile; onOpen: () => void }) {
         </span>
       )}
       {isVideo && (
-        <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-md transition-transform duration-500 group-hover:scale-110">
+        /* A tinted circle, not frosted glass: a backdrop blur over a playing
+           video is redrawn every frame, on every tile. */
+        <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white ring-1 ring-white/50 transition-transform duration-500 group-hover:scale-110">
           <Play size={22} fill="currentColor" className="ml-1" />
         </span>
       )}
