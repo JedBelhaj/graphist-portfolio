@@ -120,6 +120,19 @@ const CONTENT_QUERY = defineQuery(`{
       }
     }
   },
+  "hasVideoCategories": count(*[_type == "videoCategory"]) > 0,
+  "videoCategories": *[_type == "videoCategory" && hidden != true] | order(orderRank){
+    _id, title,
+    "videos": *[_type == "video" && category._ref == ^._id && hidden != true] | order(orderRank){
+      title, poster, "clip": clip.asset->url, link, format, hidden,
+      "stream": muxVideo.asset->playbackId, "aspect": muxVideo.asset->data.aspect_ratio
+    }
+  },
+  "hasPhotoCategories": count(*[_type == "photoCategory"]) > 0,
+  "photoCategories": *[_type == "photoCategory" && hidden != true] | order(orderRank){
+    _id, title,
+    "photos": *[_type == "photo" && category._ref == ^._id && hidden != true] | order(orderRank){ image, alt, hidden }
+  },
   "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],
   "faq": *[_type == "faqPage" && _id == "faqPage"][0],
   "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)
@@ -213,6 +226,10 @@ function build(raw: Raw | null) {
     work: null,
     photography: null,
     videography: null,
+    hasVideoCategories: false,
+    videoCategories: [],
+    hasPhotoCategories: false,
+    photoCategories: [],
     webDesign: null,
     faq: null,
     photos: [],
@@ -420,35 +437,58 @@ function build(raw: Raw | null) {
     FAQS,
   );
 
-  /* A category needs a title and at least one visible video. */
+  /* Categories are their own documents now (each video/photo points at one).
+     Until the first one exists, the old lists on the page documents are
+     read instead, so the site never shows an empty gap around the switch. */
+  type RawVideo = Parameters<typeof videoMedia>[0] & {
+    title?: string | null;
+    link?: string | null;
+    format?: string | null;
+    hidden?: boolean | null;
+    aspect?: string | null;
+  };
+  type RawPhoto = { image?: Img | null; alt?: string | null; hidden?: boolean | null };
+
+  const clipTiles = (videos: (RawVideo | null)[] | null | undefined): VideoTile[] =>
+    (videos ?? []).flatMap((v) =>
+      v && (hasImage(v.poster) || v.clip || v.link || v.stream) && !v.hidden
+        ? [
+            {
+              ...videoMedia(v, 1600),
+              alt: v.title ?? "",
+              href: v.link ?? undefined,
+              /* A Mux video's real shape wins over the Format setting, which
+                 defaults to Landscape and was often left on it for reels. */
+              tall: v.aspect ? portrait(v.aspect) : v.format === "vertical",
+            },
+          ]
+        : [],
+    );
+  const photoTilesOf = (photos: (RawPhoto | null)[] | null | undefined): MediaTile[] => {
+    const shots = (photos ?? []).flatMap((p) =>
+      p && hasImage(p.image) && !p.hidden ? [{ src: imageUrl(p.image, 1800), alt: p.alt ?? "" }] : [],
+    );
+    return photography.galleryLayout === "blocks" ? fullBlocks(shots) : shots;
+  };
+
+  /* A category needs a title and at least one visible item. */
+  const videoGroups = r.hasVideoCategories
+    ? r.videoCategories.map((c) => ({ key: c._id, title: c.title, videos: c.videos }))
+    : (videography.sections ?? []).map((s) => ({ key: s._key, title: s.title, videos: s.videos }));
   const videoSections: VideoSection[] = list(
-    (videography.sections ?? []).flatMap((s) => {
-      const clips: VideoTile[] = (s.videos ?? []).flatMap((v) =>
-        v && (hasImage(v.poster) || v.clip || v.link || v.stream) && !v.hidden
-          ? [
-              {
-                ...videoMedia(v, 1600),
-                alt: v.title ?? "",
-                href: v.link ?? undefined,
-                /* A Mux video's real shape wins over the Format setting, which
-                   defaults to Landscape and was often left on it for reels. */
-                tall: v.aspect ? portrait(v.aspect) : v.format === "vertical",
-              },
-            ]
-          : [],
-      );
-      return s.title && clips.length > 0 ? [{ key: s._key, title: s.title, videos: clips }] : [];
+    videoGroups.flatMap((g) => {
+      const clips = clipTiles(g.videos);
+      return g.title && clips.length > 0 ? [{ key: g.key, title: g.title, videos: clips }] : [];
     }),
     VIDEO_SECTIONS.map((s) => ({ ...s, key: s.title, videos: s.videos.map((v) => ({ ...v, alt: "" })) })),
   );
 
-  /* A category needs a title and at least one visible photo. */
-  const photoSections: PhotoSection[] = (photography.sections ?? []).flatMap((s) => {
-    const shots: MediaTile[] = (s.photos ?? []).flatMap((p) =>
-      p && hasImage(p.image) && !p.hidden ? [{ src: imageUrl(p.image, 1800), alt: p.alt ?? "" }] : [],
-    );
-    const shown = photography.galleryLayout === "blocks" ? fullBlocks(shots) : shots;
-    return s.title && shown.length > 0 ? [{ key: s._key, title: s.title, photos: shown }] : [];
+  const photoGroups = r.hasPhotoCategories
+    ? r.photoCategories.map((c) => ({ key: c._id, title: c.title, photos: c.photos }))
+    : (photography.sections ?? []).map((s) => ({ key: s._key, title: s.title, photos: s.photos }));
+  const photoSections: PhotoSection[] = photoGroups.flatMap((g) => {
+    const shown = photoTilesOf(g.photos);
+    return g.title && shown.length > 0 ? [{ key: g.key, title: g.title, photos: shown }] : [];
   });
 
   const stats = list(
