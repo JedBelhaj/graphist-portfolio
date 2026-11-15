@@ -7,25 +7,21 @@
    and becomes its own document, added to the end of that list, where it can
    then be reordered, hidden or edited like any other.
 
-   Videos are compressed on this computer first, unless that's switched off, and
-   can be cut to their first seconds (lib/compress.ts). A single video that's too
-   long gets a popup asking; in a batch the list just says so. They need a poster
-   frame for the site to show them, so one
-   is grabbed from the clip in the browser, and the Landscape/Vertical format is
-   read from its shape. Uploads run a few at a time (compressed videos one at a
-   time); a failed file doesn't stop the rest.
+   Videos go to Mux, like an upload in a video's Video field (lib/muxUpload.ts):
+   Mux makes the sizes, the still and the looping preview, and reports whether
+   it's vertical, so nothing is compressed or prepared here. Uploads run a few
+   at a time; a failed file doesn't stop the rest.
 
-   Photos and videos can also go straight into a category of the Photography /
-   Videography page: pick one (or type a new one) for the whole batch, and once
-   the uploads finish, everything that was added is put in it, in the order it
-   was queued. */
+   Photos and videos can also go straight into a category: pick one (or type a
+   new one) for the whole batch, and each item is created with it. They land
+   at the end of their list, in the order they were queued, which is also
+   their order inside the category. */
 import { Box, Button, Card, Checkbox, Container, Flex, Grid, Heading, Select, Stack, Text, TextInput } from "@sanity/ui";
 import { LexoRank } from "lexorank";
 import { FolderUp } from "lucide-react";
 import { useEffect, useRef, useState, type DragEvent, type FormEvent } from "react";
 import { useClient, type Tool } from "sanity";
-import { CompressionSettings } from "../assetSources/compressedUpload";
-import { SIZE_LIMIT, prepareVideo, useCompressionEnabled } from "../lib/compress";
+import { uploadToMux } from "../lib/muxUpload";
 import {
   API_KEY,
   downloadFile,
@@ -40,36 +36,30 @@ import {
 
 type Target = "photo" | "video" | "result";
 
-/* Videos are left out for now: this tool still uploads them as plain files,
-   and videos now go to Mux (the Video field on a video). They come back once
-   this tool sends them to Mux too; the video code below is kept for that. */
 const TARGETS: { type: Target; title: string; plural: string; singular: string }[] = [
   { type: "photo", title: "Photos", plural: "photos", singular: "photo" },
+  { type: "video", title: "Videos", plural: "videos", singular: "video" },
   { type: "result", title: "Client messages", plural: "messages", singular: "message" },
 ];
 
 const ACCEPT: Record<Target, string> = {
   photo: "image/*",
-  video: "video/mp4,video/webm,video/quicktime",
+  /* Mux takes nearly any video format, so no need to narrow it down. */
+  video: "video/*",
   result: "image/*",
 };
 
 const PARALLEL = 3;
 
-/* Where each kind of item is grouped into categories: the page document (a
-   singleton, with a published copy and maybe a draft), and the array inside
-   each category that holds the references. */
-const CATEGORY_PAGES: Partial<Record<Target, { pageType: string; pageId: string; field: string }>> = {
-  photo: { pageType: "photographyPage", pageId: "photographyPage", field: "photos" },
-  video: { pageType: "videographyPage", pageId: "videographyPage", field: "videos" },
+/* The category document type for each kind that has categories. */
+const CATEGORY_TYPES: Partial<Record<Target, string>> = {
+  photo: "photoCategory",
+  video: "videoCategory",
 };
 
 const NEW_CATEGORY = "__new__";
 
-type Category = { _key: string; title: string };
-type PageSections = { _id: string; sections?: Category[] | null };
-
-const newKey = () => Math.random().toString(36).slice(2, 12);
+type Category = { _id: string; title: string };
 
 type Job = {
   key: string;
@@ -89,49 +79,11 @@ const titleFrom = (name: string) => {
   return base.charAt(0).toUpperCase() + base.slice(1);
 };
 
-/* A still from the clip (a second in, or a third of the way for short ones),
-   and whether it's vertical. Fails for formats the browser can't decode. */
-function posterFrom(file: File): Promise<{ poster: Blob; vertical: boolean }> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const video = document.createElement("video");
-    const done = (fn: () => void) => {
-      URL.revokeObjectURL(url);
-      fn();
-    };
-    video.muted = true;
-    video.playsInline = true;
-    video.preload = "auto";
-    video.onerror = () => done(() => reject(new Error("the browser can't read this video format, so no poster frame")));
-    video.onloadedmetadata = () => {
-      video.currentTime = Math.min(1, (video.duration || 3) / 3);
-    };
-    video.onseeked = () => {
-      const scale = Math.min(1, 1920 / Math.max(video.videoWidth, video.videoHeight));
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(video.videoWidth * scale);
-      canvas.height = Math.round(video.videoHeight * scale);
-      canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(
-        (blob) =>
-          done(() =>
-            blob
-              ? resolve({ poster: blob, vertical: video.videoHeight > video.videoWidth })
-              : reject(new Error("couldn't grab a poster frame")),
-          ),
-        "image/jpeg",
-        0.86,
-      );
-    };
-    video.src = url;
-  });
-}
 
 function BulkAdd() {
   const client = useClient({ apiVersion: "2026-10-13" });
   const [target, setTarget] = useState<Target>("photo");
   const [keepHidden, setKeepHidden] = useState(false);
-  const compressing = useCompressionEnabled();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [running, setRunning] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -145,26 +97,21 @@ function BulkAdd() {
   const filesInput = useRef<HTMLInputElement>(null);
   const folderInput = useRef<HTMLInputElement>(null);
 
-  /* "" = no category, NEW_CATEGORY = the name typed below, else a category's _key. */
+  /* "" = no category, NEW_CATEGORY = the name typed below, else a category's _id. */
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryChoice, setCategoryChoice] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [categoryReport, setCategoryReport] = useState<{ ok: boolean; text: string } | null>(null);
-  const categoryPage = CATEGORY_PAGES[target];
+  const categoryType = CATEGORY_TYPES[target];
 
-  /* The page's categories, from its draft if it has one, plus any only the
-     published copy has. */
+  /* The categories in their site order, including ones not published yet
+     (drafts perspective: one row each, IDs without "drafts."). */
   async function loadCategories(): Promise<Category[]> {
-    if (!categoryPage) return [];
-    const docs = await client.fetch<PageSections[]>(
-      `*[_id in [$id, "drafts." + $id]]{ _id, "sections": sections[]{ _key, title } }`,
-      { id: categoryPage.pageId },
-    );
-    const ordered = [...docs].sort((a) => (a._id.startsWith("drafts.") ? -1 : 1));
-    const seen = new Set<string>();
-    return ordered
-      .flatMap((d) => d.sections ?? [])
-      .filter((s) => s.title && !seen.has(s._key) && seen.add(s._key));
+    if (!categoryType) return [];
+    const rows = await client
+      .withConfig({ perspective: "drafts" })
+      .fetch<Category[]>(`*[_type == $type && defined(title)] | order(orderRank){ _id, title }`, { type: categoryType });
+    return rows;
   }
 
   useEffect(() => {
@@ -183,36 +130,24 @@ function BulkAdd() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target]);
 
-  /* Puts the new items at the end of a category, in both the published page
-     and its draft (if there is one), so they show on the site right away and
-     publishing the draft later doesn't take them out. A category that doesn't
-     exist yet is created, with the same key in both. */
-  async function addToCategory(ids: string[], category: { key: string; title: string }) {
-    if (!categoryPage || !ids.length) return;
-    const { pageType, pageId, field } = categoryPage;
-    const refs = ids.map((id) => ({ _key: newKey(), _type: "reference" as const, _ref: id, _weak: true }));
-    const docs = await client.fetch<PageSections[]>(`*[_id in [$id, "drafts." + $id]]{ _id, "sections": sections[]{ _key } }`, {
-      id: pageId,
+  /* The batch's category: an existing one, or a new one created now (at the
+     end of the categories), unless one with that name already exists. */
+  async function resolveCategory(): Promise<Category | null> {
+    if (!categoryType || !categoryChoice) return null;
+    if (categoryChoice !== NEW_CATEGORY) return categories.find((c) => c._id === categoryChoice) ?? null;
+    const typed = newCategory.trim();
+    const same = categories.find((c) => c.title.trim().toLowerCase() === typed.toLowerCase());
+    if (same) return same;
+    const last = await client.fetch<string | null>(`*[_type == $type] | order(orderRank desc)[0].orderRank`, {
+      type: categoryType,
     });
-    if (docs.length === 0) {
-      await client.createIfNotExists({ _id: pageId, _type: pageType });
-      docs.push({ _id: pageId, sections: [] });
-    }
-    const tx = client.transaction();
-    for (const doc of docs) {
-      const exists = (doc.sections ?? []).some((s) => s._key === category.key);
-      const section = `sections[_key=="${category.key}"]`;
-      if (exists) {
-        tx.patch(doc._id, (p) => p.setIfMissing({ [`${section}.${field}`]: [] }).insert("after", `${section}.${field}[-1]`, refs));
-      } else {
-        tx.patch(doc._id, (p) =>
-          p
-            .setIfMissing({ sections: [] })
-            .append("sections", [{ _key: category.key, _type: "categorySection", title: category.title, [field]: refs }]),
-        );
-      }
-    }
-    await tx.commit();
+    const created = await client.create({
+      _type: categoryType,
+      title: typed,
+      hidden: false,
+      orderRank: (last ? LexoRank.parse(last) : LexoRank.middle()).genNext().toString(),
+    });
+    return { _id: created._id, title: typed };
   }
 
   const update =(key: string, patch: Partial<Job>) =>
@@ -275,8 +210,11 @@ function BulkAdd() {
   }
 
   /* Returns the _id of the document it created. */
-  async function addOne(job: Job, orderRank: string, ask: boolean): Promise<string> {
+  async function addOne(job: Job, orderRank: string, category: Category | null): Promise<string> {
     update(job.key, { status: "working", note: undefined });
+    const categoryRef: Record<string, unknown> = category
+      ? { category: { _type: "reference", _ref: category._id, _weak: true } }
+      : {};
     const file =
       "file" in job.source
         ? job.source.file
@@ -295,46 +233,26 @@ function BulkAdd() {
         _type: target,
         orderRank,
         ...(keepHidden ? { hidden: true } : {}),
+        ...(target === "photo" ? categoryRef : {}),
         image: { _type: "image", asset: { _type: "reference", _ref: asset._id } },
       });
       update(job.key, { status: "done", note: undefined });
       return created._id;
     }
 
-    const prepared = await prepareVideo(file, {
-      ask,
-      onProgress: (fraction) => update(job.key, { note: `compressing ${Math.round(fraction * 100)}%` }),
-    });
-    update(job.key, { note: "grabbing a poster frame" });
-    const frame = await posterFrom(prepared.file).catch((err: Error) => err);
-    update(job.key, { note: "uploading" });
-    const clip = await client.assets.upload("file", prepared.file, { filename: prepared.file.name, source });
-    const poster =
-      frame instanceof Error
-        ? null
-        : await client.assets.upload("image", frame.poster, { filename: `${titleFrom(job.name)} poster.jpg` });
+    /* Straight to Mux; it makes the still, the preview and the sizes. */
+    const muxAsset = await uploadToMux(client, file, (fraction) =>
+      update(job.key, { note: `uploading ${Math.round(fraction * 100)}%` }),
+    );
     const created = await client.create({
       _type: "video",
       orderRank,
       title: titleFrom(job.name),
-      format: frame instanceof Error ? "landscape" : frame.vertical ? "vertical" : "landscape",
       ...(keepHidden ? { hidden: true } : {}),
-      clip: { _type: "file", asset: { _type: "reference", _ref: clip._id } },
-      ...(poster ? { poster: { _type: "image", asset: { _type: "reference", _ref: poster._id } } } : {}),
+      ...categoryRef,
+      muxVideo: { _type: "mux.video", asset: { _type: "reference", _weak: true, _ref: muxAsset } },
     });
-    const large = !prepared.warning && prepared.file.size > SIZE_LIMIT;
-    const notes = [
-      prepared.warning ?? prepared.note,
-      frame instanceof Error && `added without a poster (${frame.message}): set one by hand`,
-      large && "large file: loop clips play best under 15 MB",
-    ]
-      .filter((note): note is string => Boolean(note))
-      .map((note) => note.replace(/\.$/, ""));
-    update(job.key, {
-      status: "done",
-      note: notes.join("; ") || undefined,
-      warned: Boolean(prepared.warning) || frame instanceof Error || large,
-    });
+    update(job.key, { status: "done", note: "added; Mux is still processing it (a minute or two)" });
     return created._id;
   }
 
@@ -344,67 +262,49 @@ function BulkAdd() {
     setRunning(true);
     setCategoryReport(null);
 
-    /* The category for this batch: an existing one, or a new one (unless a
-       category with that name is already there). */
-    const typed = newCategory.trim();
-    const chosen = categoryPage
-      ? categoryChoice === NEW_CATEGORY
-        ? (() => {
-            const same = categories.find((c) => c.title.trim().toLowerCase() === typed.toLowerCase());
-            return { key: same?._key ?? newKey(), title: same?.title ?? typed };
-          })()
-        : categories.find((c) => c._key === categoryChoice)
-          ? { key: categoryChoice, title: categories.find((c) => c._key === categoryChoice)!.title }
-          : null
-      : null;
+    let chosen: Category | null;
+    try {
+      chosen = await resolveCategory();
+    } catch (err) {
+      setCategoryReport({
+        ok: false,
+        text: `Couldn’t create the category (${err instanceof Error ? err.message : String(err)}). Nothing was added.`,
+      });
+      setRunning(false);
+      return;
+    }
 
     /* Ranks after the current last item, so the new ones land at the end of
-       the list in the order they were queued. */
+       the list, and of their category, in the order they were queued. */
     const last = await client.fetch<string | null>(`*[_type == $type] | order(orderRank desc)[0].orderRank`, {
       type: target,
     });
     let rank = last ? LexoRank.parse(last) : LexoRank.min();
     const ranks = todo.map(() => (rank = rank.genNext().genNext()).toString());
 
-    /* Ids of what was added, by queue position, so the category keeps the order. */
-    const created: (string | undefined)[] = [];
+    let added = 0;
     let next = 0;
     const worker = async () => {
       while (next < todo.length) {
         const i = next++;
         try {
-          created[i] = await addOne(todo[i], ranks[i], todo.length === 1);
+          await addOne(todo[i], ranks[i], chosen);
+          added++;
         } catch (err) {
           update(todo[i].key, { status: "failed", note: err instanceof Error ? err.message : String(err) });
         }
       }
     };
-    /* Compressing is heavy on memory and the video encoder: one at a time. */
-    const parallel = target === "video" && compressing ? 1 : PARALLEL;
-    await Promise.all(Array.from({ length: Math.min(parallel, todo.length) }, worker));
+    await Promise.all(Array.from({ length: Math.min(PARALLEL, todo.length) }, worker));
 
-    const ids = created.filter((id): id is string => Boolean(id));
-    if (chosen && ids.length) {
-      try {
-        await addToCategory(ids, chosen);
-        setCategoryReport({
-          ok: true,
-          text: `${ids.length} added to the category “${chosen.title}”.`,
-        });
-        const list = await loadCategories().catch(() => null);
-        if (list) {
-          setCategories(list);
-          /* A new category now exists: keep the batch pointed at it. */
-          setCategoryChoice(chosen.key);
-          setNewCategory("");
-        }
-      } catch (err) {
-        setCategoryReport({
-          ok: false,
-          text: `The files were added, but couldn’t be put in the category “${chosen.title}” (${
-            err instanceof Error ? err.message : String(err)
-          }). Add them to it by hand in the ${singular === "photo" ? "Photography" : "Videography"} page.`,
-        });
+    if (chosen && added) {
+      setCategoryReport({ ok: true, text: `${added} added to the category “${chosen.title}”.` });
+      /* A new category now exists: list it, and keep the batch pointed at it. */
+      const list = await loadCategories().catch(() => null);
+      if (list) {
+        setCategories(list);
+        setCategoryChoice(chosen._id);
+        setNewCategory("");
       }
     }
     setRunning(false);
@@ -422,9 +322,6 @@ function BulkAdd() {
           <Text muted size={1}>
             Add a whole folder at once. Each file becomes its own item at the end of its list, where you can reorder,
             hide or edit it as usual.
-          </Text>
-          <Text muted size={1}>
-            Videos: for now, add them one at a time in Videos (drag the file into the Video field).
           </Text>
         </Stack>
 
@@ -452,23 +349,13 @@ function BulkAdd() {
               </Text>
             )}
             {target === "video" && (
-              <>
-                <Text size={1} muted>
-                  Each video gets a poster frame grabbed from the clip, and its format (landscape or vertical) is set from
-                  its shape. Titles come from the file names; change them afterwards.
-                </Text>
-                <Stack gap={2}>
-                  <CompressionSettings disabled={running} />
-                  {compressing && (
-                    <Text size={1} muted>
-                      Shrinks each video to at most 1080p and, where it can, under 15 MB, on this computer, one at a
-                      time. Keep this tab open until they&apos;re done. Your original files aren&apos;t changed.
-                    </Text>
-                  )}
-                </Stack>
-              </>
+              <Text size={1} muted>
+                Full videos, any length: each one streams from Mux, which also makes its still and its looping preview
+                and works out whether it&apos;s vertical. Titles come from the file names; change them afterwards. Keep
+                this tab open until the list says they&apos;re all added.
+              </Text>
             )}
-            {categoryPage && (
+            {categoryType && (
               <Stack gap={3}>
                 <Text size={1} weight="medium">
                   Category for this whole batch
@@ -480,7 +367,7 @@ function BulkAdd() {
                 >
                   <option value="">No category (add them to a category later)</option>
                   {categories.map((c) => (
-                    <option key={c._key} value={c._key}>
+                    <option key={c._id} value={c._id}>
                       {c.title}
                     </option>
                   ))}

@@ -382,17 +382,21 @@ export const photographyPage = defineType({
   groups: [
     { name: "hero", title: "Hero", default: true },
     { name: "content", title: "Content" },
-    { name: "sections", title: "Categories" },
   ],
   fields: [
     hero,
     defineField({ name: "heading", title: "Section heading", type: "heading", group: "content" }),
     strings("disciplines", "Disciplines", "content"),
+    /* Replaced by Photo category documents (scripts/categories-migrate.ts).
+       Kept hidden, with its data, until the site reading the new categories
+       is live and checked; then the data is unset and this field removed. */
     defineField({
       name: "sections",
-      title: "Categories",
+      title: "Categories (old)",
       type: "array",
-      group: "sections",
+      hidden: true,
+      readOnly: true,
+      deprecated: { reason: "Categories are now in Photos ▸ Categories." },
       description:
         "One section per category (Portraits, Events…): a big title, then its photos. Shown in this order below the intro; drag to reorder. Only photos added to a category appear on this page. Leave empty to show every photo in one gallery.",
       of: [
@@ -464,7 +468,6 @@ export const videographyPage = defineType({
   groups: [
     { name: "hero", title: "Hero", default: true },
     { name: "content", title: "Intro" },
-    { name: "sections", title: "Categories" },
   ],
   fields: [
     hero,
@@ -478,11 +481,16 @@ export const videographyPage = defineType({
       of: [defineArrayMember({ type: "stat" })],
       validation: (r) => r.max(3),
     }),
+    /* Replaced by Video category documents (scripts/categories-migrate.ts).
+       Kept hidden, with its data, until the site reading the new categories
+       is live and checked; then the data is unset and this field removed. */
     defineField({
       name: "sections",
-      title: "Categories",
+      title: "Categories (old)",
       type: "array",
-      group: "sections",
+      hidden: true,
+      readOnly: true,
+      deprecated: { reason: "Categories are now in Videos ▸ Categories." },
       description:
         "One section per category (Restaurants, Medical…): a big title, then its videos. Shown in this order below the intro; drag to reorder. Only videos added to a category appear on this page. Leave empty to keep the sample categories.",
       of: [

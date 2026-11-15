@@ -2,6 +2,7 @@ import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-li
 import { Briefcase, Camera, Film, Image as ImageIcon, MessageSquareQuote, Monitor, Sparkles, Users } from "lucide-react";
 import { createElement } from "react";
 import { defineField, defineType, type PreviewValue } from "sanity";
+import { PhotoCategoryItems, VideoCategoryItems } from "../components/CategoryItems";
 
 /* The repeatable content: one document per photo, video, person, logo.
    Each list is drag-to-reorder in the studio (orderRank), and the site shows
@@ -47,6 +48,20 @@ const featured = defineField({
 const MOSAIC_NOTE =
   "The gallery is laid out in blocks of nine, and the last few photos are resized to fill the rows. To hold them back until a block is full instead, change Gallery layout on the Photography page.";
 
+/* The fields that matter go first; the rarely used ones sit in a collapsed
+   "More options" at the bottom, so the form stays short. */
+const MORE = [{ name: "more", title: "More options", options: { collapsible: true, collapsed: true } }];
+const more = <T extends object>(field: T) => ({ ...field, fieldset: "more" });
+
+/* An item's category: at most one, or none. Weak, so deleting a category
+   just leaves its items without one instead of being blocked. */
+const category = (to: "videoCategory" | "photoCategory", description: string) =>
+  defineField({ name: "category", title: "Category", type: "reference", to: [{ type: to }], weak: true, description });
+
+/* The category's title under the item's name in lists, or that it has none. */
+const categorySubtitle = (category?: string, hidden?: boolean) =>
+  [hidden ? "Hidden" : null, category ?? "No category"].filter(Boolean).join(" · ");
+
 export const photo = defineType({
   name: "photo",
   title: "Photo",
@@ -54,9 +69,9 @@ export const photo = defineType({
   icon: Camera,
   description: MOSAIC_NOTE,
   orderings: [orderRankOrdering],
+  fieldsets: MORE,
   fields: [
     orderRankField({ type: "photo" }),
-    hidden,
     defineField({
       name: "image",
       title: "Image",
@@ -71,9 +86,21 @@ export const photo = defineType({
       type: "string",
       description: "What's in the picture, for screen readers and search.",
     }),
-    showInRecent,
+    category(
+      "photoCategory",
+      "Where it shows on the Photography page. Photos with no category aren't shown there (unless there are no categories at all, then every photo is).",
+    ),
+    more(showInRecent),
+    more(hidden),
   ],
-  preview: preview({ title: "alt", media: "image" }, "Untitled photo"),
+  preview: {
+    select: { title: "alt", media: "image", category: "category.title", hidden: "hidden" },
+    prepare: ({ title, media, category, hidden }: { title?: string; media?: PreviewValue["media"]; category?: string; hidden?: boolean }) => ({
+      title: title || "Untitled photo",
+      subtitle: categorySubtitle(category, hidden),
+      media,
+    }),
+  },
 });
 
 export const video = defineType({
@@ -82,12 +109,20 @@ export const video = defineType({
   type: "document",
   icon: Film,
   description:
-    "A video shows on the Videography page once it is added to one of that page's sections. The first one in this list also fronts the Videography card on the Work page.",
+    "A video shows on the Videography page once it has a category. The first one in the Videos list also fronts the Videography card on the Work page.",
   orderings: [orderRankOrdering],
+  fieldsets: MORE,
   fields: [
     orderRankField({ type: "video" }),
-    hidden,
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    defineField({
+      name: "muxVideo",
+      title: "Video",
+      type: "mux.video",
+      description:
+        "The full video, any length: drag the file here. The site streams it in the right size for each visitor, loops its first few seconds silently in the gallery, and works out on its own whether it's vertical.",
+    }),
+    category("videoCategory", "Where it shows on the Videography page. Leave empty to keep it off that page."),
     /* Only for videos still on the old file: a Mux video reports its own
        shape, which the site uses instead, so the field hides itself there. */
     defineField({
@@ -106,20 +141,6 @@ export const video = defineType({
       },
       initialValue: "landscape",
     }),
-    defineField({
-      name: "poster",
-      title: "Poster frame",
-      type: "image",
-      options: { hotspot: true },
-      description: "Optional. The still shown in the gallery before the video starts. Leave empty to use the video's first frame.",
-    }),
-    defineField({
-      name: "muxVideo",
-      title: "Video",
-      type: "mux.video",
-      description:
-        "The full video, any length: drag the file here. The site streams it in the right size for each visitor, loops its first few seconds silently in the gallery, and works out on its own whether it's vertical.",
-    }),
     /* Videos uploaded before Mux. The site plays them until they are moved
        to the Video field above (scripts/mux-migrate.ts). Shown only while a
        video still depends on it, so new and moved videos never see it; the
@@ -132,22 +153,53 @@ export const video = defineType({
       hidden: ({ document }) => !document?.clip || Boolean(document?.muxVideo),
       description: "Uploaded before videos moved to Mux. Once the Video field above is filled, this one is no longer used.",
     }),
-    defineField({
-      name: "link",
-      title: "Full video link",
-      type: "url",
-      description: "Optional. The full film. YouTube and Vimeo links play inside the site's viewer; any other page gets a 'Watch the full film' link.",
-      validation: (r) => r.uri({ scheme: ["http", "https"] }),
-    }),
-    showInRecent,
+    more(
+      defineField({
+        name: "poster",
+        title: "Poster frame",
+        type: "image",
+        options: { hotspot: true },
+        description: "Optional. The still shown in the gallery before the video starts. Leave empty to use the video's first frame.",
+      }),
+    ),
+    more(
+      defineField({
+        name: "link",
+        title: "Full video link",
+        type: "url",
+        description:
+          "Optional. A YouTube or Vimeo link plays inside the site's viewer instead of the video above; any other page gets a 'Watch the full film' link.",
+        validation: (r) => r.uri({ scheme: ["http", "https"] }),
+      }),
+    ),
+    more(showInRecent),
+    more(hidden),
   ],
   /* The poster, else the Mux video's first frame, so videos without a poster
-     can still be told apart in the list. */
+     can still be told apart in the list; the category underneath. */
   preview: {
-    select: { title: "title", poster: "poster", playbackId: "muxVideo.asset.playbackId", hidden: "hidden" },
-    prepare: ({ title, poster, playbackId, hidden }: { title?: string; poster?: PreviewValue["media"]; playbackId?: string; hidden?: boolean }) => ({
+    select: {
+      title: "title",
+      poster: "poster",
+      playbackId: "muxVideo.asset.playbackId",
+      category: "category.title",
+      hidden: "hidden",
+    },
+    prepare: ({
       title,
-      subtitle: hidden ? "Hidden" : undefined,
+      poster,
+      playbackId,
+      category,
+      hidden,
+    }: {
+      title?: string;
+      poster?: PreviewValue["media"];
+      playbackId?: string;
+      category?: string;
+      hidden?: boolean;
+    }) => ({
+      title,
+      subtitle: categorySubtitle(category, hidden),
       media:
         poster ??
         (playbackId
@@ -444,4 +496,49 @@ export const clientLogo = defineType({
   preview: preview({ title: "name", media: "logo" }),
 });
 
-export const collectionTypes = [photo, video, webProject, testimonial, result, teamMember, clientLogo, portfolioItem];
+/* A category on the Videography or Photography page: a title, drag-to-reorder
+   in its list, and a panel listing its items (components/CategoryItems.tsx),
+   which changes the items' own Category field rather than storing anything
+   here. */
+const categoryType = (name: "videoCategory" | "photoCategory", kind: "video" | "photo") =>
+  defineType({
+    name,
+    title: kind === "video" ? "Video category" : "Photo category",
+    type: "document",
+    icon: kind === "video" ? Film : Camera,
+    orderings: [orderRankOrdering],
+    fields: [
+      orderRankField({ type: name }),
+      defineField({
+        name: "title",
+        title: "Title",
+        type: "string",
+        description: "Shown big above its items on the site. Keep it short: one or two words.",
+        validation: (r) => r.required(),
+      }),
+      defineField({
+        name: "items",
+        title: kind === "video" ? "Videos in this category" : "Photos in this category",
+        type: "string",
+        components: { input: kind === "video" ? VideoCategoryItems : PhotoCategoryItems },
+      }),
+      { ...hidden, description: "Keeps this category, and everything in it, off the site." },
+    ],
+    preview: preview({ title: "title" }, "Untitled category"),
+  });
+
+export const videoCategory = categoryType("videoCategory", "video");
+export const photoCategory = categoryType("photoCategory", "photo");
+
+export const collectionTypes = [
+  photo,
+  video,
+  videoCategory,
+  photoCategory,
+  webProject,
+  testimonial,
+  result,
+  teamMember,
+  clientLogo,
+  portfolioItem,
+];

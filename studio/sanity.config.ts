@@ -22,6 +22,11 @@ const dataset = process.env.SANITY_STUDIO_DATASET || "production";
 
 const SINGLETON_ACTIONS = new Set(["publish", "discardChanges", "restore"]);
 
+const IN_CATEGORY = [
+  { id: "video-in-category", type: "video", title: "Video in a category" },
+  { id: "photo-in-category", type: "photo", title: "Photo in a category" },
+];
+
 export default defineConfig({
   name: "soltani",
   title: "Soltani Media — Admin",
@@ -60,8 +65,21 @@ export default defineConfig({
 
   schema: {
     types: schemaTypes,
-    /* Singletons can't be created from the global "+" menu. */
-    templates: (templates) => templates.filter(({ schemaType }) => !SINGLETONS.includes(schemaType)),
+    /* Singletons can't be created from the global "+" menu. The two "… in a
+       category" templates back the "New video/photo in this category" button
+       in a category (components/CategoryItems.tsx). */
+    templates: (templates) => [
+      ...templates.filter(({ schemaType }) => !SINGLETONS.includes(schemaType)),
+      ...IN_CATEGORY.map(({ id, type, title }) => ({
+        id,
+        title,
+        schemaType: type,
+        parameters: [{ name: "categoryId", type: "string" }],
+        value: ({ categoryId }: { categoryId: string }) => ({
+          category: { _type: "reference", _ref: categoryId, _weak: true },
+        }),
+      })),
+    ],
   },
 
   /* Adds "Google Drive link" next to the built-in sources in every image and
@@ -74,6 +92,8 @@ export default defineConfig({
   },
 
   document: {
+    /* The "… in a category" templates only make sense from a category. */
+    newDocumentOptions: (prev) => prev.filter(({ templateId }) => !IN_CATEGORY.some((t) => t.id === templateId)),
     /* …or deleted / duplicated: there is exactly one of each. */
     actions: (input, { schemaType }) =>
       SINGLETONS.includes(schemaType)

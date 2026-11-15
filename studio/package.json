@@ -12,6 +12,7 @@
     "sync-content": "sanity exec scripts/sync-content.ts --with-user-token",
     "bulk-upload": "sanity exec scripts/bulk-upload.ts --with-user-token",
     "mux:migrate": "sanity exec scripts/mux-migrate.ts --with-user-token --",
+    "categories:migrate": "sanity exec scripts/categories-migrate.ts --with-user-token --",
     "upwork:parse": "sanity exec scripts/upwork/parse.ts --",
     "upwork:import": "sanity exec scripts/upwork/import.ts --",
     "upwork:import:dry": "sanity exec scripts/upwork/import.ts -- --dry-run",
@@ -21,6 +22,7 @@
   "dependencies": {
     "@mediabunny/aac-encoder": "^1.65.2",
     "@mediabunny/prores": "^1.65.2",
+    "@mux/upchunk": "3.5.0",
     "@sanity/orderable-document-list": "^2.0.27",
     "@sanity/ui": "^4.4.5",
     "@sanity/vision": "^6.21.0",
