@@ -121,14 +121,15 @@ export const video = defineType({
         "The full video, any length: drag the file here. The site streams it in the right size for each visitor, loops its first few seconds silently in the gallery, and works out on its own whether it's vertical.",
     }),
     /* Videos uploaded before Mux. The site plays them until they are moved
-       to the Video field above (scripts/mux-migrate.ts), and the field hides
-       itself on videos that don't have one, so new videos never see it. */
+       to the Video field above (scripts/mux-migrate.ts). Shown only while a
+       video still depends on it, so new and moved videos never see it; the
+       file itself is kept as a backup. */
     defineField({
       name: "clip",
       title: "Old video file",
       type: "file",
       options: { accept: "video/mp4,video/webm,video/quicktime" },
-      hidden: ({ document }) => !document?.clip,
+      hidden: ({ document }) => !document?.clip || Boolean(document?.muxVideo),
       description: "Uploaded before videos moved to Mux. Once the Video field above is filled, this one is no longer used.",
     }),
     defineField({
