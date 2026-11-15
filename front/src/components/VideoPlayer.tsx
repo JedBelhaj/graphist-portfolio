@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Maximize, Minimize, Pause, Play, Volume1, Volume2, VolumeX } from "lucide-react";
+import { useStream } from "@/lib/useStream";
 
 const fmt = (s: number) => {
   if (!Number.isFinite(s)) return "0:00";
@@ -97,11 +98,14 @@ function Slider({
    seek 5s. ←/→ elsewhere are the Lightbox's, for changing slides.
 
    The volume slider is hidden on touch screens: phones set volume with their
-   own buttons, and iPhones ignore a page's volume setting entirely. */
+   own buttons, and iPhones ignore a page's volume setting entirely.
+
+   `src` is a file or a Mux stream (.m3u8); useStream handles either. */
 export default function VideoPlayer({ src, poster, label }: { src: string; poster?: string; label?: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const idleTimer = useRef(0);
+  useStream(videoRef, src);
 
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -235,7 +239,6 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
     >
       <video
         ref={videoRef}
-        src={src}
         poster={poster}
         aria-label={label || undefined}
         autoPlay

@@ -6,6 +6,7 @@ import { sanityFetch } from "@/sanity/client";
 import { imageUrl } from "@/sanity/image";
 import type { CONTENT_QUERY_RESULT } from "../../sanity.types";
 import { BRAND } from "./brand";
+import { muxStill } from "./mux";
 import {
   CLIENT_LOGOS,
   COPY,
@@ -59,11 +60,13 @@ import {
 
 /* ---------- Output types ---------- */
 
-/* A tile in the photo/video mosaics. `video` is a loop clip that replaces the
-   still; `href` is the full film, played in the
-   Lightbox when it is a YouTube/Vimeo link. `src` is "" for a video with no
-   poster frame: the clip's first frame (or a plain tile) stands in. */
-export type MediaTile = { src: string; alt: string; video?: string; href?: string };
+/* A tile in the photo/video mosaics. `stream` is the video's Mux playback ID:
+   the tile loops its first seconds and the Lightbox streams the film.
+   `video` is a file uploaded before Mux, used the same way until the video is
+   moved. `href` is a film link, played in the Lightbox when it is a
+   YouTube/Vimeo link. `src` is the still: the poster, else Mux's first frame;
+   "" for an old file with no poster, whose own first frame stands in. */
+export type MediaTile = { src: string; alt: string; stream?: string; video?: string; href?: string };
 export type RecentTab = { label: string; tiles: MediaTile[] };
 /* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
 export type VideoTile = MediaTile & { tall: boolean };
@@ -111,15 +114,20 @@ const CONTENT_QUERY = defineQuery(`{
     ...,
     "sections": sections[_type == "categorySection" && hidden != true]{
       _key, title,
-      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }
+      "videos": videos[]->{
+        title, poster, "clip": clip.asset->url, link, format, hidden,
+        "stream": muxVideo.asset->playbackId, "aspect": muxVideo.asset->data.aspect_ratio
+      }
     }
   },
   "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],
   "faq": *[_type == "faqPage" && _id == "faqPage"][0],
   "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)
     { image, alt, showInRecent, _createdAt },
-  "videos": *[_type == "video" && (defined(poster.asset) || defined(clip.asset) || defined(link)) && hidden != true] | order(orderRank)
-    { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },
+  "videos": *[_type == "video"
+      && (defined(poster.asset) || defined(clip.asset) || defined(link) || defined(muxVideo.asset->playbackId))
+      && hidden != true] | order(orderRank)
+    { title, poster, "clip": clip.asset->url, "stream": muxVideo.asset->playbackId, link, showInRecent, _createdAt },
   "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)
     { title, screenshot, address },
   "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]
@@ -155,6 +163,21 @@ const heading = (h: MaybeHeading = {}, fallback: Heading): Heading => {
 const hasImage = (img: Img | null | undefined): img is Img => !!img?.asset?._ref;
 const img = (value: Img | null | undefined, fallback: string, width?: number) =>
   hasImage(value) ? imageUrl(value, width) : fallback;
+
+/* A video's tile fields: the poster if one is set, else Mux's first frame.
+   A Mux video replaces the old file. */
+const videoMedia = (v: { poster?: Img | null; stream?: string | null; clip?: string | null }, width: number) => ({
+  /* 1080: the narrow side of a 1080p video, so a vertical one isn't upscaled. */
+  src: hasImage(v.poster) ? imageUrl(v.poster, width) : v.stream ? muxStill(v.stream, Math.min(width, 1080)) : "",
+  stream: v.stream ?? undefined,
+  video: v.stream ? undefined : (v.clip ?? undefined),
+});
+
+/* Mux reports the shape as "9:16" and so on. */
+const portrait = (aspect?: string | null) => {
+  const [w, h] = (aspect ?? "").split(":").map(Number);
+  return w > 0 && h > w;
+};
 
 const blurbs = (value: Partial<Blurb>[] | undefined, fallback: Blurb[]) =>
   list(
@@ -236,12 +259,7 @@ function build(raw: Raw | null) {
     at: p._createdAt,
   }));
   const videos = r.videos.map((v) => ({
-    tile: {
-      src: hasImage(v.poster) ? imageUrl(v.poster, 1800) : "",
-      alt: v.title ?? "",
-      video: v.clip ?? undefined,
-      href: v.link,
-    } as MediaTile,
+    tile: { ...videoMedia(v, 1600), alt: v.title ?? "", href: v.link ?? undefined } as MediaTile,
     recent: v.showInRecent,
     at: v._createdAt,
   }));
@@ -406,14 +424,14 @@ function build(raw: Raw | null) {
   const videoSections: VideoSection[] = list(
     (videography.sections ?? []).flatMap((s) => {
       const clips: VideoTile[] = (s.videos ?? []).flatMap((v) =>
-        v && (hasImage(v.poster) || v.clip || v.link) && !v.hidden
+        v && (hasImage(v.poster) || v.clip || v.link || v.stream) && !v.hidden
           ? [
               {
-                src: hasImage(v.poster) ? imageUrl(v.poster, 1600) : "",
+                ...videoMedia(v, 1600),
                 alt: v.title ?? "",
-                video: v.clip ?? undefined,
                 href: v.link ?? undefined,
-                tall: v.format === "vertical",
+                /* No format chosen: go by the video's own shape. */
+                tall: v.format ? v.format === "vertical" : portrait(v.aspect),
               },
             ]
           : [],

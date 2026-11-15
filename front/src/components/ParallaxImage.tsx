@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { PREVIEW_SECONDS, muxPreview } from "@/lib/mux";
+import { useStream } from "@/lib/useStream";
 
 /* Parallax that moves the picture inside a fixed frame, not the frame itself.
 
@@ -15,44 +17,57 @@ import { useEffect, useRef } from "react";
    slack. Raise DRIFT past ~11 and an empty edge appears at the extremes. */
 const DRIFT = 11;
 
-/* `video` swaps the still for a silent loop clip, with `src` as its poster.
-   It only plays while on screen, so a page of nine clips isn't decoding
-   nine videos at once — and not at all under reduced motion, where the
-   poster stays up. */
+/* How far beyond the screen a tile counts as near: one screen height above
+   and below. Near tiles load their video and follow the scroll; the rest do
+   nothing, so a page of 50 videos costs what the few around the screen cost. */
+const NEAR = "100% 0px";
+
+/* `src` is the still. `stream` (a Mux playback ID) or `video` (an uploaded
+   file, from before Mux) adds a silent loop of the first PREVIEW_SECONDS over
+   it, playing only while the tile is on screen. Under reduced motion there is
+   no drift and no loop: the still stays up, or, for a file with no still, its
+   first frame. */
 export default function ParallaxImage({
   src,
   video,
+  stream,
   alt = "",
   className = "",
 }: {
   src: string;
   video?: string;
+  stream?: string;
   alt?: string;
   className?: string;
 }) {
   const frameRef = useRef<HTMLDivElement>(null);
-  const mediaRef = useRef<HTMLImageElement | HTMLVideoElement | null>(null);
+  const layerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [near, setNear] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
+    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const frame = frameRef.current;
-    const img = mediaRef.current;
-    if (!frame || !img) return;
+    if (!frame) return;
+    const nearIo = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: NEAR });
+    const viewIo = new IntersectionObserver(([e]) => setInView(e.isIntersecting));
+    nearIo.observe(frame);
+    viewIo.observe(frame);
+    return () => {
+      nearIo.disconnect();
+      viewIo.disconnect();
+    };
+  }, []);
 
-    /* No drift at all under the OS setting, and no listener either. */
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let io: IntersectionObserver | undefined;
-    if (img instanceof HTMLVideoElement) {
-      io = new IntersectionObserver(([entry]) => {
-        /* play() rejects if the browser blocks autoplay; the poster stays. */
-        if (entry.isIntersecting) img.play().catch(() => {});
-        else img.pause();
-      });
-      io.observe(frame);
-    }
+  /* The drift, only while near. */
+  useEffect(() => {
+    const frame = frameRef.current;
+    const layer = layerRef.current;
+    if (!near || reduced || !frame || !layer) return;
 
     let raf = 0;
-
     const update = () => {
       raf = 0;
       const rect = frame.getBoundingClientRect();
@@ -65,9 +80,8 @@ export default function ParallaxImage({
       const raw = (rect.top + rect.height / 2 - viewport / 2) / travel;
       const progress = Math.max(-1, Math.min(1, raw));
 
-      img.style.transform = `translate3d(0, ${(progress * DRIFT).toFixed(2)}%, 0)`;
+      layer.style.transform = `translate3d(0, ${(progress * DRIFT).toFixed(2)}%, 0)`;
     };
-
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
@@ -75,49 +89,68 @@ export default function ParallaxImage({
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-
     return () => {
-      io?.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [near, reduced]);
+
+  /* What the <video> plays, if anything. A file with no still loads its
+     first frame (#t nudges Safari into painting it). */
+  const url = !near
+    ? undefined
+    : stream
+      ? reduced
+        ? undefined
+        : muxPreview(stream)
+      : video && !(reduced && src)
+        ? src
+          ? video
+          : `${video}#t=0.001`
+        : undefined;
+  useStream(videoRef, url);
+
+  const play = inView && !reduced;
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    /* Also on canplay: the stream may attach after the tile comes into view.
+       play() rejects if the browser blocks autoplay; the still stays. */
+    const sync = () => (play ? v.play().catch(() => {}) : v.pause());
+    sync();
+    v.addEventListener("canplay", sync);
+    return () => v.removeEventListener("canplay", sync);
+  }, [play, url]);
 
   return (
     <div ref={frameRef} className={`relative h-full w-full overflow-hidden ${className}`}>
-      {video ? (
-        <video
-          ref={(el) => {
-            mediaRef.current = el;
-          }}
-          /* Without a poster, load the first frame so the tile isn't blank
-             (#t nudges Safari into painting it). */
-          src={src ? video : `${video}#t=0.001`}
-          poster={src || undefined}
-          aria-label={alt || undefined}
-          muted
-          loop
-          playsInline
-          preload={src ? "none" : "metadata"}
-          className="absolute left-0 h-[130%] w-full object-cover"
-          style={{ top: "-15%", willChange: "transform" }}
-        />
-      ) : !src ? (
-        /* A video with a link but no poster or clip: a plain tile. */
-        <div className="absolute inset-0 bg-neutral-900" aria-label={alt || undefined} />
-      ) : (
-        <img
-          ref={(el) => {
-            mediaRef.current = el;
-          }}
-          src={src}
-          alt={alt}
-          loading="lazy"
-          className="absolute left-0 h-[130%] w-full object-cover"
-          style={{ top: "-15%", willChange: "transform" }}
-        />
-      )}
+      <div
+        ref={layerRef}
+        className="absolute left-0 h-[130%] w-full"
+        style={{ top: "-15%", willChange: near && !reduced ? "transform" : undefined }}
+      >
+        {src ? (
+          <img src={src} alt={alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          /* A video with a link but no still or clip: a plain tile. */
+          !url && <div className="absolute inset-0 bg-neutral-900" aria-label={alt || undefined} />
+        )}
+        {url && (
+          <video
+            ref={videoRef}
+            aria-hidden
+            muted
+            loop
+            playsInline
+            preload={src ? "none" : "metadata"}
+            onTimeUpdate={(e) => {
+              if (e.currentTarget.currentTime >= PREVIEW_SECONDS) e.currentTarget.currentTime = 0;
+            }}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+      </div>
     </div>
   );
 }
