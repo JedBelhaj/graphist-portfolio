@@ -18,8 +18,12 @@ const playsHlsItself = (video: HTMLVideoElement) =>
    stream (Mux) plays natively on Apple's browsers and through hls.js
    everywhere else; hls.js is only downloaded the first time a stream is
    needed. Changing `url` to undefined, or unmounting, stops the download and
-   frees what was buffered. */
-export function useStream(ref: RefObject<HTMLVideoElement | null>, url: string | undefined) {
+   frees what was buffered.
+
+   `light` picks the size for the element's on-screen size alone, not × the
+   screen's pixel density: for the gallery loops on phones, where a small
+   tile on a 3× screen would otherwise pull the 720p stream, several at once. */
+export function useStream(ref: RefObject<HTMLVideoElement | null>, url: string | undefined, light = false) {
   useEffect(() => {
     const video = ref.current;
     if (!video || !url) return;
@@ -37,7 +41,7 @@ export function useStream(ref: RefObject<HTMLVideoElement | null>, url: string |
           return;
         }
         /* Never fetch a size bigger than the element shows. */
-        const h = new HlsJs({ capLevelToPlayerSize: true });
+        const h = new HlsJs({ capLevelToPlayerSize: true, ignoreDevicePixelRatio: light });
         h.loadSource(url);
         h.attachMedia(video);
         hls = h;
@@ -50,5 +54,5 @@ export function useStream(ref: RefObject<HTMLVideoElement | null>, url: string |
       video.removeAttribute("src");
       video.load();
     };
-  }, [ref, url]);
+  }, [ref, url, light]);
 }

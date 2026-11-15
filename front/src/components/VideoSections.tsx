@@ -113,7 +113,12 @@ function Videos({ videos, open }: { videos: VideoTile[]; open: (i: number) => vo
    each tile going to whichever is shortest so the bottoms stay close. Below
    lg the columns dissolve (display: contents) into a two-up grid where
    landscape tiles take the full width; the `order` style keeps that grid in
-   the original order. */
+   the original order.
+
+   On desktop a vertical tile is never taller than the screen, less room for
+   the header: TALL_MAX caps its width at that height × 9/16 and centres it
+   in its column, which matters most when two or three verticals share a row. */
+const TALL_MAX = "lg:mx-auto lg:w-full lg:max-w-[calc((100svh_-_9rem)*9/16)]";
 type Piece = { node: ReactNode; tall: boolean; h: number };
 
 function Columns({ pieces, cols }: { pieces: Piece[]; cols: number }) {
@@ -130,7 +135,7 @@ function Columns({ pieces, cols }: { pieces: Piece[]; cols: number }) {
       {buckets.map((b, c) => (
         <div key={c} className="contents lg:flex lg:min-w-0 lg:flex-1 lg:flex-col lg:gap-5">
           {b.map((i) => (
-            <div key={i} style={{ order: i }} className={pieces[i].tall ? "" : "col-span-2"}>
+            <div key={i} style={{ order: i }} className={pieces[i].tall ? TALL_MAX : "col-span-2"}>
               {pieces[i].node}
             </div>
           ))}

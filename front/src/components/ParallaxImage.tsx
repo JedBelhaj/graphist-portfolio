@@ -26,7 +26,8 @@ const NEAR = "100% 0px";
    file, from before Mux) adds a silent loop of the first PREVIEW_SECONDS over
    it, playing only while the tile is on screen. Under reduced motion there is
    no drift and no loop: the still stays up, or, for a file with no still, its
-   first frame. */
+   first frame. On touch screens the loop plays but the picture doesn't
+   drift, and the loop is fetched at the tile's on-screen size. */
 export default function ParallaxImage({
   src,
   video,
@@ -46,9 +47,14 @@ export default function ParallaxImage({
   const [near, setNear] = useState(false);
   const [inView, setInView] = useState(false);
   const [reduced, setReduced] = useState(false);
+  /* No drift on touch screens either: phones scroll on their own fast path,
+     and moving every tile from script on each scroll frame made them stutter. */
+  const [touch, setTouch] = useState(false);
+  const drift = !reduced && !touch;
 
   useEffect(() => {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    setTouch(window.matchMedia("(hover: none)").matches);
     const frame = frameRef.current;
     if (!frame) return;
     const nearIo = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: NEAR });
@@ -65,7 +71,7 @@ export default function ParallaxImage({
   useEffect(() => {
     const frame = frameRef.current;
     const layer = layerRef.current;
-    if (!near || reduced || !frame || !layer) return;
+    if (!near || !drift || !frame || !layer) return;
 
     let raf = 0;
     const update = () => {
@@ -94,7 +100,7 @@ export default function ParallaxImage({
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [near, reduced]);
+  }, [near, drift]);
 
   /* What the <video> plays, if anything. A file with no still loads its
      first frame (#t nudges Safari into painting it). */
@@ -109,7 +115,7 @@ export default function ParallaxImage({
           ? video
           : `${video}#t=0.001`
         : undefined;
-  useStream(videoRef, url);
+  useStream(videoRef, url, touch);
 
   const play = inView && !reduced;
   useEffect(() => {
@@ -128,7 +134,7 @@ export default function ParallaxImage({
       <div
         ref={layerRef}
         className="absolute left-0 h-[130%] w-full"
-        style={{ top: "-15%", willChange: near && !reduced ? "transform" : undefined }}
+        style={{ top: "-15%", willChange: near && drift ? "transform" : undefined }}
       >
         {src ? (
           <img src={src} alt={alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
