@@ -4,15 +4,23 @@
      npm run mux:migrate -- --dataset staging --dry-run
      npm run mux:migrate -- --dataset staging --limit 8
      npm run mux:migrate -- --dataset staging --only "Spider,Le Petit Sao"
-     npm run mux:migrate -- --dataset production
+     npm run mux:migrate -- --dataset production --env-file .env.mux-production.local
 
    --dataset is required, so it can't run on the live content by accident.
    --dry-run lists what it would do and changes nothing.
    --limit N / --only "a,b" pick a few videos (title contains any of them).
+   --env-file reads the Mux token from that file (it wins over the others).
 
    Needs MUX_TOKEN_ID and MUX_TOKEN_SECRET (a Mux access token with Mux Video
-   read + write) in the environment or in studio/.env.development.local, and
-   runs as whoever is logged in to the Sanity CLI.
+   read + write, Mux Data read) from --env-file, studio/.env.development.local
+   or studio/.env.local, and runs as whoever is logged in to the Sanity CLI.
+   For the production dataset --env-file is required, so the test token in
+   .env.development.local can't send the real videos to Mux's test
+   environment.
+
+   If the dataset has no Mux key yet (the `secrets.mux` document the studio's
+   Video field reads), the token is saved there too, so the Video field works
+   without anyone typing it in. An existing key is left alone.
 
    Mux fetches each file itself from its Sanity URL, so nothing is downloaded
    here. The old file stays where it is; the site prefers the Mux video once
@@ -21,12 +29,9 @@
    and videos that already have a Mux video are skipped. Drafts are patched
    along with the published document, so publishing one later keeps it. */
 import { randomUUID } from "node:crypto";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { parseEnv } from "node:util";
 import { getCliClient } from "sanity/cli";
-
-for (const file of [".env.development.local", ".env.local"]) {
-  if (existsSync(file)) process.loadEnvFile(file);
-}
 
 /* ---------- Arguments ---------- */
 
@@ -36,6 +41,30 @@ const arg = (name: string) => {
   return i >= 0 ? args[i + 1] : undefined;
 };
 const dataset = arg("dataset");
+const envFile = arg("env-file");
+
+if (dataset === "production" && !envFile) {
+  console.error("For the live content, pass the Production token's file: --env-file .env.mux-production.local");
+  process.exit(1);
+}
+if (envFile && !existsSync(envFile)) {
+  console.error(`${envFile} doesn't exist (run from studio/).`);
+  process.exit(1);
+}
+
+/* The Mux token. --env-file always wins, even over anything the Sanity CLI
+   already loaded; otherwise the local env files fill in what's missing. Only
+   the two MUX_ keys are read. */
+const MUX_KEYS = ["MUX_TOKEN_ID", "MUX_TOKEN_SECRET"];
+if (envFile) {
+  const vars = parseEnv(readFileSync(envFile, "utf8"));
+  for (const key of MUX_KEYS) process.env[key] = vars[key];
+}
+for (const file of [".env.development.local", ".env.local"]) {
+  if (envFile || !existsSync(file)) continue;
+  const vars = parseEnv(readFileSync(file, "utf8"));
+  for (const key of MUX_KEYS) if (!process.env[key] && vars[key]) process.env[key] = vars[key];
+}
 const dryRun = args.includes("--dry-run");
 const limit = Number(arg("limit")) || Infinity;
 const only = arg("only")
@@ -50,11 +79,32 @@ if (!dataset) {
 
 const { MUX_TOKEN_ID, MUX_TOKEN_SECRET } = process.env;
 if (!MUX_TOKEN_ID || !MUX_TOKEN_SECRET) {
-  console.error("MUX_TOKEN_ID and MUX_TOKEN_SECRET are missing (studio/.env.development.local).");
+  console.error(`MUX_TOKEN_ID and MUX_TOKEN_SECRET are missing (${envFile ?? "studio/.env.development.local"}).`);
   process.exit(1);
 }
 
 const client = getCliClient({ apiVersion: "2024-01-01" }).withConfig({ dataset, perspective: "raw" });
+
+/* ---------- The studio's Mux key ---------- */
+
+/* Same document the Video field's setup dialog saves. */
+const secrets = await client.fetch<{ token?: string } | null>(`*[_id == "secrets.mux"][0]{ token }`);
+if (!secrets?.token) {
+  console.log(`Dataset "${dataset}" has no Mux key for the studio yet: ${dryRun ? "would save" : "saving"} this token.`);
+  if (!dryRun) {
+    await client.createOrReplace({
+      _id: "secrets.mux",
+      _type: "mux.apiKey",
+      token: MUX_TOKEN_ID,
+      secretKey: MUX_TOKEN_SECRET,
+      enableSignedUrls: false,
+      signingKeyId: "",
+      signingKeyPrivate: "",
+    });
+  }
+} else if (secrets.token !== MUX_TOKEN_ID) {
+  console.log(`Note: the studio in "${dataset}" uses a different Mux token than this run. Left as is.`);
+}
 
 /* ---------- Mux API ---------- */
 

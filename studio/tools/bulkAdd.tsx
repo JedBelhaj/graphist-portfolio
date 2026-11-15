@@ -40,9 +40,11 @@ import {
 
 type Target = "photo" | "video" | "result";
 
+/* Videos are left out for now: this tool still uploads them as plain files,
+   and videos now go to Mux (the Video field on a video). They come back once
+   this tool sends them to Mux too; the video code below is kept for that. */
 const TARGETS: { type: Target; title: string; plural: string; singular: string }[] = [
   { type: "photo", title: "Photos", plural: "photos", singular: "photo" },
-  { type: "video", title: "Videos", plural: "videos", singular: "video" },
   { type: "result", title: "Client messages", plural: "messages", singular: "message" },
 ];
 
@@ -420,6 +422,9 @@ function BulkAdd() {
           <Text muted size={1}>
             Add a whole folder at once. Each file becomes its own item at the end of its list, where you can reorder,
             hide or edit it as usual.
+          </Text>
+          <Text muted size={1}>
+            Videos: for now, add them one at a time in Videos (drag the file into the Video field).
           </Text>
         </Stack>
 
