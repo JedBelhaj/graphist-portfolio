@@ -107,15 +107,25 @@ export const video = defineType({
       title: "Poster frame",
       type: "image",
       options: { hotspot: true },
-      description: "Optional. The still shown in the gallery, and before the clip loads.",
+      description: "Optional. The still shown in the gallery before the video starts. Leave empty to use the video's first frame.",
     }),
     defineField({
+      name: "muxVideo",
+      title: "Video",
+      type: "mux.video",
+      description:
+        "The full video, any length. The site streams it in the right size for each visitor, and loops its first few seconds silently in the gallery.",
+    }),
+    /* Videos uploaded before Mux. The site plays them until they are moved
+       to the Video field above (scripts/mux-migrate.ts), and the field hides
+       itself on videos that don't have one, so new videos never see it. */
+    defineField({
       name: "clip",
-      title: "Loop clip",
+      title: "Old video file",
       type: "file",
       options: { accept: "video/mp4,video/webm,video/quicktime" },
-      description:
-        "Optional. A short, silent MP4 (5–15 s, ideally under 15 MB) that plays on a loop in place of the poster. Upload full-length films to YouTube/Vimeo and use the link below instead.",
+      hidden: ({ document }) => !document?.clip,
+      description: "Uploaded before videos moved to Mux. Once the Video field above is filled, this one is no longer used.",
     }),
     defineField({
       name: "link",

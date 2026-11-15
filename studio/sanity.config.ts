@@ -7,6 +7,7 @@
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { media } from "sanity-plugin-media";
+import { muxInput } from "sanity-plugin-mux-input";
 import { structureTool } from "sanity/structure";
 import { CompressionInput, CompressionLayout, withCompression } from "./assetSources/compressedUpload";
 import { googleDriveSource } from "./assetSources/googleDrive";
@@ -34,6 +35,19 @@ export default defineConfig({
        field's Select menu). Uploading there is off because the plugin can't
        compress videos: new files come in through Bulk add or the fields. */
     media({ directUploads: false }),
+    /* Videos are hosted and streamed by Mux, not stored in Sanity: Mux
+       converts each upload into sizes for every connection, and makes the
+       looping previews and stills the site shows. The Mux access token is
+       entered once in the studio and kept in the dataset (secrets.mux).
+       Both config dialogs are off, so an upload starts straight away with
+       the settings here. */
+    muxInput({
+      video_quality: "plus",
+      max_resolution_tier: "1080p",
+      acceptedMimeTypes: ["video/*"],
+      disableUploadConfig: true,
+      disableTextTrackConfig: true,
+    }),
     /* GROQ playground, for debugging queries. */
     visionTool({ defaultApiVersion: "2026-10-13" }),
   ],
