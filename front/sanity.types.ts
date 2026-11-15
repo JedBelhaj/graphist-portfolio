@@ -15,6 +15,26 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
+export type Summarize = {
+  jobId?: string;
+  completedAt?: number;
+  title?: string;
+  description?: string;
+  tags?: Array<string>;
+};
+
+export type Moderate = {
+  jobId?: string;
+  completedAt?: number;
+  exceedsThreshold?: boolean;
+  maxScores?: MaxScores;
+};
+
+export type MaxScores = {
+  sexual?: number;
+  violence?: number;
+};
+
 export type Lane = {
   _type: "lane";
   title?: string;
@@ -264,6 +284,7 @@ export type Video = {
     crop?: SanityImageCrop;
     _type: "image";
   };
+  muxVideo?: MuxVideo;
   clip?: {
     asset?: SanityFileAssetReference;
     media?: unknown;
@@ -271,6 +292,18 @@ export type Video = {
   };
   link?: string;
   showInRecent?: boolean;
+};
+
+export type MuxVideoAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "mux.videoAsset";
+};
+
+export type MuxVideo = {
+  _type: "mux.video";
+  asset?: MuxVideoAssetReference;
 };
 
 export type Photo = {
@@ -560,6 +593,158 @@ export type SiteSettings = {
   seoDescription?: string;
 };
 
+export type MuxVideoAsset = {
+  _id: string;
+  _type: "mux.videoAsset";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  status?: string;
+  assetId?: string;
+  playbackId?: string;
+  filename?: string;
+  thumbTime?: number;
+  data?: MuxAssetData;
+  robotsJobs?: Array<
+    {
+      _key: string;
+    } & MuxRobotsJob
+  >;
+  robotsOutputs?: MuxRobotsOutputs;
+  robotsDirectiveRuns?: Array<
+    {
+      _key: string;
+    } & MuxRobotsDirectiveRun
+  >;
+  robotsPendingCreates?: Array<
+    {
+      _key: string;
+    } & MuxRobotsPendingCreate
+  >;
+};
+
+export type MuxRobotsOutputs = {
+  _type: "mux.robotsOutputs";
+  summarize?: Summarize;
+  moderate?: Moderate;
+};
+
+export type MuxAssetData = {
+  _type: "mux.assetData";
+  resolution_tier?: string;
+  upload_id?: string;
+  created_at?: string;
+  id?: string;
+  status?: string;
+  max_stored_resolution?: string;
+  passthrough?: string;
+  encoding_tier?: string;
+  video_quality?: string;
+  master_access?: string;
+  aspect_ratio?: string;
+  duration?: number;
+  max_stored_frame_rate?: number;
+  mp4_support?: string;
+  max_resolution_tier?: string;
+  thumbnail_time?: number;
+  tracks?: Array<
+    {
+      _key: string;
+    } & MuxTrack
+  >;
+  playback_ids?: Array<
+    {
+      _key: string;
+    } & MuxPlaybackId
+  >;
+  static_renditions?: MuxStaticRenditions;
+  master?: MuxMasterFile;
+};
+
+export type MuxRobotsPendingCreate = {
+  _type: "mux.robotsPendingCreate";
+  requestId?: string;
+  kind?: string;
+  workflow?: string;
+  directiveId?: string;
+  requestedAt?: number;
+};
+
+export type MuxRobotsDirectiveRun = {
+  _type: "mux.robotsDirectiveRun";
+  runId?: string;
+  directiveId?: string;
+  status?: string;
+  startedAt?: number;
+  completedAt?: number;
+  jobIds?: Array<string>;
+};
+
+export type MuxRobotsJob = {
+  _type: "mux.robotsJob";
+  id?: string;
+  workflow?: string;
+  status?: string;
+  created_at?: number;
+  updated_at?: number;
+  units_consumed?: number;
+  error?: string;
+  thumbnailApplied?: boolean;
+};
+
+export type MuxMasterFile = {
+  _type: "mux.masterFile";
+  status?: string;
+  url?: string;
+};
+
+export type MuxStaticRenditions = {
+  _type: "mux.staticRenditions";
+  status?: string;
+  files?: Array<
+    {
+      _key: string;
+    } & MuxStaticRenditionFile
+  >;
+};
+
+export type MuxStaticRenditionFile = {
+  _type: "mux.staticRenditionFile";
+  name?: string;
+  ext?: string;
+  height?: number;
+  width?: number;
+  bitrate?: number;
+  filesize?: string;
+  type?: string;
+  status?: string;
+  resolution_tier?: string;
+  resolution?: string;
+  id?: string;
+  passthrough?: string;
+};
+
+export type MuxPlaybackId = {
+  _type: "mux.playbackId";
+  id?: string;
+  policy?: string;
+};
+
+export type MuxTrack = {
+  _type: "mux.track";
+  id?: string;
+  type?: string;
+  max_width?: number;
+  max_frame_rate?: number;
+  duration?: number;
+  max_height?: number;
+  language_code?: string;
+  name?: string;
+  status?: string;
+  text_source?: string;
+  text_type?: string;
+};
+
 export type MediaFolderReference = {
   _ref: string;
   _type: "reference";
@@ -684,6 +869,9 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | Summarize
+  | Moderate
+  | MaxScores
   | Lane
   | Stat
   | Blurb
@@ -701,6 +889,8 @@ export type AllSanitySchemaTypes =
   | WebProject
   | SanityFileAssetReference
   | Video
+  | MuxVideoAssetReference
+  | MuxVideo
   | Photo
   | FaqPage
   | WebDesignPage
@@ -713,6 +903,17 @@ export type AllSanitySchemaTypes =
   | AboutPage
   | HomePage
   | SiteSettings
+  | MuxVideoAsset
+  | MuxRobotsOutputs
+  | MuxAssetData
+  | MuxRobotsPendingCreate
+  | MuxRobotsDirectiveRun
+  | MuxRobotsJob
+  | MuxMasterFile
+  | MuxStaticRenditions
+  | MuxStaticRenditionFile
+  | MuxPlaybackId
+  | MuxTrack
   | MediaFolderReference
   | MediaFolder
   | MediaTag
@@ -727,7 +928,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../front/src/lib/cms.ts
 // Variable: CONTENT_QUERY
-// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0],  "about": *[_type == "aboutPage" && _id == "aboutPage"][0],  "services": *[_type == "servicesPage" && _id == "servicesPage"][0],  "work": *[_type == "workPage" && _id == "workPage"][0],  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0]{    ...,    "sections": sections[_type == "categorySection" && hidden != true]{      _key, title,      "photos": photos[]->{ image, alt, hidden }    }  },  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{    ...,    "sections": sections[_type == "categorySection" && hidden != true]{      _key, title,      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }    }  },  "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],  "faq": *[_type == "faqPage" && _id == "faqPage"][0],  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)    { image, alt, showInRecent, _createdAt },  "videos": *[_type == "video" && (defined(poster.asset) || defined(clip.asset) || defined(link)) && hidden != true] | order(orderRank)    { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)    { title, screenshot, address },  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]    | order(coalesce(featured, false) desc, orderRank)    { quote, name, tag, handle, avatar, source, rating, projectTitle, earnings, hourlyRate, dateRange, hideDetails },  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)    { image, label, alt },  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)    { name, role, focus, photo },  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)    { name, logo, size, tone }}
+// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0],  "about": *[_type == "aboutPage" && _id == "aboutPage"][0],  "services": *[_type == "servicesPage" && _id == "servicesPage"][0],  "work": *[_type == "workPage" && _id == "workPage"][0],  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0]{    ...,    "sections": sections[_type == "categorySection" && hidden != true]{      _key, title,      "photos": photos[]->{ image, alt, hidden }    }  },  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{    ...,    "sections": sections[_type == "categorySection" && hidden != true]{      _key, title,      "videos": videos[]->{        title, poster, "clip": clip.asset->url, link, format, hidden,        "stream": muxVideo.asset->playbackId, "aspect": muxVideo.asset->data.aspect_ratio      }    }  },  "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],  "faq": *[_type == "faqPage" && _id == "faqPage"][0],  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)    { image, alt, showInRecent, _createdAt },  "videos": *[_type == "video"      && (defined(poster.asset) || defined(clip.asset) || defined(link) || defined(muxVideo.asset->playbackId))      && hidden != true] | order(orderRank)    { title, poster, "clip": clip.asset->url, "stream": muxVideo.asset->playbackId, link, showInRecent, _createdAt },  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)    { title, screenshot, address },  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]    | order(coalesce(featured, false) desc, orderRank)    { quote, name, tag, handle, avatar, source, rating, projectTitle, earnings, hourlyRate, dateRange, hideDetails },  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)    { image, label, alt },  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)    { name, role, focus, photo },  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)    { name, logo, size, tone }}
 export type CONTENT_QUERY_RESULT = {
   settings: {
     _id: "siteSettings";
@@ -945,6 +1146,8 @@ export type CONTENT_QUERY_RESULT = {
         link: string | null;
         format: "landscape" | "vertical" | null;
         hidden: boolean | null;
+        stream: string | null;
+        aspect: string | null;
       }> | null;
     }> | null;
   } | null;
@@ -1007,6 +1210,7 @@ export type CONTENT_QUERY_RESULT = {
       _type: "image";
     } | null;
     clip: string | null;
+    stream: string | null;
     link: string | null;
     showInRecent: boolean | null;
     _createdAt: string;
@@ -1082,7 +1286,7 @@ export type CONTENT_QUERY_RESULT = {
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0],\n  "about": *[_type == "aboutPage" && _id == "aboutPage"][0],\n  "services": *[_type == "servicesPage" && _id == "servicesPage"][0],\n  "work": *[_type == "workPage" && _id == "workPage"][0],\n  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0]{\n    ...,\n    "sections": sections[_type == "categorySection" && hidden != true]{\n      _key, title,\n      "photos": photos[]->{ image, alt, hidden }\n    }\n  },\n  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{\n    ...,\n    "sections": sections[_type == "categorySection" && hidden != true]{\n      _key, title,\n      "videos": videos[]->{ title, poster, "clip": clip.asset->url, link, format, hidden }\n    }\n  },\n  "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],\n  "faq": *[_type == "faqPage" && _id == "faqPage"][0],\n  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)\n    { image, alt, showInRecent, _createdAt },\n  "videos": *[_type == "video" && (defined(poster.asset) || defined(clip.asset) || defined(link)) && hidden != true] | order(orderRank)\n    { title, poster, "clip": clip.asset->url, link, showInRecent, _createdAt },\n  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)\n    { title, screenshot, address },\n  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]\n    | order(coalesce(featured, false) desc, orderRank)\n    { quote, name, tag, handle, avatar, source, rating, projectTitle, earnings, hourlyRate, dateRange, hideDetails },\n  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)\n    { image, label, alt },\n  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)\n    { name, role, focus, photo },\n  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)\n    { name, logo, size, tone }\n}': CONTENT_QUERY_RESULT;
+    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0],\n  "about": *[_type == "aboutPage" && _id == "aboutPage"][0],\n  "services": *[_type == "servicesPage" && _id == "servicesPage"][0],\n  "work": *[_type == "workPage" && _id == "workPage"][0],\n  "photography": *[_type == "photographyPage" && _id == "photographyPage"][0]{\n    ...,\n    "sections": sections[_type == "categorySection" && hidden != true]{\n      _key, title,\n      "photos": photos[]->{ image, alt, hidden }\n    }\n  },\n  "videography": *[_type == "videographyPage" && _id == "videographyPage"][0]{\n    ...,\n    "sections": sections[_type == "categorySection" && hidden != true]{\n      _key, title,\n      "videos": videos[]->{\n        title, poster, "clip": clip.asset->url, link, format, hidden,\n        "stream": muxVideo.asset->playbackId, "aspect": muxVideo.asset->data.aspect_ratio\n      }\n    }\n  },\n  "webDesign": *[_type == "webDesignPage" && _id == "webDesignPage"][0],\n  "faq": *[_type == "faqPage" && _id == "faqPage"][0],\n  "photos": *[_type == "photo" && defined(image.asset) && hidden != true] | order(orderRank)\n    { image, alt, showInRecent, _createdAt },\n  "videos": *[_type == "video"\n      && (defined(poster.asset) || defined(clip.asset) || defined(link) || defined(muxVideo.asset->playbackId))\n      && hidden != true] | order(orderRank)\n    { title, poster, "clip": clip.asset->url, "stream": muxVideo.asset->playbackId, link, showInRecent, _createdAt },\n  "webProjects": *[_type == "webProject" && defined(screenshot.asset) && hidden != true] | order(orderRank)\n    { title, screenshot, address },\n  "testimonials": *[_type == "testimonial" && defined(quote) && hidden != true]\n    | order(coalesce(featured, false) desc, orderRank)\n    { quote, name, tag, handle, avatar, source, rating, projectTitle, earnings, hourlyRate, dateRange, hideDetails },\n  "results": *[_type == "result" && defined(image.asset) && hidden != true] | order(orderRank)\n    { image, label, alt },\n  "team": *[_type == "teamMember" && defined(name) && hidden != true] | order(orderRank)\n    { name, role, focus, photo },\n  "logos": *[_type == "clientLogo" && defined(logo.asset) && hidden != true] | order(orderRank)\n    { name, logo, size, tone }\n}': CONTENT_QUERY_RESULT;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

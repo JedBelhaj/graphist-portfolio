@@ -35,7 +35,7 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
     <Reveal>
       <div className="grid w-full auto-rows-[42vw] grid-cols-2 px-3 sm:px-5 lg:auto-rows-[15vw] lg:grid-cols-4 lg:px-8">
         {items.map((m, i) => {
-          const isVideo = Boolean(m.video || m.href);
+          const isVideo = Boolean(m.stream || m.video || m.href);
           /* Plain grid item carrying the span classes. Stretched by default,
              so it takes the row height, which is what lets the frame inside
              resolve its h-full. */
@@ -54,6 +54,7 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
                 <ParallaxImage
                   src={m.src}
                   video={m.video}
+                  stream={m.stream}
                   alt={m.alt}
                   className="transition-opacity duration-300 group-hover:opacity-50"
                 />

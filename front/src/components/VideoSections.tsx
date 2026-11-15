@@ -61,7 +61,7 @@ function Section({ s, n }: { s: VideoSection; n: number }) {
    The title slides up on hover (always shown on touch screens, which have no
    hover), and a play badge marks anything with a clip or a film link. */
 function Tile({ v, onOpen }: { v: VideoTile; onOpen: () => void }) {
-  const isVideo = Boolean(v.video || v.href);
+  const isVideo = Boolean(v.stream || v.video || v.href);
   return (
     <button
       type="button"
@@ -70,7 +70,7 @@ function Tile({ v, onOpen }: { v: VideoTile; onOpen: () => void }) {
       className={`group relative block w-full cursor-pointer overflow-hidden rounded-2xl bg-white/5 ${v.tall ? "aspect-[9/16]" : "aspect-video"}`}
     >
       <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.04]">
-        <ParallaxImage src={v.src} video={v.video} alt={v.alt} />
+        <ParallaxImage src={v.src} video={v.video} stream={v.stream} alt={v.alt} />
       </div>
       {v.alt && (
         <span className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/75 to-transparent px-4 pb-3 pt-12 text-left text-sm font-semibold text-white opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100">

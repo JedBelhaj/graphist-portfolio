@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import type { MediaTile } from "@/lib/cms";
+import { muxFilm } from "@/lib/mux";
 import VideoPlayer from "./VideoPlayer";
 
 /* Turns a YouTube or Vimeo link into its embeddable player, so the full film
@@ -107,7 +108,7 @@ export default function Lightbox({
       tabIndex={-1}
       role="dialog"
       aria-modal="true"
-      aria-label={m.alt || (m.video || m.href ? "Video viewer" : "Photo viewer")}
+      aria-label={m.alt || (m.stream || m.video || m.href ? "Video viewer" : "Photo viewer")}
       onClick={() => onIndex(null)}
       onTouchStart={(e) => {
         /* Not on the player's controls: dragging the scrubber shouldn't change slides. */
@@ -140,8 +141,8 @@ export default function Lightbox({
                 : "aspect-video w-[min(92vw,calc(80vh*16/9))] rounded-lg bg-black"
             }
           />
-        ) : m.video ? (
-          <VideoPlayer src={m.video} poster={m.src || undefined} label={m.alt} />
+        ) : m.stream || m.video ? (
+          <VideoPlayer src={m.stream ? muxFilm(m.stream) : m.video!} poster={m.src || undefined} label={m.alt} />
         ) : !m.src ? null : (
           <img src={m.src} alt={m.alt} className="max-h-[80vh] max-w-[92vw] rounded-lg object-contain" />
         )}
