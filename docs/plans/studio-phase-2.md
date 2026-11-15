@@ -1,7 +1,9 @@
 # Studio phase 2: categories, simpler forms, sidebar, Bulk add → Mux
 
 Branch: `feature/studio-categories` (from `main` after #27 and #28).
-Status: **planned, not started.** Implement only when Jed says so.
+Status: **1–6 built and migrated on `staging`** (old and new categories compared:
+identical for videos and photos). Waiting on Jed's test, then going live.
+7 (Mux domain restriction) and 8 (loose ends) are still to do.
 
 ## Goal
 
