@@ -430,8 +430,9 @@ function build(raw: Raw | null) {
                 ...videoMedia(v, 1600),
                 alt: v.title ?? "",
                 href: v.link ?? undefined,
-                /* No format chosen: go by the video's own shape. */
-                tall: v.format ? v.format === "vertical" : portrait(v.aspect),
+                /* A Mux video's real shape wins over the Format setting, which
+                   defaults to Landscape and was often left on it for reels. */
+                tall: v.aspect ? portrait(v.aspect) : v.format === "vertical",
               },
             ]
           : [],

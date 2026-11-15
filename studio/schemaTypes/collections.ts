@@ -1,5 +1,6 @@
 import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
 import { Briefcase, Camera, Film, Image as ImageIcon, MessageSquareQuote, Monitor, Sparkles, Users } from "lucide-react";
+import { createElement } from "react";
 import { defineField, defineType, type PreviewValue } from "sanity";
 
 /* The repeatable content: one document per photo, video, person, logo.
@@ -87,10 +88,13 @@ export const video = defineType({
     orderRankField({ type: "video" }),
     hidden,
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
+    /* Only for videos still on the old file: a Mux video reports its own
+       shape, which the site uses instead, so the field hides itself there. */
     defineField({
       name: "format",
       title: "Format",
       type: "string",
+      hidden: ({ document }) => Boolean(document?.muxVideo),
       description: "Vertical for Reels, TikToks and Shorts, so they are not cropped to a wide frame.",
       options: {
         list: [
@@ -114,7 +118,7 @@ export const video = defineType({
       title: "Video",
       type: "mux.video",
       description:
-        "The full video, any length. The site streams it in the right size for each visitor, and loops its first few seconds silently in the gallery.",
+        "The full video, any length: drag the file here. The site streams it in the right size for each visitor, loops its first few seconds silently in the gallery, and works out on its own whether it's vertical.",
     }),
     /* Videos uploaded before Mux. The site plays them until they are moved
        to the Video field above (scripts/mux-migrate.ts), and the field hides
@@ -136,7 +140,24 @@ export const video = defineType({
     }),
     showInRecent,
   ],
-  preview: preview({ title: "title", media: "poster" }),
+  /* The poster, else the Mux video's first frame, so videos without a poster
+     can still be told apart in the list. */
+  preview: {
+    select: { title: "title", poster: "poster", playbackId: "muxVideo.asset.playbackId", hidden: "hidden" },
+    prepare: ({ title, poster, playbackId, hidden }: { title?: string; poster?: PreviewValue["media"]; playbackId?: string; hidden?: boolean }) => ({
+      title,
+      subtitle: hidden ? "Hidden" : undefined,
+      media:
+        poster ??
+        (playbackId
+          ? createElement("img", {
+              src: `https://image.mux.com/${playbackId}/thumbnail.webp?time=0&width=200`,
+              alt: "",
+              style: { width: "100%", height: "100%", objectFit: "cover" },
+            })
+          : undefined),
+    }),
+  },
 });
 
 export const webProject = defineType({
