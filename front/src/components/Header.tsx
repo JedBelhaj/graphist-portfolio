@@ -162,12 +162,12 @@ export default function Header({
           {/* The one coloured thing in the bar, so the eye lands on it. A shade
               deeper than ACCENT: white on ACCENT is 4.4:1, just under the 4.5
               that text this size needs; this is 4.7:1 and reads the same. */}
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="ml-1 hidden rounded-full bg-[rgb(118,86,248)] px-5 py-2.5 text-base font-medium text-white transition-[transform,background-color] hover:scale-[1.03] hover:bg-[rgb(104,72,236)] sm:inline-block"
           >
             Work with us
-          </a>
+          </Link>
           <button
             type="button"
             className="ml-1 p-1 lg:hidden"
@@ -235,13 +235,13 @@ export default function Header({
             ))}
 
             <div className="mt-4 flex items-center gap-3">
-              <a
-                href="#contact"
+              <Link
+                href="/contact"
                 onClick={() => setMenuOpen(false)}
                 className="flex-1 rounded-full bg-[rgb(118,86,248)] px-5 py-3 text-center text-base font-medium text-white"
               >
                 Work with us
-              </a>
+              </Link>
               {SOCIALS.map(({ label, href, Icon }) => (
                 <a
                   key={label}
