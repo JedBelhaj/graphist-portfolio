@@ -1,13 +1,12 @@
 import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
-import { Camera, Film, FileText, Inbox, MessageSquareQuote } from "lucide-react";
+import { Camera, Film, FileText, MessageSquareQuote } from "lucide-react";
 import type { ConfigContext } from "sanity";
 import type { StructureBuilder, StructureResolver } from "sanity/structure";
 import { singletonTypes } from "./schemaTypes/pages";
 
-/* The admin sidebar, grouped so it's short: contact-form messages on top,
-   then the work (Videos, Photos, Websites…), then the reviews, the team,
-   the pages and the site settings. Every list but Messages is
-   drag-to-reorder, and the site shows them in that order. */
+/* The admin sidebar, grouped so it's short: the work first (Videos, Photos,
+   Websites…), then the reviews, the team, the pages and the site settings.
+   Every list is drag-to-reorder, and the site shows them in that order. */
 
 type Ctx = { S: StructureBuilder; context: ConfigContext };
 
@@ -31,32 +30,6 @@ const media = (ctx: Ctx, kind: "video" | "photo", title: string, icon: typeof Fi
         ]),
     );
 
-/* Messages ▸ New / All: what came in through the website's contact form,
-   newest first. */
-const messages = (S: StructureBuilder) => {
-  const list = (title: string, filter: string) =>
-    S.documentTypeList("message")
-      .title(title)
-      .filter(filter)
-      .defaultOrdering([{ field: "receivedAt", direction: "desc" }]);
-  return S.listItem()
-    .title("Messages")
-    .id("messages")
-    .icon(Inbox)
-    .child(
-      S.list()
-        .title("Messages")
-        .items([
-          S.listItem()
-            .title("New")
-            .id("messages-new")
-            .icon(Inbox)
-            .child(list("New", '_type == "message" && handled != true')),
-          S.listItem().title("All").id("messages-all").child(list("All messages", '_type == "message"')),
-        ]),
-    );
-};
-
 const page = (S: StructureBuilder, t: (typeof singletonTypes)[number]) =>
   S.listItem()
     .title(t.title ?? t.name)
@@ -72,8 +45,6 @@ export const structure: StructureResolver = (S, context) => {
   return S.list()
     .title("Content")
     .items([
-      messages(S),
-      S.divider(),
       media(ctx, "video", "Videos", Film),
       media(ctx, "photo", "Photos", Camera),
       orderable(ctx, "webProject", "Websites"),

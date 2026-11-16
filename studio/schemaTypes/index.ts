@@ -1,9 +1,8 @@
 import { collectionTypes } from "./collections";
-import { inboxTypes } from "./inbox";
 import { objectTypes } from "./objects";
 import { singletonTypes } from "./pages";
 
-export const schemaTypes = [...singletonTypes, ...collectionTypes, ...inboxTypes, ...objectTypes];
+export const schemaTypes = [...singletonTypes, ...collectionTypes, ...objectTypes];
 
 /* Singletons live at a fixed document ID equal to their type name, so the
    site can fetch them by ID and the studio can open them directly. */
