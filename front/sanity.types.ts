@@ -70,6 +70,20 @@ export type Heading = {
   body?: string;
 };
 
+export type Message = {
+  _id: string;
+  _type: "message";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  handled?: boolean;
+  name?: string;
+  email?: string;
+  service?: string;
+  message?: string;
+  receivedAt?: string;
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
@@ -917,6 +931,7 @@ export type AllSanitySchemaTypes =
   | Blurb
   | PageHero
   | Heading
+  | Message
   | SanityImageAssetReference
   | PortfolioItem
   | SanityImageCrop

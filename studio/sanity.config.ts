@@ -21,6 +21,8 @@ const projectId = process.env.SANITY_STUDIO_PROJECT_ID ?? "";
 const dataset = process.env.SANITY_STUDIO_DATASET || "production";
 
 const SINGLETON_ACTIONS = new Set(["publish", "discardChanges", "restore"]);
+/* Contact-form messages: tick "Dealt with" and publish, or delete. */
+const MESSAGE_ACTIONS = new Set(["publish", "discardChanges", "delete"]);
 
 const IN_CATEGORY = [
   { id: "video-in-category", type: "video", title: "Video in a category" },
@@ -65,11 +67,11 @@ export default defineConfig({
 
   schema: {
     types: schemaTypes,
-    /* Singletons can't be created from the global "+" menu. The two "… in a
-       category" templates back the "New video/photo in this category" button
+    /* Singletons can't be created from the global "+" menu, nor can messages
+       (only the contact form makes those). The two "… in a category" templates back the "New video/photo in this category" button
        in a category (components/CategoryItems.tsx). */
     templates: (templates) => [
-      ...templates.filter(({ schemaType }) => !SINGLETONS.includes(schemaType)),
+      ...templates.filter(({ schemaType }) => !SINGLETONS.includes(schemaType) && schemaType !== "message"),
       ...IN_CATEGORY.map(({ id, type, title }) => ({
         id,
         title,
@@ -98,6 +100,8 @@ export default defineConfig({
     actions: (input, { schemaType }) =>
       SINGLETONS.includes(schemaType)
         ? input.filter(({ action }) => action && SINGLETON_ACTIONS.has(action))
-        : input,
+        : schemaType === "message"
+          ? input.filter(({ action }) => action && MESSAGE_ACTIONS.has(action))
+          : input,
   },
 });
