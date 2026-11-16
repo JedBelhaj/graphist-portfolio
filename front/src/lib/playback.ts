@@ -18,6 +18,13 @@
    While the Lightbox is open (holdGallery), nothing plays and nothing new
    loads, so the film has the connection to itself.
 
+   While someone scrolls fast, nothing new loads or starts playing either:
+   every tile flying past the middle would otherwise connect, start
+   decoding and be shut down a moment later, and that churn is what made a
+   fast scroll stutter. Tiles already playing keep playing while they're on
+   screen. SETTLE ms after the last fast scroll, the tiles on screen get
+   their turn as usual.
+
    Re-ranked on scroll and resize, once per frame at most, and only while
    some tile is near the screen. */
 export type Slot = { load: boolean; play: boolean };
@@ -26,8 +33,17 @@ type Entry = { el: Element; set: (s: Slot) => void; slot: Slot };
 const KEEP = 2;
 const OFF: Slot = { load: false, play: false };
 
+/* Faster than this, in px per ms (about 30 px a frame at 60 Hz), is a fast
+   scroll; SETTLE ms after the last one, it's over. */
+const FAST = 2;
+const SETTLE = 150;
+
 const entries = new Set<Entry>();
 let raf = 0;
+let fast = false;
+let settle = 0;
+let lastY = 0;
+let lastT = 0;
 let listening = false;
 let held = false;
 
@@ -64,8 +80,11 @@ function rank() {
     })
     .sort((a, b) => a.d - b.d)
     .forEach(({ e, visible }, i) => {
-      const loaded = held ? e.slot.load : i < load || (e.slot.load && i < load + KEEP);
-      const plays = !held && loaded && visible && playing < play;
+      /* Held or scrolling fast: loads stay as they are, and only a tile
+         already playing may go on playing. */
+      const frozen = held || fast;
+      const loaded = frozen ? e.slot.load : i < load || (e.slot.load && i < load + KEEP);
+      const plays = !held && (!fast || e.slot.play) && loaded && visible && playing < play;
       if (plays) playing++;
       /* Only tell the tile when something changed: this runs on every
          scroll frame, and each call re-renders the tile. */
@@ -80,13 +99,35 @@ function schedule() {
   if (!raf) raf = requestAnimationFrame(rank);
 }
 
+/* Measures the scroll speed; a fast scroll freezes the gallery until SETTLE
+   ms after the last fast step. Slowing down doesn't extend it, so it ends
+   SETTLE ms after the scroll drops below FAST, even mid-scroll. */
+function onScroll() {
+  const now = performance.now();
+  const y = window.scrollY;
+  const speed = Math.abs(y - lastY) / Math.max(now - lastT, 1);
+  lastY = y;
+  lastT = now;
+  if (speed > FAST) {
+    fast = true;
+    clearTimeout(settle);
+    settle = window.setTimeout(() => {
+      fast = false;
+      schedule();
+    }, SETTLE);
+  }
+  schedule();
+}
+
 /* Call while the tile is near the screen; `set` is told whether it may load
    and play. The returned function withdraws it (and tells it neither). */
 export function requestSlot(el: Element, set: (s: Slot) => void) {
   const entry: Entry = { el, set, slot: OFF };
   entries.add(entry);
   if (!listening) {
-    window.addEventListener("scroll", schedule, { passive: true });
+    lastY = window.scrollY;
+    lastT = performance.now();
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", schedule);
     listening = true;
   }
@@ -96,8 +137,10 @@ export function requestSlot(el: Element, set: (s: Slot) => void) {
     entries.delete(entry);
     set(OFF);
     if (entries.size === 0 && listening) {
-      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", schedule);
+      clearTimeout(settle);
+      fast = false;
       listening = false;
     }
     schedule();
