@@ -113,13 +113,17 @@ function Videos({ videos, open }: { videos: VideoTile[]; open: (i: number) => vo
 
 /* Masonry for mixed landscape and vertical tiles. Desktop: `cols` columns,
    each tile going to whichever is shortest so the bottoms stay close. Below
-   lg the columns dissolve (display: contents) into a two-up grid where
-   landscape tiles take the full width; the `order` style keeps that grid in
-   the original order.
+   lg the columns dissolve (display: contents) into a grid; the `order` style
+   keeps it in the original order. Tablets get two-up, landscape tiles taking
+   the full width. Phones get one tile per row, big, so about two are on
+   screen at once, which is also how many play at once there
+   (lib/playback.ts).
 
-   On desktop a vertical tile is never taller than the screen, less room for
-   the header: TALL_MAX caps its width at that height × 9/16 and centres it
-   in its column, which matters most when two or three verticals share a row. */
+   A vertical tile is never taller than the screen. On phones TALL_PHONE caps
+   it at 80% of the screen height, centred. On desktop TALL_MAX caps it at the
+   screen less room for the header, centred in its column, which matters most
+   when two or three verticals share a row. Each cap is its width × 16/9. */
+const TALL_PHONE = "mx-auto w-full max-w-[calc(80svh*9/16)] sm:mx-0 sm:max-w-none";
 const TALL_MAX = "lg:mx-auto lg:w-full lg:max-w-[calc((100svh_-_9rem)*9/16)]";
 type Piece = { node: ReactNode; tall: boolean; h: number };
 
@@ -133,11 +137,11 @@ function Columns({ pieces, cols }: { pieces: Piece[]; cols: number }) {
   });
 
   return (
-    <div className="grid grid-flow-dense grid-cols-2 gap-3 sm:gap-4 lg:flex lg:items-start lg:gap-5">
+    <div className="grid grid-flow-dense grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-4 lg:flex lg:items-start lg:gap-5">
       {buckets.map((b, c) => (
         <div key={c} className="contents lg:flex lg:min-w-0 lg:flex-1 lg:flex-col lg:gap-5">
           {b.map((i) => (
-            <div key={i} style={{ order: i }} className={pieces[i].tall ? TALL_MAX : "col-span-2"}>
+            <div key={i} style={{ order: i }} className={pieces[i].tall ? `${TALL_PHONE} ${TALL_MAX}` : "sm:col-span-2"}>
               {pieces[i].node}
             </div>
           ))}

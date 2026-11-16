@@ -39,15 +39,16 @@ type Nav = Navigator & {
 
 /* How many loops may load and play at once, by device:
    - data saver on, or a 2G-class connection: 1 playing, 2 loaded
-   - phones and tablets: 2 playing, 6 loaded (1 and 3 with 2 GB of RAM or less)
-   - computers: 4 playing (6 with 8+ cores), 10 loaded (4 with 2 GB or less) */
+   - phones and tablets: 2 playing, 6 loaded (1 and 3 with 2 GB of RAM or less);
+     on phones the Videography tiles are sized so about two fit on screen
+   - computers: 8 playing, 12 loaded (2 and 4 with 2 GB or less) */
 function budget() {
   const nav = navigator as Nav;
   if (nav.connection?.saveData || /2g$/.test(nav.connection?.effectiveType ?? "")) return { play: 1, load: 2 };
   const low = (nav.deviceMemory ?? 8) <= 2;
   if (window.matchMedia("(hover: none)").matches) return low ? { play: 1, load: 3 } : { play: 2, load: 6 };
   if (low) return { play: 2, load: 4 };
-  return { play: (nav.hardwareConcurrency ?? 4) >= 8 ? 6 : 4, load: 10 };
+  return { play: 8, load: 12 };
 }
 
 function rank() {
