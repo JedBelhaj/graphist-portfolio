@@ -5,7 +5,7 @@ import { Play } from "lucide-react";
 import type { MediaTile } from "@/lib/cms";
 import { tileSpan } from "@/lib/mosaic";
 import Lightbox from "./Lightbox";
-import ParallaxImage from "./ParallaxImage";
+import TileMedia from "./TileMedia";
 import Reveal from "./Reveal";
 
 /* Flush mosaic: no gap between tiles, but held in from the left and right
@@ -51,7 +51,7 @@ export default function MediaMosaic({ items, spans }: { items: MediaTile[]; span
                 }
                 className="group relative block h-full w-full cursor-pointer"
               >
-                <ParallaxImage
+                <TileMedia
                   src={m.src}
                   video={m.video}
                   stream={m.stream}

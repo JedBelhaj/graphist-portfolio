@@ -5,11 +5,11 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 /* One-shot scroll reveal. Holds its children at opacity 0 until they come into
    view, then hands over to the `reveal-in` keyframe.
 
-   The observer deliberately pairs a low threshold with a negative bottom
-   rootMargin rather than a high threshold: a block taller than the viewport can
-   never reach a high intersection ratio, so a threshold-only trigger silently
-   never fires on short screens. The margin delays the trigger instead, which
-   works at any height.
+   The observer fires on any overlap (threshold 0) and lets a negative bottom
+   rootMargin delay it instead: a block can never show more of itself than a
+   screen's worth, so any ratio threshold fails for blocks tall enough (10%
+   did, for a phone's one-column Videography section of a dozen verticals,
+   which then stayed invisible). The margin works at any height.
 
    Under prefers-reduced-motion the keyframe is a no-op (see globals.css), so
    clearing the inline opacity is what actually reveals the content. */
@@ -35,7 +35,7 @@ export default function Reveal({
         setShown(true);
         io.disconnect(); // reveals on the way in, not on every pass
       },
-      { threshold: 0.1, rootMargin: "0px 0px -12% 0px" },
+      { threshold: 0, rootMargin: "0px 0px -12% 0px" },
     );
 
     io.observe(el);

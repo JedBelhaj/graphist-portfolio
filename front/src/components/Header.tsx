@@ -159,9 +159,12 @@ export default function Header({
               <Icon size={18} />
             </a>
           ))}
+          {/* The one coloured thing in the bar, so the eye lands on it. A shade
+              deeper than ACCENT: white on ACCENT is 4.4:1, just under the 4.5
+              that text this size needs; this is 4.7:1 and reads the same. */}
           <a
             href="#contact"
-            className="ml-1 hidden rounded-full bg-[rgb(10,11,16)] px-5 py-2.5 text-base font-medium text-white transition-transform hover:scale-[1.03] sm:inline-block"
+            className="ml-1 hidden rounded-full bg-[rgb(118,86,248)] px-5 py-2.5 text-base font-medium text-white transition-[transform,background-color] hover:scale-[1.03] hover:bg-[rgb(104,72,236)] sm:inline-block"
           >
             Work with us
           </a>
@@ -235,7 +238,7 @@ export default function Header({
               <a
                 href="#contact"
                 onClick={() => setMenuOpen(false)}
-                className="flex-1 rounded-full bg-[rgb(10,11,16)] px-5 py-3 text-center text-base font-medium text-white"
+                className="flex-1 rounded-full bg-[rgb(118,86,248)] px-5 py-3 text-center text-base font-medium text-white"
               >
                 Work with us
               </a>

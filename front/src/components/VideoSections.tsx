@@ -5,7 +5,7 @@ import { Play } from "lucide-react";
 import { ACCENT, FONT_DISPLAY } from "@/lib/brand";
 import type { VideoSection, VideoTile } from "@/lib/cms";
 import Lightbox from "./Lightbox";
-import ParallaxImage from "./ParallaxImage";
+import TileMedia from "./TileMedia";
 import Reveal from "./Reveal";
 
 /* The Videography page's categories (Restaurants, Medical…): a hairline
@@ -14,7 +14,7 @@ import Reveal from "./Reveal";
    the page. */
 export default function VideoSections({ sections }: { sections: VideoSection[] }) {
   return (
-    <div className="bg-[rgb(10,11,16)] pb-10 lg:pb-16">
+    <div className="bg-[rgb(10,11,16)] pb-10 lg:pb-12">
       {sections.map((s, i) => (
         <Section key={s.key} s={s} n={i + 1} />
       ))}
@@ -26,7 +26,7 @@ function Section({ s, n }: { s: VideoSection; n: number }) {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section aria-labelledby={`category-${n}`} className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8 lg:py-24">
+    <section aria-labelledby={`category-${n}`} className="mx-auto max-w-[1180px] px-5 py-10 sm:px-8 lg:py-8">
       <Reveal>
         <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/45">
           <span className="tabular-nums" style={{ color: ACCENT }}>
@@ -39,14 +39,14 @@ function Section({ s, n }: { s: VideoSection; n: number }) {
         </div>
         <h2
           id={`category-${n}`}
-          className="mt-5 text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-white sm:text-7xl lg:text-[128px]"
+          className="mt-5 text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-white sm:text-7xl lg:text-[80px]"
           style={{ fontFamily: FONT_DISPLAY }}
         >
           {s.title}
         </h2>
       </Reveal>
       <Reveal delay={120}>
-        <div className="mt-10 lg:mt-14">
+        <div className="mt-10 lg:mt-8">
           <Videos videos={s.videos} open={setOpen} />
         </div>
       </Reveal>
@@ -70,7 +70,7 @@ function Tile({ v, onOpen }: { v: VideoTile; onOpen: () => void }) {
       className={`group relative block w-full cursor-pointer overflow-hidden rounded-2xl bg-white/5 ${v.tall ? "aspect-[9/16]" : "aspect-video"}`}
     >
       <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.04]">
-        <ParallaxImage src={v.src} video={v.video} stream={v.stream} alt={v.alt} />
+        <TileMedia src={v.src} video={v.video} stream={v.stream} alt={v.alt} />
       </div>
       {v.alt && (
         <span className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/75 to-transparent px-4 pb-3 pt-12 text-left text-sm font-semibold text-white opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100">
@@ -113,13 +113,17 @@ function Videos({ videos, open }: { videos: VideoTile[]; open: (i: number) => vo
 
 /* Masonry for mixed landscape and vertical tiles. Desktop: `cols` columns,
    each tile going to whichever is shortest so the bottoms stay close. Below
-   lg the columns dissolve (display: contents) into a two-up grid where
-   landscape tiles take the full width; the `order` style keeps that grid in
-   the original order.
+   lg the columns dissolve (display: contents) into a grid; the `order` style
+   keeps it in the original order. Tablets get two-up, landscape tiles taking
+   the full width. Phones get one tile per row, big, so about two are on
+   screen at once, which is also how many play at once there
+   (lib/playback.ts).
 
-   On desktop a vertical tile is never taller than the screen, less room for
-   the header: TALL_MAX caps its width at that height × 9/16 and centres it
-   in its column, which matters most when two or three verticals share a row. */
+   A vertical tile is never taller than the screen. On phones TALL_PHONE caps
+   it at 80% of the screen height, centred. On desktop TALL_MAX caps it at the
+   screen less room for the header, centred in its column, which matters most
+   when two or three verticals share a row. Each cap is its width × 16/9. */
+const TALL_PHONE = "mx-auto w-full max-w-[calc(80svh*9/16)] sm:mx-0 sm:max-w-none";
 const TALL_MAX = "lg:mx-auto lg:w-full lg:max-w-[calc((100svh_-_9rem)*9/16)]";
 type Piece = { node: ReactNode; tall: boolean; h: number };
 
@@ -133,11 +137,11 @@ function Columns({ pieces, cols }: { pieces: Piece[]; cols: number }) {
   });
 
   return (
-    <div className="grid grid-flow-dense grid-cols-2 gap-3 sm:gap-4 lg:flex lg:items-start lg:gap-5">
+    <div className="grid grid-flow-dense grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-4 lg:flex lg:items-start lg:gap-5">
       {buckets.map((b, c) => (
         <div key={c} className="contents lg:flex lg:min-w-0 lg:flex-1 lg:flex-col lg:gap-5">
           {b.map((i) => (
-            <div key={i} style={{ order: i }} className={pieces[i].tall ? TALL_MAX : "col-span-2"}>
+            <div key={i} style={{ order: i }} className={pieces[i].tall ? `${TALL_PHONE} ${TALL_MAX}` : "sm:col-span-2"}>
               {pieces[i].node}
             </div>
           ))}

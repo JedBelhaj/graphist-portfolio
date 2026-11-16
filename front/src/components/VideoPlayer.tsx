@@ -105,7 +105,9 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const idleTimer = useRef(0);
-  useStream(videoRef, src);
+  /* Started from code rather than the autoPlay attribute, so a refusal is
+     reported (`blocked`) instead of leaving the video waiting silently. */
+  const { failed, blocked, retry } = useStream(videoRef, src, { autoplay: true });
 
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -119,15 +121,20 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
      hiccup doesn't flash the circle on and off. */
   const [loading, setLoading] = useState(true);
   const [spinner, setSpinner] = useState(false);
+  /* Not waiting once the stream has given up, nor when autoplay was refused
+     and nobody has pressed play yet: iPhones don't load a video that hasn't
+     been tapped, so the spinner would turn forever over a Play button the
+     visitor can't see. */
+  const waiting = loading && !failed && !(blocked && !playing);
 
   useEffect(() => {
-    if (!loading) {
+    if (!waiting) {
       setSpinner(false);
       return;
     }
     const t = setTimeout(() => setSpinner(true), 250);
     return () => clearTimeout(t);
-  }, [loading]);
+  }, [waiting]);
 
   /* timeupdate only fires a few times a second, which makes the bar step;
      follow the frame rate while playing instead. */
@@ -241,7 +248,6 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
         ref={videoRef}
         poster={poster}
         aria-label={label || undefined}
-        autoPlay
         playsInline
         onClick={toggle}
         onPlay={() => {
@@ -275,7 +281,7 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
 
       {/* Paused: a big play button in the middle, like the gallery tiles.
           Not while loading, so the two never sit on top of each other. */}
-      {!playing && !loading && (
+      {!playing && !waiting && !failed && (
         <button
           type="button"
           aria-label="Play"
@@ -330,6 +336,23 @@ export default function VideoPlayer({ src, poster, label }: { src: string; poste
           </button>
         </div>
       </div>
+
+      {/* Every restart failed (a dead connection, usually). */}
+      {failed && (
+        <div
+          role="alert"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/70 px-6 text-center text-sm text-white"
+        >
+          <p>This video didn&apos;t load. Check your connection and try again.</p>
+          <button
+            type="button"
+            onClick={retry}
+            className="rounded-full bg-white/15 px-5 py-2 font-semibold ring-1 ring-white/30 transition-colors hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            Try again
+          </button>
+        </div>
+      )}
     </div>
   );
 }
