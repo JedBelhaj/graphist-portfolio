@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import type { MediaTile } from "@/lib/cms";
 import { muxFilm } from "@/lib/mux";
+import { holdGallery } from "@/lib/playback";
 import VideoPlayer from "./VideoPlayer";
 
 /* Turns a YouTube or Vimeo link into its embeddable player, so the full film
@@ -70,7 +71,9 @@ export default function Lightbox({
 
   /* Lock the page behind, move focus into the viewer, and hand it back to
      the tile that opened it on close. Focus goes to the dialog itself, not
-     the close button, so Space reaches the video player instead of closing. */
+     the close button, so Space reaches the video player instead of closing.
+     The gallery loops behind stop playing and loading meanwhile, so the
+     film doesn't share the connection with them. */
   useEffect(() => {
     if (!open) return;
     const opener = document.activeElement as HTMLElement | null;
@@ -78,9 +81,11 @@ export default function Lightbox({
     const overflow = root.style.overflow;
     root.style.overflow = "hidden";
     rootRef.current?.focus();
+    holdGallery(true);
     return () => {
       root.style.overflow = overflow;
       opener?.focus();
+      holdGallery(false);
     };
   }, [open]);
 

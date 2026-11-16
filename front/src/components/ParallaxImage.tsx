@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PREVIEW_SECONDS, muxPreview } from "@/lib/mux";
-import { requestPlay } from "@/lib/playback";
+import { requestSlot, type Slot } from "@/lib/playback";
 import { useStream } from "@/lib/useStream";
 
 /* Parallax that moves the picture inside a fixed frame, not the frame itself.
@@ -19,15 +19,16 @@ import { useStream } from "@/lib/useStream";
 const DRIFT = 11;
 
 /* How far beyond the screen a tile counts as near: one screen height above
-   and below. Near tiles follow the scroll and keep a stream they've opened;
-   the rest do nothing, so a page of 50 videos costs what the few around the
-   screen cost. */
+   and below. Near tiles follow the scroll and may load their loop ahead of
+   time; the rest do nothing, so a page of 50 videos costs what the few
+   around the screen cost. */
 const NEAR = "100% 0px";
 
 /* `src` is the still. `stream` (a Mux playback ID) or `video` (an uploaded
    file, from before Mux) adds a silent loop of the first PREVIEW_SECONDS over
-   it, playing only while the tile is on screen and among the few nearest the
-   middle (the others show the still). Under reduced motion there is
+   it. lib/playback.ts decides which near tiles load the loop and which play
+   it; a tile that is loaded but not playing shows the loop's first frame,
+   the same picture as the still. Under reduced motion there is
    no drift and no loop: the still stays up, or, for a file with no still, its
    first frame. On touch screens the loop plays but the picture doesn't
    drift, and the loop is fetched at the tile's on-screen size. */
@@ -48,7 +49,6 @@ export default function ParallaxImage({
   const layerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
-  const [inView, setInView] = useState(false);
   const [reduced, setReduced] = useState(false);
   /* No drift on touch screens either: phones scroll on their own fast path,
      and moving every tile from script on each scroll frame made them stutter. */
@@ -60,14 +60,9 @@ export default function ParallaxImage({
     setTouch(window.matchMedia("(hover: none)").matches);
     const frame = frameRef.current;
     if (!frame) return;
-    const nearIo = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: NEAR });
-    const viewIo = new IntersectionObserver(([e]) => setInView(e.isIntersecting));
-    nearIo.observe(frame);
-    viewIo.observe(frame);
-    return () => {
-      nearIo.disconnect();
-      viewIo.disconnect();
-    };
+    const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: NEAR });
+    io.observe(frame);
+    return () => io.disconnect();
   }, []);
 
   /* The drift, only while near. */
@@ -105,28 +100,19 @@ export default function ParallaxImage({
     };
   }, [near, drift]);
 
-  /* Playing is rationed (lib/playback.ts): an on-screen tile asks, and only
-     the few nearest the middle of the screen are allowed. */
+  /* Loading and playing are rationed (lib/playback.ts): a near tile asks,
+     and is told whether it may load its loop, and whether it may play it. */
   const moving = Boolean(stream || video);
-  const [allowed, setAllowed] = useState(false);
+  const [slot, setSlot] = useState<Slot>({ load: false, play: false });
   useEffect(() => {
     const frame = frameRef.current;
-    if (!inView || reduced || !moving || !frame) return;
-    return requestPlay(frame, setAllowed);
-  }, [inView, reduced, moving]);
-
-  /* A tile only starts streaming once it has been allowed to play, and
-     keeps the stream until it leaves the near zone, so tiles nudged in and
-     out of the playing few while scrolling don't keep reconnecting. */
-  const [armed, setArmed] = useState(false);
-  useEffect(() => {
-    if (!near) setArmed(false);
-    else if (allowed) setArmed(true);
-  }, [near, allowed]);
+    if (!near || reduced || !moving || !frame) return;
+    return requestSlot(frame, setSlot);
+  }, [near, reduced, moving]);
 
   /* What the <video> plays, if anything. An old file with no still loads its
      first frame as soon as it's near (#t nudges Safari into painting it). */
-  const live = armed && !reduced;
+  const live = slot.load && !reduced;
   const url = !near
     ? undefined
     : stream
@@ -142,7 +128,7 @@ export default function ParallaxImage({
         : undefined;
   useStream(videoRef, url, { light: touch });
 
-  const play = allowed && !reduced;
+  const play = slot.play && !reduced;
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -174,7 +160,9 @@ export default function ParallaxImage({
             muted
             loop
             playsInline
-            preload={src ? "none" : "metadata"}
+            /* "auto" so Safari fetches a loaded tile's loop before it's
+               asked to play (hls.js fetches regardless). */
+            preload={src ? "auto" : "metadata"}
             onTimeUpdate={(e) => {
               if (e.currentTarget.currentTime >= PREVIEW_SECONDS) e.currentTarget.currentTime = 0;
             }}

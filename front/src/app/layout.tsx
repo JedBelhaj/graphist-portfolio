@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { preload } from "react-dom";
+import { preconnect, preload } from "react-dom";
 import { BRAND, FONT_BODY } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import Header from "@/components/Header";
@@ -61,6 +61,13 @@ export default async function RootLayout({
   FONT_PRELOADS.forEach((href) =>
     preload(href, { as: "font", type: "font/woff2", crossOrigin: "anonymous" }),
   );
+
+  /* Open the connections to Mux while the page is still loading, so the
+     first video and the first still don't wait for them (a few hundred ms
+     on a phone). Streams are fetched by hls.js in CORS mode, stills by
+     plain <img>. */
+  preconnect("https://stream.mux.com", { crossOrigin: "anonymous" });
+  preconnect("https://image.mux.com");
 
   /* data-scroll-behavior lets Next switch off the CSS smooth scroll while it
      jumps to the top of a new page, so route changes don't glide up from the
