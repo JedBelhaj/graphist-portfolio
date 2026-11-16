@@ -5,7 +5,7 @@ import { Play } from "lucide-react";
 import { ACCENT, FONT_DISPLAY } from "@/lib/brand";
 import type { VideoSection, VideoTile } from "@/lib/cms";
 import Lightbox from "./Lightbox";
-import ParallaxImage from "./ParallaxImage";
+import TileMedia from "./TileMedia";
 import Reveal from "./Reveal";
 
 /* The Videography page's categories (Restaurants, Medical…): a hairline
@@ -70,7 +70,7 @@ function Tile({ v, onOpen }: { v: VideoTile; onOpen: () => void }) {
       className={`group relative block w-full cursor-pointer overflow-hidden rounded-2xl bg-white/5 ${v.tall ? "aspect-[9/16]" : "aspect-video"}`}
     >
       <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.04]">
-        <ParallaxImage src={v.src} video={v.video} stream={v.stream} alt={v.alt} />
+        <TileMedia src={v.src} video={v.video} stream={v.stream} alt={v.alt} />
       </div>
       {v.alt && (
         <span className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/75 to-transparent px-4 pb-3 pt-12 text-left text-sm font-semibold text-white opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100">
