@@ -57,6 +57,7 @@ export const siteSettings = defineType({
       title: "Contact email",
       type: "string",
       group: "brand",
+      description: "Shown on the site, and where messages from the website's contact form are sent.",
       validation: (r) => r.email(),
     }),
     defineField({ name: "instagram", title: "Instagram URL", type: "url", group: "brand" }),
