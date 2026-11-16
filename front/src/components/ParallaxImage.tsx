@@ -140,7 +140,7 @@ export default function ParallaxImage({
             ? video
             : undefined
         : undefined;
-  useStream(videoRef, url, touch);
+  useStream(videoRef, url, { light: touch });
 
   const play = allowed && !reduced;
   useEffect(() => {
