@@ -11,7 +11,7 @@ export default async function Photography() {
     <section id="photography" style={{ backgroundColor: ACCENT_WASH }}>
       {/* One slim line under the page hero, which already introduces the
           page: the eyebrow and paragraph would only repeat it. */}
-      <div className="mx-auto max-w-[1180px] px-5 pb-6 pt-10 sm:px-8 lg:pb-8 lg:pt-12">
+      <div className="mx-auto max-w-[1180px] px-5 pb-6 pt-10 sm:px-8 lg:pb-4 lg:pt-8">
         <Reveal>
           <h2
             className="text-3xl font-semibold leading-[1.1] tracking-tight text-[rgb(10,11,16)] lg:text-4xl"
@@ -28,9 +28,9 @@ export default async function Photography() {
            a hairline with the number and count, the category in big type,
            then its photos in the collage. */
         photography.sections.map((s, i) => (
-          <div key={s.key} aria-labelledby={`photo-category-${i + 1}`} role="group" className="pb-10 lg:pb-14">
+          <div key={s.key} aria-labelledby={`photo-category-${i + 1}`} role="group" className="pb-10 lg:pb-8">
             <Reveal>
-              <div className="mx-auto max-w-[1180px] px-5 pb-8 pt-10 sm:px-8 lg:pb-12 lg:pt-16">
+              <div className="mx-auto max-w-[1180px] px-5 pb-8 pt-10 sm:px-8 lg:pb-8 lg:pt-8">
                 <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.22em] text-[rgb(10,11,16)]/45">
                   <span className="tabular-nums" style={{ color: ACCENT }}>
                     {String(i + 1).padStart(2, "0")}
@@ -42,7 +42,7 @@ export default async function Photography() {
                 </div>
                 <h2
                   id={`photo-category-${i + 1}`}
-                  className="mt-5 text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-[rgb(10,11,16)] sm:text-7xl lg:text-[128px]"
+                  className="mt-5 text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-[rgb(10,11,16)] sm:text-7xl lg:text-[80px]"
                   style={{ fontFamily: FONT_DISPLAY }}
                 >
                   {s.title}
@@ -56,7 +56,7 @@ export default async function Photography() {
         <PhotoGallery items={photography.tiles} />
       )}
 
-      <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8 lg:py-20">
+      <div className="mx-auto max-w-[1180px] px-5 py-10 sm:px-8 lg:py-12">
         <div className="flex flex-wrap justify-center gap-3">
           {photography.disciplines.map((d, i) => (
             <Reveal key={d} delay={i * 70}>
