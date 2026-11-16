@@ -14,7 +14,7 @@ import Reveal from "./Reveal";
    the page. */
 export default function VideoSections({ sections }: { sections: VideoSection[] }) {
   return (
-    <div className="bg-[rgb(10,11,16)] pb-10 lg:pb-16">
+    <div className="bg-[rgb(10,11,16)] pb-10 lg:pb-12">
       {sections.map((s, i) => (
         <Section key={s.key} s={s} n={i + 1} />
       ))}
@@ -26,7 +26,7 @@ function Section({ s, n }: { s: VideoSection; n: number }) {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section aria-labelledby={`category-${n}`} className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8 lg:py-24">
+    <section aria-labelledby={`category-${n}`} className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8 lg:py-12">
       <Reveal>
         <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/45">
           <span className="tabular-nums" style={{ color: ACCENT }}>
@@ -39,14 +39,14 @@ function Section({ s, n }: { s: VideoSection; n: number }) {
         </div>
         <h2
           id={`category-${n}`}
-          className="mt-5 text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-white sm:text-7xl lg:text-[128px]"
+          className="mt-5 text-[44px] font-semibold leading-[0.95] tracking-[-0.04em] text-white sm:text-7xl lg:text-[80px]"
           style={{ fontFamily: FONT_DISPLAY }}
         >
           {s.title}
         </h2>
       </Reveal>
       <Reveal delay={120}>
-        <div className="mt-10 lg:mt-14">
+        <div className="mt-10 lg:mt-8">
           <Videos videos={s.videos} open={setOpen} />
         </div>
       </Reveal>

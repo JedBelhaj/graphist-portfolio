@@ -12,7 +12,7 @@ export default async function Videography() {
   return (
     <>
       <section id="videography" className="bg-[rgb(10,11,16)]">
-        <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-5 py-10 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:py-12">
+        <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-5 py-10 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:py-8">
           <Reveal className="lg:shrink-0">
             <h2
               className="text-3xl font-semibold leading-[1.05] tracking-tight text-[rgb(254,254,254)] lg:text-right lg:text-4xl"
