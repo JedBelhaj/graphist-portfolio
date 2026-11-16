@@ -26,7 +26,7 @@ function Section({ s, n }: { s: VideoSection; n: number }) {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section aria-labelledby={`category-${n}`} className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8 lg:py-12">
+    <section aria-labelledby={`category-${n}`} className="mx-auto max-w-[1180px] px-5 py-10 sm:px-8 lg:py-8">
       <Reveal>
         <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/45">
           <span className="tabular-nums" style={{ color: ACCENT }}>

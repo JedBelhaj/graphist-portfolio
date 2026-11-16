@@ -17,16 +17,16 @@ export default function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="bg-white px-5 pb-10 pt-28 sm:px-8 lg:pb-12 lg:pt-36">
+    <section className="bg-white px-5 pb-8 pt-24 sm:px-8 lg:pb-10 lg:pt-32">
       <div className="mx-auto max-w-[1180px]">
         <p
-          className="hero-rise mb-5 text-sm font-semibold uppercase tracking-[0.22em]"
+          className="hero-rise mb-3 text-sm font-semibold uppercase tracking-[0.22em]"
           style={{ color: ACCENT }}
         >
           {eyebrow}
         </p>
         <h1
-          className="hero-rise max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.03em] text-[rgb(10,11,16)] sm:text-6xl lg:text-[88px]"
+          className="hero-rise max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.03em] text-[rgb(10,11,16)] sm:text-6xl lg:text-[72px]"
           style={{ fontFamily: FONT_DISPLAY, animationDelay: "80ms" }}
         >
           {title}
@@ -38,7 +38,7 @@ export default function PageHero({
         </h1>
         {children && (
           <div
-            className="hero-rise mt-8 max-w-2xl text-lg leading-relaxed text-[rgb(74,74,86)]"
+            className="hero-rise mt-5 max-w-2xl text-lg leading-relaxed text-[rgb(74,74,86)]"
             style={{ animationDelay: "160ms" }}
           >
             {children}
