@@ -49,13 +49,13 @@ export default async function AboutIntro({ page = false }: { page?: boolean }) {
           </Reveal>
           <Reveal delay={240}>
             {page ? (
-              <a
-                href="#contact"
+              <Link
+                href="/contact"
                 className="mt-10 inline-block rounded-full px-10 py-4 text-lg font-medium transition-transform hover:scale-[1.03]"
                 style={{ backgroundColor: ACCENT_TINT, color: INK }}
               >
                 Work with us
-              </a>
+              </Link>
             ) : (
               <Link
                 href="/about"

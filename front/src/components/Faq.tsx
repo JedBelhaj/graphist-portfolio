@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { FONT_DISPLAY } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import Reveal from "./Reveal";
+import Link from "next/link";
 
 /* Native <details> rather than a JS accordion: keyboard, screen reader and
    find-in-page support come free, and it works before hydration. */
@@ -38,12 +39,12 @@ export default async function Faq() {
             >
               {faq.ctaTitle}
             </p>
-            <a
-              href="#contact"
+            <Link
+              href="/contact"
               className="rounded-full bg-[rgb(10,11,16)] px-6 py-3 text-base font-medium text-white transition-transform hover:scale-[1.03]"
             >
               {faq.ctaButton}
-            </a>
+            </Link>
           </div>
         </Reveal>
       </div>

@@ -9,7 +9,7 @@ export default async function SiteFooter() {
   const { brand, footer, images } = await getContent();
 
   return (
-    <footer id="contact" className="bg-[rgb(10,11,16)] px-5 pb-12 sm:px-8 lg:px-[72px]">
+    <footer className="bg-[rgb(10,11,16)] px-5 pb-12 sm:px-8 lg:px-[72px]">
       <div className="mx-auto max-w-[1180px]">
         {/* CTA card */}
         <div className="mb-12 flex flex-col items-center gap-6 rounded-2xl bg-[rgb(124,92,252)] p-8 text-center lg:flex-row lg:justify-between lg:gap-16 lg:text-left">
@@ -20,12 +20,12 @@ export default async function SiteFooter() {
           >
             {footer.cta}
           </h3>
-          <a
-            href={`mailto:${brand.email}`}
+          <Link
+            href="/contact"
             className="rounded-full bg-[rgb(254,254,254)] px-6 py-2.5 text-base font-medium text-[rgb(124,92,252)] transition-transform hover:scale-[1.03]"
           >
             {footer.button}
-          </a>
+          </Link>
         </div>
 
         {/* Links */}

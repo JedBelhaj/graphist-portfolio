@@ -7,6 +7,7 @@ import HeroStream from "./HeroStream";
 import InViewGate from "./InViewGate";
 import ParallaxLayer from "./ParallaxLayer";
 import Stickers from "./Stickers";
+import Link from "next/link";
 
 /* Entrance sequence, in ms: the left column rises first, then the photo slides
    in from the right, then the burst behind it, then the logos pop one by one. */
@@ -107,13 +108,13 @@ export default async function Hero() {
             {home.heroIntro}
           </p>
 
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="hero-rise inline-block rounded-full bg-[rgb(10,11,16)] px-5 py-2.5 text-base font-medium text-white transition-transform hover:scale-[1.03]"
             style={{ animationDelay: "280ms" }}
           >
             {home.heroButton}
-          </a>
+          </Link>
         </div>
 
         {/* Mobile / tablet photo, below the copy. A square-cornered colour

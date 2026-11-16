@@ -840,7 +840,24 @@ export const NAV: NavItem[] = [
   },
   { label: "About Us", href: "/about" },
   { label: "FAQ", href: "/faq" },
+  { label: "Contact", href: "/contact" },
 ];
+
+/* ---------- Contact page ----------
+   Not in the studio yet: adding it there needs new fields (a schema change
+   and a studio deploy). `services` are the choices on the form, and arrive
+   in the enquiry email as written here. */
+export const CONTACT_PAGE = {
+  eyebrow: "Contact",
+  title: "Let's make",
+  accent: "something worth watching",
+  body: "Tell us about the project. We read every message and reply within one working day.",
+  services: ["Photography", "Videography", "Web design", "Something else"],
+  sent: {
+    title: "Message sent",
+    body: "Thanks for reaching out. We'll get back to you within one working day.",
+  },
+} as const;
 
 /* ---------- Page copy ----------
    The words on every page, as they stood before the CMS. Each one is the
