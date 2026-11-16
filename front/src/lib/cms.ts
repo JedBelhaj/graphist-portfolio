@@ -67,7 +67,8 @@ import {
    YouTube/Vimeo link. `src` is the still: the poster, else Mux's first frame;
    "" for an old file with no poster, whose own first frame stands in. */
 export type MediaTile = { src: string; alt: string; stream?: string; video?: string; href?: string };
-export type RecentTab = { label: string; tiles: MediaTile[] };
+/* `href`: the full page for the tab ("See more"), where there is one. */
+export type RecentTab = { label: string; tiles: MediaTile[]; href?: string };
 /* A video in a Videography section. `tall` is a 9:16 vertical, shown uncropped. */
 export type VideoTile = MediaTile & { tall: boolean };
 export type VideoSection = { key: string; title: string; videos: VideoTile[] };
@@ -315,8 +316,16 @@ function build(raw: Raw | null) {
   /* One tab per lane, and a lane with nothing to show gets no tab. Web only
      counts real screenshots: its fallback stills are mockups of no project. */
   const recentTabs: RecentTab[] = [
-    { label: photoLane.title, tiles: photos.length > 0 ? recentIn(photos) : photoTiles.slice(0, 7) },
-    { label: videoLane.title, tiles: videos.length > 0 ? recentIn(videos) : videoTiles.slice(0, 7) },
+    {
+      label: photoLane.title,
+      tiles: photos.length > 0 ? recentIn(photos) : photoTiles.slice(0, 7),
+      href: "/work/photography",
+    },
+    {
+      label: videoLane.title,
+      tiles: videos.length > 0 ? recentIn(videos) : videoTiles.slice(0, 7),
+      href: "/work/videography",
+    },
     {
       label: webLane.title,
       tiles: webShots.filter((w) => w.real).slice(0, 7).map((w) => ({ src: w.src, alt: w.address })),
