@@ -53,23 +53,10 @@ export default async function Photography() {
           </div>
         ))
       ) : (
-        <PhotoGallery items={photography.tiles} />
-      )}
-
-      <div className="mx-auto max-w-[1180px] px-5 py-10 sm:px-8 lg:py-12">
-        <div className="flex flex-wrap justify-center gap-3">
-          {photography.disciplines.map((d, i) => (
-            <Reveal key={d} delay={i * 70}>
-              <span
-                className="inline-block rounded-full border border-[rgb(10,11,16)]/12 bg-white/70 px-5 py-2.5 text-sm font-semibold text-[rgb(10,11,16)]"
-                style={{ fontFamily: FONT_DISPLAY }}
-              >
-                {d}
-              </span>
-            </Reveal>
-          ))}
+        <div className="pb-10 lg:pb-8">
+          <PhotoGallery items={photography.tiles} />
         </div>
-      </div>
+      )}
     </section>
   );
 }
