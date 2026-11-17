@@ -37,36 +37,38 @@ export default async function Countries() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
           {countries.map((c, i) => {
             const Flag = FLAGS[c.code];
             return (
               <Reveal key={c.code} delay={i * 80}>
-                <div className="group flex h-full flex-col justify-between rounded-2xl bg-white p-6 transition-transform duration-300 hover:-translate-y-1 lg:p-7">
+                <div className="group flex h-full flex-col justify-between rounded-xl bg-white p-4 transition-transform duration-300 hover:-translate-y-1 sm:rounded-2xl sm:p-6 lg:p-7">
                   <div className="flex items-start justify-between gap-3">
                     {/* The ring keeps white-edged flags (Canada, Lebanon, France)
                         from dissolving into the white card. */}
                     {Flag ? (
                       <Flag
                         title={c.name}
-                        className="w-16 overflow-hidden rounded-md shadow-sm ring-1 ring-black/10 transition-transform duration-300 group-hover:scale-105 lg:w-20"
+                        className="w-11 overflow-hidden rounded-md shadow-sm ring-1 ring-black/10 transition-transform duration-300 group-hover:scale-105 sm:w-16 lg:w-20"
                       />
                     ) : (
                       /* An unknown code keeps its slot rather than breaking the card. */
-                      <Globe size={40} className="text-[rgb(122,122,132)]" aria-hidden="true" />
+                      <Globe className="size-7 text-[rgb(122,122,132)] sm:size-10" aria-hidden="true" />
                     )}
                     <span className="text-xs font-semibold tracking-[0.14em] text-[rgb(122,122,132)]">
                       {c.code}
                     </span>
                   </div>
-                  <div className="mt-10">
+                  <div className="mt-5 sm:mt-10">
                     <div
-                      className="text-xl font-bold tracking-tight text-[rgb(10,11,16)]"
+                      className="text-base font-bold tracking-tight text-[rgb(10,11,16)] sm:text-xl"
                       style={{ fontFamily: FONT_DISPLAY }}
                     >
                       {c.name}
                     </div>
-                    {c.note && <div className="mt-1 text-sm text-[rgb(122,122,132)]">{c.note}</div>}
+                    {c.note && (
+                      <div className="mt-1 text-xs text-[rgb(122,122,132)] sm:text-sm">{c.note}</div>
+                    )}
                   </div>
                 </div>
               </Reveal>

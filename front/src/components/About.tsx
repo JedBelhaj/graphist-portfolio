@@ -38,10 +38,15 @@ export default async function About() {
           {/* On-set image */}
           <Reveal delay={120} className="lg:col-start-2 lg:row-start-2 lg:row-span-2">
             <div className="relative overflow-hidden rounded-2xl">
-              <img src={images.aboutStudio} alt="On set with the Soltani Media crew" className="w-full" />
+              {/* Capped and cropped below desktop so the portrait shot doesn't fill the whole phone screen. */}
+              <img
+                src={images.aboutStudio}
+                alt="On set with the Soltani Media crew"
+                className="h-[400px] w-full object-cover object-center sm:h-[520px] lg:h-auto"
+              />
               {/* White with a soft shadow: the on-set shot is dark at the bottom. */}
               <div
-                className="absolute bottom-6 left-4 text-2xl font-bold text-white [text-shadow:0_2px_10px_rgba(10,11,16,0.7)]"
+                className="absolute bottom-4 left-4 text-xl font-bold sm:bottom-6 sm:text-2xl text-white [text-shadow:0_2px_10px_rgba(10,11,16,0.7)]"
                 style={{ fontFamily: FONT_SCRIPT }}
               >
                 {about.photoCaption}

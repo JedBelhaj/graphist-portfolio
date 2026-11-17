@@ -839,8 +839,6 @@ export const NAV: NavItem[] = [
     ],
   },
   { label: "About Us", href: "/about" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Contact", href: "/contact" },
 ];
 
 /* ---------- Contact page ----------

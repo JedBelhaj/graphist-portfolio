@@ -19,10 +19,14 @@ export default async function AboutIntro({ page = false }: { page?: boolean }) {
   return (
     <section
       id={page ? undefined : "about"}
-      className={`relative overflow-hidden bg-white px-5 sm:px-8 ${page ? "pt-32 lg:pt-40" : "py-20 lg:py-28"}`}
+      className={`relative overflow-hidden bg-white px-5 sm:px-8 ${page ? "pt-24 sm:pt-28 lg:pt-40" : "py-20 lg:py-28"}`}
     >
-      <div className="mx-auto grid max-w-[1180px] grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-        <div className={page ? "pb-4 lg:pb-32" : ""}>
+      <div
+        className={`mx-auto grid max-w-[1180px] grid-cols-1 items-center lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 ${
+          page ? "gap-6 sm:gap-8" : "gap-12"
+        }`}
+      >
+        <div className={page ? "pb-14 lg:pb-32" : ""}>
           <Reveal>
             <p
               className="mb-6 text-sm font-semibold uppercase tracking-[0.22em]"
@@ -69,9 +73,10 @@ export default async function AboutIntro({ page = false }: { page?: boolean }) {
         </div>
 
         {page ? (
-          /* self-end so the cut-out sits on the section's bottom edge, the way
-             a studio backdrop meets the floor. */
-          <Reveal delay={120} className="relative self-end">
+          /* Below desktop the photo comes first (order-first), then the text.
+             On desktop it sits on the right and self-end puts the cut-out on
+             the section's bottom edge, the way a studio backdrop meets the floor. */
+          <Reveal delay={120} className="relative order-first self-end lg:order-none">
             <div
               className="absolute inset-x-[8%] bottom-0 top-[18%] rounded-t-[999px]"
               style={{ backgroundColor: ACCENT_WASH }}
@@ -79,7 +84,7 @@ export default async function AboutIntro({ page = false }: { page?: boolean }) {
             <img
               src={images.aboutCutout}
               alt={`${brand.founder}, founder of ${brand.name}`}
-              className="relative mx-auto max-h-[560px] lg:max-h-[680px]"
+              className="relative mx-auto max-h-[380px] sm:max-h-[560px] lg:max-h-[680px]"
             />
           </Reveal>
         ) : (

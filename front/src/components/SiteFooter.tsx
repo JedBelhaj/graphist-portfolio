@@ -56,7 +56,7 @@ export default async function SiteFooter() {
               ["Videography", "/work/videography"],
               ["Web Design", "/work/web-design"],
               ["About us", "/about"],
-              ["FAQ", "/faq"],
+              ["FAQ", "/contact#faq"],
             ]}
           />
           <FooterCol
