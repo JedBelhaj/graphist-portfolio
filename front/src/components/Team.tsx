@@ -38,13 +38,15 @@ export default async function Team() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        {/* Two across on phones so each photo is half the screen wide, not the
+            full width. */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-6 lg:grid-cols-4 lg:gap-8">
           {team.map((m, i) => (
             <Reveal key={m.name} delay={i * 110}>
               {/* h-full so the cards in a row line up even when the focus line
                   wraps to a different number of lines. */}
               <div className="group flex h-full flex-col">
-                <div className="mb-5 overflow-hidden rounded-2xl bg-black/5">
+                <div className="mb-3 overflow-hidden rounded-xl bg-black/5 sm:mb-5 sm:rounded-2xl">
                   <img
                     src={m.photo}
                     alt={`${m.name} — ${m.role}`}
@@ -53,15 +55,15 @@ export default async function Team() {
                 </div>
 
                 <div
-                  className="text-xl font-bold tracking-tight text-[rgb(10,11,16)]"
+                  className="text-base font-bold tracking-tight text-[rgb(10,11,16)] sm:text-xl"
                   style={{ fontFamily: FONT_DISPLAY }}
                 >
                   {m.name}
                 </div>
-                <div className="mt-1 text-sm font-semibold" style={{ color: ACCENT }}>
+                <div className="mt-1 text-xs font-semibold sm:text-sm" style={{ color: ACCENT }}>
                   {m.role}
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-[rgb(74,74,86)]">{m.focus}</p>
+                <p className="mt-2 text-xs leading-relaxed text-[rgb(74,74,86)] sm:mt-3 sm:text-sm">{m.focus}</p>
               </div>
             </Reveal>
           ))}

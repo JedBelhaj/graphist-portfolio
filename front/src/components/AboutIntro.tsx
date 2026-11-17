@@ -79,7 +79,7 @@ export default async function AboutIntro({ page = false }: { page?: boolean }) {
             <img
               src={images.aboutCutout}
               alt={`${brand.founder}, founder of ${brand.name}`}
-              className="relative mx-auto max-h-[560px] lg:max-h-[680px]"
+              className="relative mx-auto max-h-[380px] sm:max-h-[560px] lg:max-h-[680px]"
             />
           </Reveal>
         ) : (
