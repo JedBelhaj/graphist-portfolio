@@ -4,6 +4,7 @@ import { ACCENT_WASH, FONT_DISPLAY } from "@/lib/brand";
 import { getContent } from "@/lib/cms";
 import { CONTACT_PAGE } from "@/lib/content";
 import ContactForm from "@/components/ContactForm";
+import Faq from "@/components/Faq";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
@@ -60,6 +61,8 @@ export default async function ContactPage() {
           </div>
         </div>
       </section>
+
+      <Faq embedded />
     </>
   );
 }
