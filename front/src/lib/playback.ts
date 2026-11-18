@@ -55,8 +55,7 @@ type Nav = Navigator & {
 
 /* How many loops may load and play at once, by device:
    - data saver on, or a 2G-class connection: 1 playing, 2 loaded
-   - phones and tablets: 2 playing, 6 loaded (1 and 3 with 2 GB of RAM or less);
-     on phones the Videography tiles are sized so about two fit on screen
+   - phones and tablets: 2 playing, 6 loaded (1 and 3 with 2 GB of RAM or less)
    - computers: 4 playing, 12 loaded (2 and 4 with 2 GB or less); 8 playing
      made the Videography page lag on laptops */
 function budget() {
