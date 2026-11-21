@@ -19,7 +19,8 @@
    - testimonials: replaces every testimonial with the defaults.
    - team: name, role and line for each member, by position in the list;
      uploads the lead's photo only if they have none.
-   - images: uploads the hero cut-out, on-set photo and founder portrait. */
+   - images: uploads the hero cut-out, on-set photo and founder portrait.
+   - home: the text of the second marquee belt (marqueeTwo). */
 import { createReadStream, existsSync } from "node:fs";
 import { basename, join } from "node:path";
 import { getCliClient } from "sanity/cli";
@@ -138,6 +139,12 @@ const steps: Record<string, Step> = {
       [HERO_PHOTO, STUDIO_PHOTO, FOUNDER_PORTRAIT].map(upload),
     );
     tx.patch("siteSettings", (p) => p.set({ heroPhoto, studioPhoto, founderPortrait }));
+  },
+
+  async home(tx) {
+    console.log(`home\n  marqueeTwo → "${COPY.home.marqueeTwo}"`);
+    if (!apply) return;
+    tx.patch("homePage", (p) => p.set({ marqueeTwo: COPY.home.marqueeTwo }));
   },
 };
 
