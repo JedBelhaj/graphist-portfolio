@@ -19,7 +19,7 @@ export default async function AboutIntro({ page = false }: { page?: boolean }) {
   return (
     <section
       id={page ? undefined : "about"}
-      className={`relative overflow-hidden bg-white px-5 sm:px-8 ${page ? "pt-24 sm:pt-28 lg:pt-40" : "py-20 lg:py-28"}`}
+      className={`relative overflow-hidden bg-white px-5 sm:px-8 ${page ? "pt-24 sm:pt-28 lg:pt-40" : "pt-20 pb-10 lg:pt-28 lg:pb-14"}`}
     >
       <div
         className={`mx-auto grid max-w-[1180px] grid-cols-1 items-center lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 ${

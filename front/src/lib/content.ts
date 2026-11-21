@@ -139,12 +139,6 @@ export const SEAM_STICKERS = {
   services: {
     groups: [
       seam(
-        "espresso",
-        "w-16 -top-[44px] right-[4%] lg:w-32 lg:-top-[150px] lg:right-[8%]",
-        6,
-        12,
-      ),
-      seam(
         "adobe-pack",
         "w-14 -top-[44px] right-[30%] lg:w-24 lg:-top-[80px] lg:right-[22%]",
         -8,
@@ -168,7 +162,6 @@ export const SEAM_STICKERS = {
         -7,
         -12,
       ),
-      seam("boga", "w-8 -top-[56px] right-[6%] lg:w-14 lg:-top-[90px]", 10, 14),
     ],
   },
   photography: {
@@ -237,19 +230,19 @@ export const SEAM_STICKERS = {
 export const HERO_SLOGAN_STICKERS = [
   {
     src: "/stickers/sticker-1.webp",
-    cls: "w-12 -top-[66px] left-[2%] lg:w-28 lg:-top-[130px]",
+    cls: "w-[38px] -top-[66px] left-[2%] lg:w-[90px] lg:-top-[130px]",
     tilt: -8,
     lean: -14,
   },
   {
     src: "/stickers/sticker-2.webp",
-    cls: "w-12 -top-[66px] left-[38%] lg:w-28 lg:-top-[130px] lg:left-[44%]",
+    cls: "w-[38px] -top-[66px] left-[38%] lg:w-[90px] lg:-top-[130px] lg:left-[44%]",
     tilt: 7,
     lean: 14,
   },
   {
     src: "/stickers/sticker-3.webp",
-    cls: "w-12 -top-[52px] left-[80%] lg:w-28 lg:top-[10px] lg:left-[82%]",
+    cls: "w-[38px] -top-[52px] left-[80%] lg:w-[90px] lg:top-[10px] lg:left-[82%]",
     tilt: 6,
     lean: 14,
   },
@@ -924,7 +917,7 @@ export const COPY = {
       accent: "[aka what we do]",
     }),
     marqueeTwo:
-      "Media & Marketing [noun]: Making something worth watching — then making sure it gets seen.",
+      "Media & Marketing: Making something worth watching — then making sure it gets seen.",
   },
 
   about: {
