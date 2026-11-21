@@ -15,7 +15,7 @@ export default async function Countries() {
   const h = about.countries;
 
   return (
-    <section style={{ backgroundColor: ACCENT_WASH }} className="px-5 pt-14 pb-20 sm:px-8 lg:pt-16 lg:pb-24">
+    <section style={{ backgroundColor: ACCENT_WASH }} className="px-5 pt-10 pb-20 sm:px-8 lg:pt-10 lg:pb-24">
       <div className="mx-auto max-w-[1180px]">
         <Reveal className="mb-12 lg:mb-14">
           <h2
