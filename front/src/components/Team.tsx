@@ -7,7 +7,7 @@ export default async function Team() {
   const h = about.team;
 
   return (
-    <section id="team" className="bg-white px-5 pt-20 pb-6 sm:px-8 lg:pt-28 lg:pb-8">
+    <section id="team" className="bg-white px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-[1180px]">
         <div className="mb-14 text-center lg:mb-20">
           <Reveal>
