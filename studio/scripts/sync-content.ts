@@ -20,7 +20,8 @@
    - team: name, role and line for each member, by position in the list;
      uploads the lead's photo only if they have none.
    - images: uploads the hero cut-out, on-set photo and founder portrait.
-   - home: the text of the second marquee belt (marqueeTwo). */
+   - home: the text of the second marquee belt (marqueeTwo).
+   - videoStats: the three stats on the Videography page. */
 import { createReadStream, existsSync } from "node:fs";
 import { basename, join } from "node:path";
 import { getCliClient } from "sanity/cli";
@@ -36,6 +37,7 @@ import {
   STUDIO_PHOTO,
   TEAM,
   TESTIMONIALS,
+  VIDEO_STATS,
 } from "../../front/src/lib/content";
 
 const client = getCliClient({ apiVersion: "2026-10-13" });
@@ -145,6 +147,16 @@ const steps: Record<string, Step> = {
     console.log(`home\n  marqueeTwo → "${COPY.home.marqueeTwo}"`);
     if (!apply) return;
     tx.patch("homePage", (p) => p.set({ marqueeTwo: COPY.home.marqueeTwo }));
+  },
+
+  async videoStats(tx) {
+    const now = await client.fetch<{ figure?: string; label?: string }[] | null>(`*[_id == "videographyPage"][0].stats`);
+    console.log("videoStats");
+    VIDEO_STATS.forEach((s, i) =>
+      console.log(`  ${now?.[i]?.figure ?? "—"} ${now?.[i]?.label ?? ""} → ${s.figure} ${s.label}`),
+    );
+    if (!apply) return;
+    tx.patch("videographyPage", (p) => p.set({ stats: keyed(VIDEO_STATS, "stat") }));
   },
 };
 

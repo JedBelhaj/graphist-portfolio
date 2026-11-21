@@ -612,7 +612,7 @@ export const VIDEO_CAPABILITIES = [
 
 export const VIDEO_STATS = [
   { figure: "120+", label: "Projects delivered" },
-  { figure: "6K", label: "Capture standard" },
+  { figure: "1M+", label: "Views generated" },
   { figure: "72h", label: "Typical first cut" },
 ];
 
