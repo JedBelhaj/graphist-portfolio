@@ -15,27 +15,19 @@ export default async function Countries() {
   const h = about.countries;
 
   return (
-    <section style={{ backgroundColor: ACCENT_WASH }} className="px-5 py-20 sm:px-8 lg:py-24">
+    <section style={{ backgroundColor: ACCENT_WASH }} className="px-5 pt-14 pb-20 sm:px-8 lg:pt-16 lg:pb-24">
       <div className="mx-auto max-w-[1180px]">
-        <div className="mb-12 flex flex-col gap-4 lg:mb-14 lg:flex-row lg:items-end lg:justify-between">
-          <Reveal>
-            <h2
-              className="text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[56px]"
-              style={{ fontFamily: FONT_DISPLAY }}
-            >
-              {h.title}
-              <span className="block" style={{ fontFamily: FONT_SCRIPT, color: ACCENT }}>
-                {h.accent}
-              </span>
-            </h2>
-          </Reveal>
-          <Reveal delay={100}>
-            <p className="flex max-w-sm items-start gap-3 text-base leading-relaxed text-[rgb(74,74,86)]">
-              <Globe size={20} className="mt-1 shrink-0" style={{ color: ACCENT }} />
-              {h.body}
-            </p>
-          </Reveal>
-        </div>
+        <Reveal className="mb-12 lg:mb-14">
+          <h2
+            className="text-4xl font-semibold leading-[1.05] tracking-tight text-[rgb(10,11,16)] sm:text-5xl lg:text-[56px]"
+            style={{ fontFamily: FONT_DISPLAY }}
+          >
+            {h.title}
+            <span className="block" style={{ fontFamily: FONT_SCRIPT, color: ACCENT }}>
+              {h.accent}
+            </span>
+          </h2>
+        </Reveal>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
           {countries.map((c, i) => {
