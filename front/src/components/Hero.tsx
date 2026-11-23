@@ -64,10 +64,11 @@ export default async function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-[rgb(254,254,254)] pt-24 lg:pt-15">
-      <div className="mx-auto grid max-w-[1300px] grid-cols-1 items-center gap-6 px-5 sm:px-8 lg:min-h-[85vh] lg:grid-cols-2 lg:gap-6 lg:px-[43px]">
+      <div className="mx-auto grid max-w-[1300px] grid-cols-1 items-center gap-2 px-5 sm:gap-6 sm:px-8 lg:min-h-[85vh] lg:grid-cols-2 lg:gap-6 lg:px-[43px]">
         {/* More room above than below: the slogan stickers sit over the headline
-            and mustn't reach the logo on short laptops. */}
-        <div className="py-6 lg:pb-16 lg:pt-32">
+            and mustn't reach the logo on short laptops. On phones the bottom is
+            tight so the photo peeks in above the fold. */}
+        <div className="pt-6 sm:pb-6 lg:pb-16 lg:pt-32">
           <div className="relative mb-8">
             <div className="hero-rise flex flex-wrap gap-x-3">
               <h1
@@ -102,7 +103,7 @@ export default async function Hero() {
             {home.heroTagline}
           </p>
           <p
-            className="hero-rise mb-8 max-w-xl text-lg leading-relaxed tracking-tight text-[rgb(10,11,16)] sm:text-xl"
+            className="hero-rise mb-6 max-w-xl sm:mb-8 text-lg leading-relaxed tracking-tight text-[rgb(10,11,16)] sm:text-xl"
             style={{ animationDelay: "200ms" }}
           >
             {home.heroIntro}
@@ -127,7 +128,7 @@ export default async function Hero() {
         <div className="pb-8 lg:hidden">
           {/* Gated: with the copy first, the photo often starts below the fold,
               and the sticker sequence would finish before anyone saw it. */}
-          <InViewGate className="relative flex items-end justify-center pt-4">
+          <InViewGate className="relative flex items-end justify-center sm:pt-4">
             {/* Starts at the shoulders, so only the head and neck rise above it. */}
             <div aria-hidden className="absolute inset-x-0 bottom-0 top-[31%] bg-[rgb(238,234,255)]" />
             {/* Phone size keeps the sticker orbit, which reaches past the photo's
